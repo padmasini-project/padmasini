@@ -1,0 +1,58 @@
+/* Drawer.css */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -50%;
+  width: 50%;
+  height: 100%;
+  background-color: #f9f9f9;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.drawer.open {
+  right: 0;
+}
+
+.close-btn {
+ padding: 14px;
+  margin: 5px;
+  overflow :hidden;
+  border-radius: 11px;
+  color: black;
+  font-size: 20px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+   background: linear-gradient(45deg, #2196f3, white);
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+}.mic-tip {
+  color: #444;
+  background: #eef;
+  padding: 8px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.mic-warning {
+  background: #ffecec;
+  color: #b30000;
+  padding: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  overflow: hidden;
+}

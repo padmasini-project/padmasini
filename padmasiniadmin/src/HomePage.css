@@ -1,0 +1,74 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.left, .right {
+  padding: 20px;
+}
+
+.dis{
+  position: sticky;
+  max-height: 50px; /* or absolute */
+  top: 100px;
+  left: 10px;
+  background-color: transparent;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 24px;
+  border-radius: 4px;
+  z-index: 1000;
+  height: auto;
+  line-height: normal;
+
+}
+.left {
+  width: 25%;
+  margin: 7px;
+  border-radius: 15px;
+  background: #e1efff;
+  border-right: 1px solid #ccc;
+}
+.noleft{
+  display:none;
+}
+.right {
+    margin: 7px;
+  border-radius: 15px;
+  width: 100%;
+  background-color: transparent;
+  position: relative;
+  overflow-y: auto;
+}
+
+.right-component {
+  height: auto;
+  overflow-y: hidden;
+  border: 1px solid #ddd;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+.my-button {
+  padding: 7px;
+  margin: 0px;
+  border-radius: 11px;
+  color: black;
+  font-size: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.my-button:hover {
+  color: black;
+  background: linear-gradient(45deg, #2196f3, white);
+  
+}
+
+.my-button.selected {
+  background: linear-gradient(45deg, #2196f3, #64b5f6);
+}
