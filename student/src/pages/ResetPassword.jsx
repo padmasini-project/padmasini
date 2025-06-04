@@ -1,0 +1,62 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./ResetPassword.css";
+import whatsappIcon from "../assets/WhatsApp_icon.png"; // Adjust path if needed
+
+const ResetPassword = () => {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleReset = (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    alert("Password reset successful!");
+    navigate("/login");
+  };
+
+  return (
+    <div className="reset-container">
+      <h2>Reset Password</h2>
+      <div className="form-box">
+      <form onSubmit={handleReset}>
+        <input
+          type="password"
+          placeholder="New Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Reset Password</button>
+      </form>
+      </div>
+      {/* WhatsApp Chat Button */}
+      <a
+        href="https://wa.me/YOUR_PHONE_NUMBER"
+        className="whatsapp-chat-button"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with us on WhatsApp"
+      >
+        <img
+          src={whatsappIcon}
+          alt="WhatsApp"
+          className="whatsapp-icon"
+        />
+        <span>Chat with us on whatsapp</span>
+      </a>
+    </div>
+  );
+};
+
+export default ResetPassword;

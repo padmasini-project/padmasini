@@ -1,0 +1,344 @@
+/* General Styles */
+.quiz-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 5px 75px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.quiz-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0px 75px;
+  background-color: #f4f7fa;
+  border-radius: 15px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+/* Heading */
+.quiz-container h2 {
+  font-size: 28px;
+  color: #2b7a78;
+  text-align: center;
+  margin-bottom: 20px;
+  background-color: #06060600;
+}
+
+.start-screen {
+  text-align: center;
+  padding: 5px 75px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  font-size: 1.3rem; /* added to scale up all text inside */
+}
+.start-screen p{
+  font-size: 30px;
+}
+
+.start-btn {
+  padding: 15px 30px; /* bigger button */
+  font-size: 1.5rem;  /* larger text */
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px; /* more rounded */
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.start-btn:hover {
+  background-color: #45a049;
+}
+/* Question Styles */
+.quiz-question {
+  margin-bottom: 30px;
+}
+
+.question-text {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+/* Centering Complete and Back Buttons */
+.complete-btn, .back-btn {
+  width: 50%;
+  padding: 15px 0;
+  font-size: 18px;
+  margin: 20px auto;
+  display: block;
+  border-radius: 8px;
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.complete-btn:hover, .back-btn:hover {
+  background-color: #117a8b;
+}
+
+.complete-btn.completed {
+  background-color: #28a745;
+  cursor: not-allowed;
+}
+/* Options Styling */
+.options-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border-radius: 6px;
+  background-color: #ecf0f1;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.option-label:hover {
+  background-color: #dce3e8;
+}
+.option-label input[type="radio"] {
+  accent-color: #1a73e8;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Input Hidden */
+.option-label input[type="radio"] {
+  transform: scale(1.2);
+}
+
+
+.correct {
+  background-color: #d4edda !important;
+  border-color: #28a745 !important;
+}
+
+.incorrect {
+  background-color: #f8d7da !important;
+  border-color: #dc3545 !important;
+}
+
+.feedback-msg {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.feedback-msg.correct {
+  color: #28a745;
+}
+
+.feedback-msg.incorrect {
+  color: #dc3545;
+}
+
+.feedback-msg {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.feedback-msg.correct {
+  color: #28a745;
+}
+
+.feedback-msg.incorrect {
+  color: #dc3545;
+}
+/* Navigation Buttons Layout */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between; /* Push buttons to the left and right */
+  margin-top: 20px; /* Optional: adjust the space between the buttons and content */
+}
+
+.nav-btn, .submit-btn {
+  width: 100px; /* Smaller width for the buttons */
+  padding: 8px 12px; /* Adjust padding for better clickability */
+  font-size: 14px; /* Smaller font size */
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav-btn:disabled {
+  background-color: #c0c0c0;
+  cursor: not-allowed;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.submit-btn {
+  background-color: #007bff;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.submit-btn:disabled {
+  background-color: #c0c0c0;
+  cursor: not-allowed;
+}
+
+/* Score Display Styling */
+.score-display {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.score-display p {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Confirmation Popup */
+.confirmation-popup {
+  background-color: rgba(253, 248, 248, 0.804);
+  color: rgb(6, 0, 0);
+  padding: 30px;
+  border-radius: 10px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  text-align: center;
+}
+
+.confirmation-popup p {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.confirmation-popup .confirm-btn,
+.confirmation-popup .cancel-btn {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirmation-popup .confirm-btn {
+  background-color: #28a745;
+}
+
+.confirmation-popup .cancel-btn {
+  background-color: #dc3545;
+}
+
+.confirmation-popup .confirm-btn:hover {
+  background-color: #218838;
+}
+
+.confirmation-popup .cancel-btn:hover {
+  background-color: #c82333;
+}
+
+
+/* Timer Style */
+.timer {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #cbf7fe; /* Light background to highlight the timer */
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Adjusted width to 60% (you can change this value) */
+  margin-top: 10px;
+}
+
+.timer p {
+  margin: 0;
+  font-size: 24px;
+  color: #e74c3c; /* Red color for the timer to make it stand out */
+}
+
+
+/* Optional: Add some responsive design if you need */
+@media (max-width: 600px) {
+  .timer {
+    font-size: 18px; /* Smaller font on mobile */
+    padding: 8px;
+  }
+
+  .timer p {
+    font-size: 20px; /* Slightly smaller text on mobile */
+  }
+}
+
+/* Responsive - Mobile First */
+@media (max-width: 768px) {
+  .quiz-wrapper{
+    padding: 1px 0px;
+
+  }
+  .quiz-container {
+    padding: 0px;
+  }
+
+  .quiz-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .question-text {
+    font-size: 1rem;
+  }
+  .start-screen p{
+    font-size: 20px;
+  }
+  .option-label {
+    font-size: 0.95rem;
+    padding: 8px 12px;
+  }
+
+  .nav-buttons {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .nav-buttons button {
+    flex: 1;
+    max-width: 100px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .confirm-dialog {
+    padding: 20px;
+    width: 90%;
+  }
+}
+
