@@ -1,0 +1,75 @@
+
+.right-component {
+    padding: 20px;
+    font-family: Arial;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #e1efff;
+    min-height: 90vh;
+  }
+  
+  .flex-container {
+   
+    display: flex;
+    margin-bottom: 20px;
+  }
+  
+  .flex-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .unit-section {
+    flex: 3;
+    border: 2px solid #ccc;
+    padding: 15px;
+    border-radius: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  .input-box {
+    width: 100%;
+    padding: 8px;
+    font-size: 1rem;
+  }
+  
+  .input-box {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: auto;
+  }
+  .subject-input{
+    margin: 20px;
+    width: 90%;
+    padding: 8px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+.my-buttonIn {
+  padding: 14px;
+  width: 25%;
+  margin: 5px;
+  border-radius: 11px;
+  color: black;
+  font-size: 20px;
+
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+   background: linear-gradient(45deg, #2196f3, white);
+}
+
+.my-buttonIn:hover {
+  color: black;
+ background: linear-gradient(45deg, #118cf1, #64b5f6);
+  
+}
+
+
+
+  

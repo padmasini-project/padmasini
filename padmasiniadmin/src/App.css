@@ -1,0 +1,50 @@
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Arial", sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(to left, rgb(48, 103, 147), rgb(187, 222, 251));
+ 
+  min-height: 100vh;
+}
+
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding-top: 80px; /* Adjusted for fixed header */
+}
+
+/* Buttons */
+button {
+ padding: 14px;
+  margin: 5px;
+  overflow :hidden;
+  border-radius: 11px;
+  color: black;
+  font-size: 20px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+   background: linear-gradient(45deg, #2196f3, white);
+}
+
+button:hover {
+  color: black;
+ background: linear-gradient(45deg, #118cf1, #64b5f6);
+  
+}
