@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiBook } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import './AdminHome.css';
@@ -15,15 +15,36 @@ const professionalCards = [
 ];
 
 const AdminHome = () => {
+const navigate = useNavigate();
+   const [user, setUser] = useState({
+    email: 'admin@example.com',
+    role: 'admin',
+    access: {
+      mode: 'professional',
+      cardId: 'jee',
+      subject: 'Physics',
+      standard: '11'
+    }
+  });
+
   const [subjectsByCard, setSubjectsByCard] = useState({});
   const [current, setCurrent] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [menuOpen, setMenuOpen] = useState(true);
   const [mode, setMode] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [selectedStandard, setSelectedStandard] = useState('');
-
-  const navigate = useNavigate();
+const [selectedStandard, setSelectedStandard] = useState(user?.role === 'admin' ? '' : user?.access.standard);
+  
+useEffect(() => {
+    // Preload default subjects if card matches
+    if (user.role !== 'admin' && user.access.cardId) {
+      handleCardClick({
+        id: user.access.cardId,
+        title: user.access.cardId === 'jee' ? 'JEE Prep Material' : 'NEET Prep Material',
+        subtitle: user.access.cardId === 'jee' ? 'JEE Exam' : 'NEET Exam'
+      });
+    }
+  }, []);
 
   const currentCardId = selectedCard?.id || null;
   const currentSubjects = currentCardId ? subjectsByCard[currentCardId] || [] : [];
@@ -126,36 +147,34 @@ const AdminHome = () => {
 
   return (
     <div className="container">
-      {mode !== null && (
-        <>
-          <button className="dis" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
+      {mode !== null && selectedCard !== null && (
+  <>
+    <button className="dis" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
 
-          <aside className={`sidebar ${menuOpen ? '' : 'hidden'}`}>
-            <h2 className="sub">Subjects</h2>
-            <ul>
-              {selectedCard === null ? (
-                <li className="empty">Select a card to see its subjects</li>
-              ) : currentSubjects.length === 0 ? (
-                <li className="empty">No subjects in this category</li>
-              ) : (
-                currentSubjects.map((subj, idx) => {
-                  const restricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
-                  return (
-                    <li
-                      key={idx}
-                      className={`${selectedIndex === idx ? 'active' : ''} ${restricted ? 'disabled' : ''}`}
-                      onClick={() => handleSelectSubject(idx, true)}
-                    >
-                      <FiBook className="icon" />
-                      <span>{subj}</span>
-                    </li>
-                  );
-                })
-              )}
-            </ul>
-          </aside>
-        </>
-      )}
+    <aside className={`sidebar ${menuOpen ? '' : 'hidden'}`}>
+      <h2 className="sub">Subjects</h2>
+      <ul>
+        {currentSubjects.length === 0 ? (
+          <li className="empty">No subjects in this category</li>
+        ) : (
+          currentSubjects.map((subj, idx) => {
+            const restricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
+            return (
+              <li
+                key={idx}
+                className={`${selectedIndex === idx ? 'active' : ''} ${restricted ? 'disabled' : ''}`}
+                onClick={() => handleSelectSubject(idx, true)}
+              >
+                <FiBook className="icon" />
+                <span>{subj}</span>
+              </li>
+            );
+          })
+        )}
+      </ul>
+    </aside>
+  </>
+)}
 
       <section className="main">
         <div className="header">
@@ -163,6 +182,8 @@ const AdminHome = () => {
             <div className="mode-switch-container">
               <button className="mode-button uniform" onClick={() => setMode('academics')}>Academics</button>
               <button className="mode-button uniform" onClick={() => setMode('professional')}>Professional Training</button>
+              <button className="mode-button uniform" onClick={() => navigate('/manage-account')}>Manage Account</button>
+
             </div>
           ) : (
             <>
