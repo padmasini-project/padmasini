@@ -91,12 +91,16 @@ body, html {
   background: linear-gradient(90deg, #0f9d58, #27ae60);
 }
 
-/* Message (Success/Error) */
-.signin-message {
-  margin-top: 20px;
-  font-size: 1rem;
-  color: #e74c3c;
+/* Success Message */
+.signin-message.success {
+  color: #0f9d58; /* Green */
 }
+
+/* Error Message */
+.signin-message.error {
+  color: #e53935; /* Red */
+}
+
 
 /* Mobile Responsive */
 @media (max-width: 768px) {

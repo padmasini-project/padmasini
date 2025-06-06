@@ -68,3 +68,44 @@ body, html {
 .navbar-signin .signin-button:hover {
   background-color: #0c7c43;
 }
+
+.user-button {
+  background: #0c7c43;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.user-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  background: white;
+  color: black;
+  padding: 10px;
+  border-radius: 8px;
+  top: 40px;
+  width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.dropdown-menu p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.logout-button {
+  background-color: #e63946;
+  color: white;
+  border: none;
+  padding: 8px;
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}

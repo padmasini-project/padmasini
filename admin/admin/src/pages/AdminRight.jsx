@@ -6,7 +6,7 @@ import './AdminRight.css';
 
 const AdminRight = () => {
   const location = useLocation();
-  const { cardId, subject } = location.state || { cardId: null, subject: 'Unknown' };
+const { cardId, subject, standard, examTitle } = location.state || {};
 
   let standards = [];
   if (cardId === 'class1-5') {
@@ -21,6 +21,8 @@ const AdminRight = () => {
   const [selectedUnit, setSelectedUnit] = useState('');
   const [editingLessonIndex, setEditingLessonIndex] = useState(null);
   const [lessonSubtopicsMap, setLessonSubtopicsMap] = useState({}); // new
+  const [selectedSubtopic, setSelectedSubtopic] = useState(null);
+  const [editingSubtopicIndex, setEditingSubtopicIndex] = useState(null);
 
   const [showExplanationForm, setShowExplanationForm] = useState(false);
   const [showTestForm, setShowTestForm] = useState(false);
@@ -38,8 +40,15 @@ const AdminRight = () => {
   const audioChunks = useRef([]);
   const recordingIntervalRef = useRef(null);
 
-  const [testTimeLimit, setTestTimeLimit] = useState('');
-  const [questions, setQuestions] = useState([]);
+const [lessonTestsMap, setLessonTestsMap] = useState({});
+const [selectedTest, setSelectedTest] = useState(null);
+const [testName, setTestName] = useState('');
+const [editingTestIndex, setEditingTestIndex] = useState(null);
+const [testTimeLimit, setTestTimeLimit] = useState('');
+const [questions, setQuestions] = useState([]);
+const [editingQuestionIndex, setEditingQuestionIndex] = useState(null);
+const [passPercentage, setPassPercentage] = useState(70); // default 70%
+
   const [currentQuestion, setCurrentQuestion] = useState({
     text: '',
     options: ['', '', '', ''],
@@ -139,8 +148,8 @@ const AdminRight = () => {
   };
 
 const handleAddSubtopic = () => {
-  if (!subTitle.trim() || !subDesc.trim() || !selectedUnit) {
-    alert('Please select a lesson and fill subtopic details.');
+  if (!selectedUnit || !subTitle.trim()) {
+    alert("Select a lesson and enter a title.");
     return;
   }
 
@@ -148,39 +157,69 @@ const handleAddSubtopic = () => {
     title: subTitle,
     description: subDesc,
     voices: [...recordedVoiceFiles, ...uploadedVoiceFiles],
-    animation: animFiles,
+    animation: animFiles
   };
 
   setLessonSubtopicsMap((prev) => {
-    const updated = { ...prev };
-    const existingSubtopics = updated[selectedUnit] ? [...updated[selectedUnit]] : [];
-    updated[selectedUnit] = [...existingSubtopics, newSub]; // immutably add new subtopic
-    return updated;
+    const currentSubs = prev[selectedUnit] || [];
+    if (editingSubtopicIndex !== null) {
+      const updated = [...currentSubs];
+      updated[editingSubtopicIndex] = newSub;
+      return { ...prev, [selectedUnit]: updated };
+    } else {
+      return { ...prev, [selectedUnit]: [...currentSubs, newSub] };
+    }
   });
 
-  // ✅ Clean up the form
-  setSubTitle('');
-  setSubDesc('');
-  setRecordedVoiceFiles([]);
-  setUploadedVoiceFiles([]);
-  setAnimFiles([]);
+  resetExplanationForm();
+};
+
+const handleEditSubtopic = (unit, index) => {
+  const sub = lessonSubtopicsMap[unit][index];
+  setSubTitle(sub.title);
+  setSubDesc(sub.description);
+  setRecordedVoiceFiles(sub.voices || []);
+  setUploadedVoiceFiles([]); // Optional: Only use recorded if you want
+  setAnimFiles(sub.animation || []);
+  setEditingSubtopicIndex(index);
+  setShowExplanationForm(true);
+  setShowTestForm(false);
+};
+
+const handleDeleteSubtopic = (unit, index) => {
+  const updatedSubs = [...lessonSubtopicsMap[unit]];
+  updatedSubs.splice(index, 1);
+  setLessonSubtopicsMap(prev => ({
+    ...prev,
+    [unit]: updatedSubs
+  }));
+  setSelectedSubtopic(null);
 };
 
 
   const handleAddQuestion = () => {
-    const { text, options, correctIndex, explanation } = currentQuestion;
-    if (!text || options.some((opt) => !opt.trim()) || correctIndex === null || !explanation) {
-      alert('Fill all fields correctly.');
-      return;
-    }
-    setQuestions((prev) => [...prev, currentQuestion]);
-    setCurrentQuestion({
-      text: '',
-      options: ['', '', '', ''],
-      correctIndex: null,
-      explanation: '',
-    });
-  };
+  if (!currentQuestion.text || currentQuestion.options.some(opt => !opt) || currentQuestion.correctIndex === null) {
+    alert("Please complete the question and all options, and select a correct answer.");
+    return;
+  }
+
+  if (editingQuestionIndex !== null) {
+    const updatedQuestions = [...questions];
+    updatedQuestions[editingQuestionIndex] = currentQuestion;
+    setQuestions(updatedQuestions);
+    setEditingQuestionIndex(null);
+  } else {
+    setQuestions([...questions, currentQuestion]);
+  }
+
+  // Reset question form
+  setCurrentQuestion({
+    text: '',
+    options: ['', '', '', ''],
+    correctIndex: null,
+    explanation: '',
+  });
+};
 
   const resetExplanationForm = () => {
   setSubTitle('');
@@ -188,7 +227,57 @@ const handleAddSubtopic = () => {
   setRecordedVoiceFiles([]);
   setUploadedVoiceFiles([]);
   setAnimFiles([]);
-  setShowExplanationForm(false);
+  setEditingSubtopicIndex(null);
+};
+
+const handleSaveTest = () => {
+  if (!selectedUnit) {
+    alert('Please select a lesson before saving the test.');
+    return;
+  }
+
+  const testData = {
+    name: testName,
+    timeLimit: testTimeLimit,
+    passPercentage: Number(passPercentage),
+    questions: [...questions],
+  };
+
+  setLessonTestsMap((prevMap) => {
+    const updatedTests = [...(prevMap[selectedUnit] || [])];
+    if (editingTestIndex !== null) {
+      // Update existing
+      updatedTests[editingTestIndex] = testData;
+    } else {
+      // Prevent duplicate add
+      const isDuplicate = updatedTests.some(t => t.name === testName);
+      if (!isDuplicate) {
+        updatedTests.push(testData);
+      } else {
+        alert("Test name already exists.");
+        return prevMap;
+      }
+    }
+
+    return {
+      ...prevMap,
+      [selectedUnit]: updatedTests,
+    };
+  });
+
+  // Clear form and reset state
+  resetTestForm();
+};
+
+
+const handleDeleteTest = () => {
+  if (editingTestIndex === null) return;
+  setLessonTestsMap(prev => {
+    const updated = [...(prev[selectedUnit] || [])];
+    updated.splice(editingTestIndex, 1);
+    return { ...prev, [selectedUnit]: updated };
+  });
+  resetTestForm();
 };
 
 
@@ -208,7 +297,11 @@ const handleAddSubtopic = () => {
 
   return (
     <div className="adminright-container">
-      <h2 className="title">You are in: {subject}</h2>
+<h2 className="title">
+  You are in: {examTitle ? `${examTitle} - ` : ''}
+  {subject}
+  {standard ? ` (Standard ${standard})` : ''}
+</h2>
       <div className="adminright-grid">
         <div className="left-panel">
           {standards.length > 0 && (
@@ -243,46 +336,57 @@ const handleAddSubtopic = () => {
           </button>
 
           <div className="bottom-box">
-            <h3>Select Lesson</h3>
-            <select
-              value={selectedUnit}
-              onChange={(e) => setSelectedUnit(e.target.value)}
-            >
-              <option value="">Select a lesson</option>
-              {(standards.length > 0 ? unitsMap[selectedStandard] || [] : unitsMap.default || []).map((unit) => (
-                <option key={unit} value={unit}>{unit}</option>
-              ))}
-            </select>
-
             <h3>All Lessons</h3>
-            
-            {(standards.length > 0 ? unitsMap[selectedStandard] || [] : unitsMap.default || []).map((unit, index) => (
-              <React.Fragment key={index}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '8px 0' }}>
-                  <button
-                    className="lesson-btn"
-                    onClick={() => setSelectedUnit(unit)}
-                  >
-                    {unit}
-                  </button>
-                  <button className="icon-btn" onClick={() => handleEditLesson(index)} title="Edit">
-                    <Pencil size={18} />
-                  </button>
-                  <button className="icon-btn" onClick={() => handleDeleteLesson(index)} title="Delete">
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-                {lessonSubtopicsMap[unit] && lessonSubtopicsMap[unit].length > 0 && (
-                  <ul style={{ marginLeft: '20px', marginTop: '5px' }}>
-                    {lessonSubtopicsMap[unit].map((sub, subIdx) => (
-                      <li key={subIdx} style={{ fontSize: '14px' }}>
-                         {sub.title}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </React.Fragment>
-            ))}
+            <h4>Select Lesson</h4>
+            {currentUnits.map((unit, index) => (
+  <React.Fragment key={index}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '8px 0' }}>
+      <button
+        className="lesson-btn"
+        onClick={() => {
+          setSelectedUnit(unit);
+          setSelectedSubtopic(null); // Clear previous subtopic
+        }}
+      >
+        {unit}
+      </button>
+      <button className="icon-btn" onClick={() => handleEditLesson(index)} title="Edit">
+        <Pencil size={18} />
+      </button>
+      <button className="icon-btn" onClick={() => handleDeleteLesson(index)} title="Delete">
+        <Trash2 size={18} />
+      </button>
+    </div>
+
+    {/* Show subtopics only if this unit is selected */}
+    {selectedUnit === unit && lessonSubtopicsMap[unit]?.length > 0 && (
+      <ul style={{ marginLeft: '20px', marginTop: '5px' ,color: 'blue'}}>
+        {lessonSubtopicsMap[unit].map((sub, subIdx) => (
+  <li key={subIdx}>
+    <span onClick={() => setSelectedSubtopic(sub)}style={{ cursor: 'pointer' }}>{sub.title}</span>
+  </li>
+))
+
+}
+      </ul>
+    )}
+    {lessonTestsMap[unit]?.length > 0 && (
+  <ul style={{ marginLeft: '20px', color: 'blue' }}>
+    {lessonTestsMap[unit].map((test, idx) => (
+      <li key={idx} onClick={() => {
+        setSelectedTest(test);
+        setShowTestForm(false);
+        setShowExplanationForm(false);
+      }}style={{ cursor: 'pointer' }}
+      >
+         {test.name}
+      </li>
+    ))}
+  </ul>
+)}
+
+  </React.Fragment>
+))}
           </div>
         </div>
 
@@ -300,11 +404,130 @@ const handleAddSubtopic = () => {
                 setShowExplanationForm(true);
                 setShowTestForm(false);
               }}>Add Content</button>
-              <button onClick={() => {
-                setShowTestForm(true);
-                setShowExplanationForm(false);
-              }}>Add Test</button>
+              <button
+  onClick={() => {
+    if (!selectedUnit) {
+      alert('Please select a lesson before adding a test.');
+      return;
+    }
+    setShowTestForm(true);
+    setShowExplanationForm(false);
+    setSelectedTest(null);
+    setTestName('');
+    setCurrentQuestion({
+      text: '',
+      options: ['', '', '', ''],
+      correctIndex: null,
+      explanation: '',
+    });
+    setQuestions([]);
+    setEditingTestIndex(null);
+  }}
+>
+  Add Test
+</button>
+
+              
             </div>
+            {selectedSubtopic && (
+  <div className="subtopic-detail-box" style={{ marginTop: '20px' }}>
+    <h4>Subtopic Preview</h4>
+    <p><strong>Title:</strong> {selectedSubtopic.title}</p>
+    <p><strong>Description:</strong> {selectedSubtopic.description}</p>
+
+    <div>
+      <h5>Audio:</h5>
+      {selectedSubtopic.voices.map((audioFile, idx) => (
+        <audio
+          key={idx}
+          controls
+          src={URL.createObjectURL(audioFile)}
+          style={{ marginBottom: '10px' }}
+        />
+      ))}
+    </div>
+
+    <div>
+      <h5>Videos:</h5>
+      {selectedSubtopic.animation.map((videoFile, idx) => (
+        <video
+          key={idx}
+          width="200"
+          controls
+          src={URL.createObjectURL(videoFile)}
+          style={{ marginBottom: '10px' }}
+        />
+      ))}
+{/* NEW: Edit/Delete Buttons */}
+    <div className="subtopic-actions" style={{ marginTop: '15px' }}>
+      <button
+        className="icon-btn"
+        onClick={() => {
+          const subIdx = lessonSubtopicsMap[selectedUnit].findIndex(s => s.title === selectedSubtopic.title);
+          if (subIdx !== -1) handleEditSubtopic(selectedUnit, subIdx);
+        }}
+        title="Edit Subtopic"
+      >
+        <Pencil size={10} /> Edit
+      </button>
+      <button
+        className="icon-btn"
+        onClick={() => {
+          const subIdx = lessonSubtopicsMap[selectedUnit].findIndex(s => s.title === selectedSubtopic.title);
+          if (subIdx !== -1) handleDeleteSubtopic(selectedUnit, subIdx);
+        }}
+        title="Delete Subtopic"
+        style={{ marginLeft: '10px' }}
+      >
+        <Trash2 size={10} /> Delete
+      </button>
+    </div>
+      {selectedTest && (
+  <div className="test-detail-box" style={{ marginTop: '20px' }}>
+    <h4>Test Preview</h4>
+    <p><strong>Name:</strong> {selectedTest.name}</p>
+    <p><strong>Time Limit:</strong> {selectedTest.timeLimit} mins</p>
+    <p><strong>Pass Percentage:</strong> {selectedTest.passPercentage}%</p>
+    <h5><strong>Questions:</strong></h5>
+    <ol>
+  {selectedTest.questions.map((q, idx) => (
+    <li key={idx} style={{ marginBottom: '10px' }}>
+      <strong>{q.text}</strong>
+      <ul>
+        {q.options.map((opt, i) => (
+          <li key={i}>
+            {i === q.correctIndex ? '✅ ' : ''}
+            {opt}
+          </li>
+        ))}
+      </ul>
+      <p><strong>Explanation: </strong><em>{q.explanation}</em></p>
+      
+     
+    </li>
+  ))}
+</ol>
+
+    <div style={{ marginTop: '10px' }}>
+      <button onClick={() => {
+        setShowTestForm(true);
+        setTestName(selectedTest.name);
+        setQuestions(selectedTest.questions);
+        setTestTimeLimit(selectedTest.timeLimit);
+        const index = lessonTestsMap[selectedUnit].findIndex(t => t.name === selectedTest.name);
+        setEditingTestIndex(index);
+      }}>        <Pencil size={10} /> All Edit
+</button>
+      <button onClick={handleDeleteTest} style={{ marginLeft: '10px' }}>        <Trash2 size={10} /> All Delete
+</button>
+    </div>
+  </div>
+)}
+
+    </div>
+  </div>
+)}
+
 
             {showExplanationForm && (
               <div className="explanation-form">
@@ -429,7 +652,7 @@ const handleAddSubtopic = () => {
 </div>
 
 
-                <button onClick={handleAddSubtopic}>Add Subtopic</button>
+
 
                {lessonSubtopicsMap[selectedUnit]?.length > 0 && (
   <div>
@@ -442,9 +665,9 @@ const handleAddSubtopic = () => {
 
 
                 <div className="action-buttons">
-                  <button>Add</button>
-                  <button>Update</button>
-                  <button>Delete</button>
+                  <button onClick={handleAddSubtopic}>
+  {editingSubtopicIndex !== null ? 'Update Subtopic' : 'Add Subtopic'}
+</button>
                   <button onClick={resetExplanationForm}>Cancel</button>
                 </div>
               </div>
@@ -455,13 +678,29 @@ const handleAddSubtopic = () => {
               <div className="test-form">
                 <h4>Test Settings</h4>
                 <input
+                   type="text"
+  placeholder="Test Name"
+  value={testName}
+  onChange={(e) => setTestName(e.target.value)}
+  required
+/>
+
+                <input
                   type="number"
                   placeholder="Time limit (minutes)"
                   min="1"
                   value={testTimeLimit}
                   onChange={(e) => setTestTimeLimit(e.target.value)}
                 />
-                <p>Pass mark: 70%</p>
+                <input
+  type="number"
+  placeholder="Pass Percentage"
+  min="1"
+  max="100"
+  value={passPercentage}
+  onChange={(e) => setPassPercentage(e.target.value)}
+/>
+
 
                 <h4>Add Question</h4>
                 <input
@@ -498,27 +737,79 @@ const handleAddSubtopic = () => {
                   onChange={(e) => setCurrentQuestion((q) => ({ ...q, explanation: e.target.value }))}
                 />
                 <button onClick={handleAddQuestion}>Add Question</button>
+{editingQuestionIndex !== null && (
+  <button
+    onClick={() => {
+      setEditingQuestionIndex(null);
+      setCurrentQuestion({
+        text: '',
+        options: ['', '', '', ''],
+        correctIndex: null,
+        explanation: '',
+      });
+    }}
+    style={{ marginLeft: '10px' }}
+  >
+    Cancel Edit
+  </button>
+)}
 
                 {questions.length > 0 && (
-                  <div>
-                    <h5>Questions Added:</h5>
-                    <ol>{questions.map((q, idx) => <li key={idx}>{q.text}</li>)}</ol>
-                  </div>
+                  <ol>
+  {questions.map((q, idx) => (
+    <li key={idx} style={{ marginBottom: '10px' }}>
+      <strong>{q.text}</strong>
+      <div style={{ marginTop: '5px' }}>
+        <button
+          onClick={() => {
+            setCurrentQuestion({ ...q }); // populate form
+            setEditingQuestionIndex(idx); // track index for update
+          }}
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => {
+            const updatedQuestions = questions.filter((_, i) => i !== idx);
+            setQuestions(updatedQuestions);
+            if (editingQuestionIndex === idx) {
+              setCurrentQuestion({
+                text: '',
+                options: ['', '', '', ''],
+                correctIndex: null,
+                explanation: '',
+              });
+              setEditingQuestionIndex(null);
+            }
+          }}
+          style={{ marginLeft: '10px' }}
+        >
+          Delete
+        </button>
+      </div>
+    </li>
+  ))}
+</ol>
+
                 )}
 
-                <div className="action-buttons">
-                  <button>Save</button>
-                  <button>Update</button>
-                  <button>Delete</button>
-                  <button onClick={resetTestForm}>Cancel</button>
-                </div>
+               <div className="action-buttons">
+  <button onClick={handleSaveTest}>
+    {editingTestIndex !== null ? 'Update Test' : 'Save Test'}
+  </button>
+  {editingTestIndex !== null && (
+    <button onClick={handleDeleteTest}>Delete</button>
+  )}
+  <button onClick={resetTestForm}>Cancel</button>
+</div>
+
               </div>
             )}
 
           </div>
-</div>
+        </div>
       </div>
-    </div>
+    </div>  
   );
 };
 

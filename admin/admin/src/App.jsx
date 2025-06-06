@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/navbar";
+import Navbar from "./components/Navbar";
 import Footer from './components/Footer';
+import Home from './pages/Home';
+import Signup from './pages/Signup';
 import Signin from './pages/Signin';
 import AdminHome from './pages/AdminHome'; // Assuming you have this page
 import AdminRight from './pages/AdminRight';
@@ -13,8 +15,9 @@ function App() {
       <div className="app-container">
         <Navbar />
         <Routes>
-          <Route path="/" element={<Signin />} />
+          <Route path="/" element={<Home />} />
           <Route path="/signin" element={<Signin />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/adminhome" element={<AdminHome />} />
           <Route path="/adminright" element={<AdminRight />} />
           {/* Add more routes as needed */}

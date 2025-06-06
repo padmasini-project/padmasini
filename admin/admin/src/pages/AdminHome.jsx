@@ -1,4 +1,3 @@
-// AdminHome.jsx
 import React, { useState } from 'react';
 import { FiBook } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
@@ -44,7 +43,6 @@ const AdminHome = () => {
 
   const handleUpdate = () => {
     if (currentCardId === null || selectedIndex === null || !current.trim()) return;
-
     setSubjectsByCard((prev) => {
       const copy = { ...prev };
       const arr = [...(copy[currentCardId] || [])];
@@ -58,7 +56,6 @@ const AdminHome = () => {
 
   const handleDelete = () => {
     if (currentCardId === null || selectedIndex === null) return;
-
     setSubjectsByCard((prev) => {
       const copy = { ...prev };
       const arr = [...(copy[currentCardId] || [])];
@@ -71,6 +68,11 @@ const AdminHome = () => {
   };
 
   const handleSelectSubject = (idx, navigateToPage = false) => {
+    const isRestricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
+    if (isRestricted) {
+      alert('Please select a standard before proceeding.');
+      return;
+    }
     setSelectedIndex(idx);
     setCurrent(currentSubjects[idx] || '');
     if (navigateToPage) {
@@ -78,6 +80,13 @@ const AdminHome = () => {
         state: {
           cardId: currentCardId,
           subject: currentSubjects[idx],
+          ...(selectedCard?.id === 'jee' || selectedCard?.id === 'neet'
+            ? {
+                standard: selectedStandard,
+                examTitle: selectedCard.title,
+                examSubtitle: selectedCard.subtitle,
+              }
+            : {}),
         },
       });
     }
@@ -109,7 +118,6 @@ const AdminHome = () => {
         [card.id]: defaults,
       }));
     }
-
     setSelectedIndex(null);
     setCurrent('');
     setSelectedStandard('');
@@ -118,42 +126,43 @@ const AdminHome = () => {
 
   return (
     <div className="container">
-      <button className="dis" onClick={() => setMenuOpen(!menuOpen)}>
-        ☰
-      </button>
+      {mode !== null && (
+        <>
+          <button className="dis" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
 
-      <aside className={`sidebar ${menuOpen ? '' : 'hidden'}`}>
-        <h2 className="sub">Subjects</h2>
-        <ul>
-          {selectedCard === null ? (
-            <li className="empty">Select a card to see its subjects</li>
-          ) : currentSubjects.length === 0 ? (
-            <li className="empty">No subjects in this category</li>
-          ) : (
-            currentSubjects.map((subj, idx) => (
-              <li
-                key={idx}
-                className={selectedIndex === idx ? 'active' : ''}
-                onClick={() => handleSelectSubject(idx, true)}
-              >
-                <FiBook className="icon" />
-                <span>{subj}</span>
-              </li>
-            ))
-          )}
-        </ul>
-      </aside>
+          <aside className={`sidebar ${menuOpen ? '' : 'hidden'}`}>
+            <h2 className="sub">Subjects</h2>
+            <ul>
+              {selectedCard === null ? (
+                <li className="empty">Select a card to see its subjects</li>
+              ) : currentSubjects.length === 0 ? (
+                <li className="empty">No subjects in this category</li>
+              ) : (
+                currentSubjects.map((subj, idx) => {
+                  const restricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
+                  return (
+                    <li
+                      key={idx}
+                      className={`${selectedIndex === idx ? 'active' : ''} ${restricted ? 'disabled' : ''}`}
+                      onClick={() => handleSelectSubject(idx, true)}
+                    >
+                      <FiBook className="icon" />
+                      <span>{subj}</span>
+                    </li>
+                  );
+                })
+              )}
+            </ul>
+          </aside>
+        </>
+      )}
 
       <section className="main">
         <div className="header">
           {mode === null ? (
             <div className="mode-switch-container">
-              <button className="mode-button uniform" onClick={() => setMode('academics')}>
-                Academics
-              </button>
-              <button className="mode-button uniform" onClick={() => setMode('professional')}>
-                Professional Training
-              </button>
+              <button className="mode-button uniform" onClick={() => setMode('academics')}>Academics</button>
+              <button className="mode-button uniform" onClick={() => setMode('professional')}>Professional Training</button>
             </div>
           ) : (
             <>
@@ -179,15 +188,8 @@ const AdminHome = () => {
                   </div>
 
                   <div className="card-cancel-wrapper">
-                    <button
-                      className="card-cancel-button"
-                      onClick={() => setSelectedCard(null)}
-                    >
-                      Back
-                    </button>
-                    <button className="card-cancel-button" onClick={handleCancelAll}>
-                      Cancel
-                    </button>
+                    <button className="card-cancel-button" onClick={() => setSelectedCard(null)}>Back</button>
+                    <button className="card-cancel-button" onClick={handleCancelAll}>Cancel</button>
                   </div>
                 </div>
               ) : (
@@ -204,14 +206,11 @@ const AdminHome = () => {
                         className="summary-dropdown"
                         value={selectedIndex ?? ''}
                         onChange={(e) => handleSelectSubject(Number(e.target.value))}
+                        disabled={(selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard}
                       >
-                        <option value="" disabled>
-                          Select a subject
-                        </option>
+                        <option value="" disabled>Select a subject</option>
                         {currentSubjects.map((subj, idx) => (
-                          <option key={idx} value={idx}>
-                            {subj}
-                          </option>
+                          <option key={idx} value={idx}>{subj}</option>
                         ))}
                       </select>
                     )}
@@ -221,11 +220,7 @@ const AdminHome = () => {
                     <div className="cards-wrapper">
                       <div className="cards-container">
                         {(mode === 'academics' ? academicCards : professionalCards).map((cardObj) => (
-                          <div
-                            key={cardObj.id}
-                            className="card"
-                            onClick={() => handleCardClick(cardObj)}
-                          >
+                          <div key={cardObj.id} className="card" onClick={() => handleCardClick(cardObj)}>
                             <div className="card-subtitle">{cardObj.subtitle}</div>
                             <div className="card-title">{cardObj.title}</div>
                             <button className="card-button">Select</button>
@@ -233,9 +228,7 @@ const AdminHome = () => {
                         ))}
                       </div>
                       <div className="card-cancel-wrapper">
-                        <button className="card-cancel-button" onClick={handleCancelAll}>
-                          Cancel
-                        </button>
+                        <button className="card-cancel-button" onClick={handleCancelAll}>Cancel</button>
                       </div>
                     </div>
                   ) : (
@@ -256,22 +249,13 @@ const AdminHome = () => {
 
                       <div className="buttons">
                         <button onClick={handleAdd}>Add New</button>
-                        <button onClick={handleUpdate} disabled={selectedIndex === null}>
-                          Update
-                        </button>
-                        <button onClick={handleDelete} disabled={selectedIndex === null}>
-                          Delete
-                        </button>
+                        <button onClick={handleUpdate} disabled={selectedIndex === null}>Update</button>
+                        <button onClick={handleDelete} disabled={selectedIndex === null}>Delete</button>
                         <button onClick={handleCancelSelection}>Cancel</button>
                       </div>
 
                       <div className="card-cancel-wrapper">
-                        <button
-                          className="card-cancel-button"
-                          onClick={() => setSelectedCard(null)}
-                        >
-                          Back
-                        </button>
+                        <button className="card-cancel-button" onClick={() => setSelectedCard(null)}>Back</button>
                       </div>
                     </div>
                   )}
