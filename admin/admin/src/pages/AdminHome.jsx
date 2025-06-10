@@ -15,8 +15,9 @@ const professionalCards = [
 ];
 
 const AdminHome = () => {
-const navigate = useNavigate();
-   const [user, setUser] = useState({
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState({
     email: 'admin@example.com',
     role: 'admin',
     access: {
@@ -33,10 +34,9 @@ const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(true);
   const [mode, setMode] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
-const [selectedStandard, setSelectedStandard] = useState(user?.role === 'admin' ? '' : user?.access.standard);
-  
-useEffect(() => {
-    // Preload default subjects if card matches
+  const [selectedStandard, setSelectedStandard] = useState(user?.role === 'admin' ? '' : user?.access.standard);
+
+  useEffect(() => {
     if (user.role !== 'admin' && user.access.cardId) {
       handleCardClick({
         id: user.access.cardId,
@@ -50,26 +50,27 @@ useEffect(() => {
   const currentSubjects = currentCardId ? subjectsByCard[currentCardId] || [] : [];
 
   const handleAdd = () => {
-    if (!current.trim() || currentCardId === null) return;
-    setSubjectsByCard((prev) => {
-      const copy = { ...prev };
-      const arr = Array.isArray(copy[currentCardId]) ? [...copy[currentCardId]] : [];
-      arr.push(current.trim());
-      copy[currentCardId] = arr;
-      return copy;
-    });
+    const trimmed = current.trim();
+    if (!trimmed || currentCardId === null) return;
+    if (currentSubjects.includes(trimmed)) {
+      alert('Subject already exists.');
+      return;
+    }
+    setSubjectsByCard((prev) => ({
+      ...prev,
+      [currentCardId]: [...(prev[currentCardId] || []), trimmed],
+    }));
     setCurrent('');
     setSelectedIndex(null);
   };
 
   const handleUpdate = () => {
-    if (currentCardId === null || selectedIndex === null || !current.trim()) return;
+    const trimmed = current.trim();
+    if (currentCardId === null || selectedIndex === null || !trimmed) return;
     setSubjectsByCard((prev) => {
-      const copy = { ...prev };
-      const arr = [...(copy[currentCardId] || [])];
-      arr[selectedIndex] = current.trim();
-      copy[currentCardId] = arr;
-      return copy;
+      const updated = [...(prev[currentCardId] || [])];
+      updated[selectedIndex] = trimmed;
+      return { ...prev, [currentCardId]: updated };
     });
     setCurrent('');
     setSelectedIndex(null);
@@ -78,11 +79,9 @@ useEffect(() => {
   const handleDelete = () => {
     if (currentCardId === null || selectedIndex === null) return;
     setSubjectsByCard((prev) => {
-      const copy = { ...prev };
-      const arr = [...(copy[currentCardId] || [])];
-      arr.splice(selectedIndex, 1);
-      copy[currentCardId] = arr;
-      return copy;
+      const updated = [...(prev[currentCardId] || [])];
+      updated.splice(selectedIndex, 1);
+      return { ...prev, [currentCardId]: updated };
     });
     setCurrent('');
     setSelectedIndex(null);
@@ -147,34 +146,33 @@ useEffect(() => {
 
   return (
     <div className="container">
-      {mode !== null && selectedCard !== null && (
-  <>
-    <button className="dis" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
-
-    <aside className={`sidebar ${menuOpen ? '' : 'hidden'}`}>
-      <h2 className="sub">Subjects</h2>
-      <ul>
-        {currentSubjects.length === 0 ? (
-          <li className="empty">No subjects in this category</li>
-        ) : (
-          currentSubjects.map((subj, idx) => {
-            const restricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
-            return (
-              <li
-                key={idx}
-                className={`${selectedIndex === idx ? 'active' : ''} ${restricted ? 'disabled' : ''}`}
-                onClick={() => handleSelectSubject(idx, true)}
-              >
-                <FiBook className="icon" />
-                <span>{subj}</span>
-              </li>
-            );
-          })
-        )}
-      </ul>
-    </aside>
-  </>
-)}
+      {mode && selectedCard && (
+        <>
+          <button className="dis" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
+          <aside className={`sidebar ${menuOpen ? '' : 'hidden'}`}>
+            <h2 className="sub">Subjects {selectedStandard && `(Std ${selectedStandard})`}</h2>
+            <ul>
+              {currentSubjects.length === 0 ? (
+                <li className="empty">No subjects in this category</li>
+              ) : (
+                currentSubjects.map((subj, idx) => {
+                  const restricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
+                  return (
+                    <li
+                      key={idx}
+                      className={`${selectedIndex === idx ? 'active' : ''} ${restricted ? 'disabled' : ''}`}
+                      onClick={() => handleSelectSubject(idx, true)}
+                    >
+                      <FiBook className="icon" />
+                      <span>{subj}</span>
+                    </li>
+                  );
+                })
+              )}
+            </ul>
+          </aside>
+        </>
+      )}
 
       <section className="main">
         <div className="header">
@@ -183,7 +181,6 @@ useEffect(() => {
               <button className="mode-button uniform" onClick={() => setMode('academics')}>Academics</button>
               <button className="mode-button uniform" onClick={() => setMode('professional')}>Professional Training</button>
               <button className="mode-button uniform" onClick={() => navigate('/manage-account')}>Manage Account</button>
-
             </div>
           ) : (
             <>
@@ -195,7 +192,6 @@ useEffect(() => {
                       {selectedCard.title} ({selectedCard.subtitle})
                     </span>
                   </div>
-
                   <div className="standard-select">
                     <label>Select Standard:</label>
                     <select
@@ -207,7 +203,6 @@ useEffect(() => {
                       <option value="12">Standard 12</option>
                     </select>
                   </div>
-
                   <div className="card-cancel-wrapper">
                     <button className="card-cancel-button" onClick={() => setSelectedCard(null)}>Back</button>
                     <button className="card-cancel-button" onClick={handleCancelAll}>Cancel</button>
@@ -216,7 +211,6 @@ useEffect(() => {
               ) : (
                 <>
                   <h3 className="subs">Subjects</h3>
-
                   <div className="summary-box">
                     {selectedCard === null ? (
                       <span>Select a card above to manage its subjects</span>
@@ -266,6 +260,11 @@ useEffect(() => {
                         placeholder="Subject Name"
                         value={current}
                         onChange={(e) => setCurrent(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            selectedIndex === null ? handleAdd() : handleUpdate();
+                          }
+                        }}
                       />
 
                       <div className="buttons">

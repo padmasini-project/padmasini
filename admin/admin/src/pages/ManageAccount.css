@@ -9,6 +9,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
+  margin-bottom: 30px;
 }
 
 .manage-container h2 {
@@ -171,6 +172,36 @@ color: #218838;
   font-size: 14px;
   color: #555;
 }
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.checkbox-group label {
+  background-color: #f0f4f8;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.checkbox-group input[type='checkbox'] {
+  margin-right: 6px;
+  accent-color: #2b6cb0;
+}
+
+/* Optional: Enhance hover effect */
+.checkbox-group label:hover {
+  background-color: #e0eaf3;
+  border-color: #888;
+}
+
 /* ---------- Responsive for Mobile ---------- */
 @media (max-width: 768px) {
   .manage-container {

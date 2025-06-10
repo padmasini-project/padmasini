@@ -13,6 +13,7 @@ const SignIn = () => {
 
     const users = JSON.parse(localStorage.getItem('users')) || [];
 
+    // Admin login fallback
     if (username === 'admin' && password === '1234') {
       const adminUser = {
         username: 'admin',
@@ -21,17 +22,21 @@ const SignIn = () => {
         phone: '0000000000'
       };
       localStorage.setItem('currentUser', JSON.stringify(adminUser));
+      window.dispatchEvent(new Event('userLogin')); // 👈 here it automatically updates Navbar to signin name 
       setMessage('Login successful!');
       setTimeout(() => navigate('/adminhome'), 1000);
       return;
     }
 
+    // Check against saved users
     const matchedUser = users.find(
-      (user) => user.username === username && user.password === password
+      (user) => user.name === username && user.password === password
     );
 
     if (matchedUser) {
+      if (!matchedUser.role) matchedUser.role = 'user'; // fallback role
       localStorage.setItem('currentUser', JSON.stringify(matchedUser));
+      window.dispatchEvent(new Event('userLogin')); // 👈 notify Navbar
       setMessage('Login successful!');
       setTimeout(() => navigate('/adminhome'), 1000);
     } else {
@@ -50,6 +55,7 @@ const SignIn = () => {
           onChange={(e) => setUsername(e.target.value)}
           required
         />
+
         <input
           type="password"
           placeholder="Password"
@@ -57,8 +63,10 @@ const SignIn = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
         <button type="submit">Sign In</button>
       </form>
+
       {message && (
         <p className={`signin-message ${message === 'Login successful!' ? 'success' : 'error'}`}>
           {message}

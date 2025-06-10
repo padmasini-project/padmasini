@@ -9,23 +9,45 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef();
 
-  useEffect(() => {
+  // Function to update user from localStorage
+  const updateUser = () => {
     const storedUser = JSON.parse(localStorage.getItem('currentUser'));
     setCurrentUser(storedUser);
+  };
+
+  // Load current user and listen for login/logout events
+  useEffect(() => {
+    updateUser();
+
+    // Listen for custom login/logout events
+    window.addEventListener('userLogin', updateUser);
+    window.addEventListener('userLogout', updateUser);
+
+    // Optional: update on localStorage change (cross-tab sync)
+    window.addEventListener('storage', updateUser);
+
+    return () => {
+      window.removeEventListener('userLogin', updateUser);
+      window.removeEventListener('userLogout', updateUser);
+      window.removeEventListener('storage', updateUser);
+    };
   }, []);
 
+  // Toggle dropdown menu
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
   };
 
+  // Logout handler
   const handleLogout = () => {
     localStorage.removeItem('currentUser');
     setCurrentUser(null);
     setDropdownOpen(false);
+    window.dispatchEvent(new Event('userLogout')); // Notify others
     navigate('/signin');
   };
 
-  // Close dropdown on outside click
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -44,7 +66,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <ul className="navbar-links">{/* Add more nav links if needed */}</ul>
+      <ul className="navbar-links">{/* Add links if needed */}</ul>
 
       <div className="navbar-signin">
         {!currentUser ? (

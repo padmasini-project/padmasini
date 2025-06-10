@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import './ManageAccount.css';
 
 const defaultSubjects = {
@@ -50,23 +51,36 @@ const ManageAccount = () => {
       mode: '',
       cardId: '',
       subjects: [],
-      standard: '',
+      standard: [],
     },
   });
 
+  useEffect(() => {
+  const storedUsers = localStorage.getItem('users');
+  if (storedUsers) {
+    setUsers(JSON.parse(storedUsers));
+  }
+}, []);
+
+useEffect(() => {
+  localStorage.setItem('users', JSON.stringify(users));
+}, [users]);
+
+
   const handleCardChange = (e) => {
-    const cardId = e.target.value;
-    const defaultSubjs = defaultSubjects[cardId] || [];
-    setFormData((prev) => ({
-      ...prev,
-      access: {
-        ...prev.access,
-        cardId,
-        standard: '',
-        subjects: defaultSubjs,
-      },
-    }));
-  };
+  const cardId = e.target.value;
+  const defaultSubjs = defaultSubjects[cardId] || [];
+  setFormData((prev) => ({
+    ...prev,
+    access: {
+      ...prev.access,
+      cardId,
+      standards: [],
+      subjects: defaultSubjs,
+    },
+  }));
+};
+
 
   const handleSubjectChange = (subject) => {
     const current = formData.access.subjects;
@@ -104,14 +118,29 @@ const ManageAccount = () => {
       role: 'user',
       newSubject: '',
       access: {
-        mode: '',
-        cardId: '',
-        subjects: [],
-        standard: '',
-      },
+  mode: '',
+  cardId: '',
+  subjects: [],
+  standards: [], // changed from standard: ''
+},
+
     });
   };
 
+const handleStandardChange = (standard) => {
+  const current = formData.access.standards;
+  const updated = current.includes(standard)
+    ? current.filter((s) => s !== standard)
+    : [...current, standard];
+
+  setFormData({
+    ...formData,
+    access: {
+      ...formData.access,
+      standards: updated,
+    },
+  });
+};
 
   const handleDelete = (index) => {
     const updated = [...users];
@@ -211,23 +240,20 @@ const ManageAccount = () => {
             {formData.access.cardId !== 'kindergarten' &&
               getStandardsForCard(formData.access.cardId).length > 0 && (
                 <>
-                  <label>Standard:</label>
-                  <select
-                    value={formData.access.standard}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        access: { ...formData.access, standard: e.target.value },
-                      })
-                    }
-                  >
-                    <option value="">-- Select Standard --</option>
-                    {getStandardsForCard(formData.access.cardId).map((std) => (
-                      <option key={std} value={std}>
-                        {std}
-                      </option>
-                    ))}
-                  </select>
+                  <label>Standards:</label>
+<div className="checkbox-group">
+  {getStandardsForCard(formData.access.cardId).map((std) => (
+    <label key={std}>
+      <input
+        type="checkbox"
+        checked={formData.access.standards.includes(std)}
+        onChange={() => handleStandardChange(std)}
+      />
+      {std}
+    </label>
+  ))}
+</div>
+
                 </>
               )}
 
@@ -316,7 +342,7 @@ const ManageAccount = () => {
               {u.role === 'user' && (
                 <div className="access-summary">
                   Access: {u.access.mode}, {u.access.cardId},{' '}
-                  {u.access.subjects.join(', ')}, Std {u.access.standard}
+{u.access.subjects.join(', ')}, Std {u.access.standards.join(', ')}
                 </div>
               )}
               <button onClick={() => handleEdit(idx)}>Edit</button>
