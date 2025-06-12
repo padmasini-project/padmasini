@@ -7,8 +7,6 @@ body {
 background-color: #f4f4f4;
 }
 
-/* NEET.css */
-
 /* Overall Page Layout */
 .subjects-page {
   display: flex;
@@ -24,17 +22,17 @@ margin-top: 60px;
   padding: 2rem 1.5rem;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   border-right: 1px solid #e0e0e0;
-  border-radius: 20px;
   margin-top: 25px;
   color: white;
+  margin-left: -20px;
 }
 
 .sidebar h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
-  background-color: #0bd112;
+  background-color: white;
   margin-top: 10px;
-  color: #efefef;
+  color: #0bd112;
 }
 
 .badge {
@@ -196,7 +194,7 @@ margin-top: 10px;}
   left: 13px;
   width: 14px;
   height: 14px;
-  background: #2b7a78;
+  background: #185c08;
   border-radius: 50%;
   z-index: 1;
 }
@@ -230,31 +228,31 @@ margin-top: 10px;}
 
 /* Subject-specific colors + hover shades */
 .subject-card-0 {
-  background-color: #fde6a7; /* Physics */
+  background-color: #f7e8c1; /* Physics */
 }
 .subject-card-0:hover {
-  background-color: #fcd77f;
+  background-color: #fde6a7;
 }
 
 .subject-card-1 {
-  background-color: #fbd5e5; /* Chemistry */
+  background-color: #dfc5d0; /* Chemistry */
 }
 .subject-card-1:hover {
-  background-color: #f8aacb;
+  background-color: #d1bcc6;
 }
 
 .subject-card-2 {
-  background-color: #c6efff; /* Zoology */
+  background-color: #d7f1fb; /* Zoology */
 }
 .subject-card-2:hover {
-  background-color: #a8e4fc;
+  background-color: #b2e5f9;
 }
 
 .subject-card-3 {
-  background-color: #ffb18b; /* Botany */
+  background-color: #ffd4dd; /* Botany */
 }
 .subject-card-3:hover {
-  background-color: #fc6240;
+  background-color: #f8baac;
 }
 
 .subject-thumbnail {
@@ -321,11 +319,10 @@ margin-top: 10px;}
   /* Sidebar */
   .sidebar {
     width: 100%;
-    margin-bottom: 2rem;
-    border-radius: 12px;
+     margin-bottom: 2rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
     margin-top: -5px;
+    margin-left: 0px;
   }
 
   .sidebar h2 {
@@ -342,7 +339,6 @@ margin-top: 10px;}
     margin-bottom: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
     margin-top: -5px;
     background-color: rgb(233, 251, 245);
   }
@@ -410,18 +406,22 @@ margin-top: 10px;}
 
   .timeline-content {
     padding: 0.8rem;
+    max-width: 280px;
+    max-height: 280px;
   }
 
   /* Subject Card */
+  
   .subject-card {
     width: 100%;
+    height: 100%;
     padding: 1rem;
     margin-bottom: 1.5rem;
   }
 
   .subject-thumbnail {
-    width: 150px;
-    height: 150px;
+    width: 120px;
+    height: 120px;
   }
   .subject-title {
     font-size: 1.2rem;

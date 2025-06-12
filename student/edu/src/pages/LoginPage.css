@@ -165,15 +165,13 @@ form input[type="password"],
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #25d366;
+  background-color: #25D366;
   color: white;
   padding: 12px 20px;
   border-radius: 50px;
   font-size: 14px;
-  font-weight: bold;
   text-decoration: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s;
 }
 
 .whatsapp-chat:hover {

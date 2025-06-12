@@ -22,9 +22,9 @@ margin-top: 60px;
   padding: 2rem 1.5rem;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   border-right: 1px solid #e0e0e0;
-  border-radius: 20px;
   margin-top: 25px;
   color: white;
+  margin-left: -20px;
 }
 
 .sidebar h2 {
@@ -319,11 +319,10 @@ margin-top: 10px;}
   /* Sidebar */
   .sidebar {
     width: 100%;
-    margin-bottom: 2rem;
-    border-radius: 12px;
+     margin-bottom: 2rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
     margin-top: -5px;
+    margin-left: 0px;
   }
 
   .sidebar h2 {
@@ -340,7 +339,6 @@ margin-top: 10px;}
     margin-bottom: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
     margin-top: -5px;
     background-color: rgb(233, 251, 245);
   }
@@ -392,6 +390,7 @@ margin-top: 10px;}
   /* Learning Path Timeline */
   .learning-path {
     padding: 1rem;
+
   }
 
   .timeline::before {
@@ -408,22 +407,32 @@ margin-top: 10px;}
 
   .timeline-content {
     padding: 0.8rem;
+    max-width: 250px;
+    max-height: 250px;
   }
 
   /* Subject Card */
+  
   .subject-card {
     width: 100%;
+    height: 100%;
     padding: 1rem;
     margin-bottom: 1.5rem;
   }
 
   .subject-thumbnail {
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 120px;
+  }
+  .course-number {
+    font-size: 1.1rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0px;
   }
   .subject-title {
     font-size: 1.2rem;
     margin-top: 0.1rem;
+    margin-bottom: 0px;
   }
 
   .continue-btn {
