@@ -16,34 +16,26 @@
 
 /* Left Side - Illustration */
 .login-illustration {
-   flex: 1;
-  padding: 60px 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  flex: 1;
+  padding: 40px;
+  color: rgb(9, 9, 9);
   text-align: center;
-  margin-top: auto;
 }
 
 .login-illustration img {
-  max-width: 550px;
-  width: 100%;
+  max-width: 80%;
   height: auto;
-  margin-bottom: 20px;
   border-radius: 10px;
 }
 
 .login-illustration h1 {
+  margin-top: 20px;
   font-size: 28px;
-  color: #333;
-  margin-bottom: 8px;
-  font-weight: bold;
 }
 
 .login-illustration p {
+  margin-top: 10px;
   font-size: 16px;
-  color: #666;
 }
 
 /* Right Side - Login Form */
@@ -76,12 +68,14 @@
 }
 
 /* Form Box */
-.form-box {
+.login-form-box {
   width: 100%;
   max-width: 600px; /* Increased width */
-  background: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(to bottom, #d1fad7, #cbd7c3);flex: 1;
   padding: 40px 40px; /* Increased padding */
   border-radius: 16px;
+ height: 100%;
+ max-height: 400px; ;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   margin: 20px auto; /* Center horizontally with top margin */
 }
@@ -118,25 +112,25 @@ form input[type="password"],
   margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
   align-items: center;
 }
 
 .form-actions button[type="submit"] {
-  width: 100%;
-  padding: 12px;
-  background-color: #26730e;
-  color: #fff;
-  font-size: 17px;
-  font-weight: bold;
+ width: 100%;
+  padding: 14px;
+  background-color: #28a745;
+  color: white;
+  font-size: 16px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background 0.3s ease;
+  margin-top: 10px;
 }
 
 .form-actions button[type="submit"]:hover {
-  background-color: #2bdd0b;
+  background-color: #1c7e32;
 }
 
 /* Forgot Password */
@@ -169,72 +163,109 @@ form input[type="password"],
   text-decoration: underline;
 }
 
-/* WhatsApp Button */
-.whatsapp-chat {
+/* WhatsApp Chat Button */
+.whatsapp-chat-button {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #25D366;
+  background-color: #07d252;
   color: white;
-  padding: 12px 20px;
   border-radius: 50px;
-  font-size: 14px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   text-decoration: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  z-index: 1000;
+  animation: bounce 2s infinite;
 }
 
-.whatsapp-chat:hover {
+/* Hover effect */
+.whatsapp-chat-button:hover {
   background-color: #1ebe5d;
+  transform: scale(1.05);
+  animation-play-state: paused; /* Pause bounce on hover */
 }
 
+/* WhatsApp icon size */
+.whatsapp-icon {
+  width: 24px;
+  height: 24px;
+}
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .login-container {
     flex-direction: column;
-    margin-top: 80px;
-    padding: 20px;
+    margin-top: 60px;
+    height: auto;
   }
 
   .login-illustration,
   .login {
-    flex: none;
+    flex: unset;
     width: 100%;
     padding: 20px;
+    box-shadow: none;
+    border-radius: 0;
   }
 
   .login-illustration img {
-    max-width: 400px;
+    max-width: 100%;
+    margin-bottom: 20px;
   }
 
   .login-illustration h1 {
-    font-size: 24px;
-  }
-
-  .login-illustration p {
-    font-size: 15px;
-  }
-
-  .login h2 {
     font-size: 22px;
   }
 
-  .form-box {
-    padding: 20px;
+  .login-illustration p {
+    font-size: 14px;
+  }
+
+  .login h2 {
+    font-size: 20px;
+    padding: 8px 16px;
+  }
+
+  .login-form-box {
+    width: 100%;
+    padding: 25px;
+    max-height: unset;
+    margin: 10px auto;
   }
 
   form input[type="email"],
   form input[type="password"],
   .password-container input {
-    font-size: 14px;
     padding: 12px;
+    font-size: 14px;
+  }
+
+  .form-actions {
+    gap: 14px;
   }
 
   .form-actions button[type="submit"] {
-    font-size: 16px;
     padding: 12px;
+    font-size: 15px;
+  }
+
+  .forgot-password {
+    font-size: 14px;
   }
 
   .login-text {
-    font-size: 14px;
+    font-size: 13px;
+  }
+
+  .whatsapp-chat {
+    padding: 10px 16px;
+    font-size: 13px;
+    bottom: 15px;
+    right: 15px;
   }
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
 import loginIllustration from "../assets/registerillustration.jpg";
+import whatsappIcon from "../assets/WhatsApp_icon.png"; // Adjust path if needed
 
 const LoginPage = () => {
   const [email, setEmail] = useState("demo@student.com"); // Pre-filled for demo
@@ -76,7 +77,7 @@ if (!storedUser) return alert("No registered user found. Please register first."
       {/* Right Section */}
       <div className="login">
         <h2>Student Login</h2>
-        <div className="form-box">
+        <div className="login-form-box">
           <form onSubmit={handleLogin}>
             <input
               type="email"
@@ -127,14 +128,20 @@ if (!storedUser) return alert("No registered user found. Please register first."
       </div>
 
       {/* WhatsApp Chat Button */}
-      <a
-        href="https://wa.me/YOUR_PHONE_NUMBER"
-        className="whatsapp-chat"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Chat with us on WhatsApp
-      </a>
+                  <a
+              href="https://wa.me/YOUR_PHONE_NUMBER"
+              className="whatsapp-chat-button"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chat with us on WhatsApp"
+            >
+              <img
+                src={whatsappIcon}
+                alt="WhatsApp"
+                className="whatsapp-icon"
+              />
+              <span>Chat with us on whatsapp</span>
+            </a>
     </div>
   );
 };

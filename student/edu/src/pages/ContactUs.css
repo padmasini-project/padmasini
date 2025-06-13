@@ -7,7 +7,6 @@
   height: 100vh;
   font-family: Arial, sans-serif;
   margin-top: 100px;
-margin-bottom: 250px;
 }
 
 /* Heading */
@@ -22,14 +21,14 @@ margin-bottom: 250px;
 }
 
 /* Form Box */
-.form-box {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 25px 30px;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+.contact-form-box {
   width: 100%;
-  max-width: 350px;
-  margin-top: 10px;
+  max-width: 600px; /* Increased width */
+  background: linear-gradient(to bottom, #d1fad7, #cbd7c3);flex: 1;
+  padding: 40px 40px; /* Increased padding */
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  margin: 20px auto; 
 }
 
 /* Form Layout */
@@ -42,12 +41,13 @@ form {
 /* Input Fields */
 form input,
 form textarea {
-  width: 100%;
+ width: 100%;
   padding: 14px;
+  margin: 10px 0;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 15px;
-  transition: border-color 0.3s ease;
+  
 }
 form input:hover,
 form textarea:hover {
@@ -56,12 +56,6 @@ form textarea:hover {
 /* Special class for Name input (optional but included since you had "form-name") */
 .form-name {
   font-weight: 500;
-}
-
-/* Focus states */
-form input:focus,
-form textarea:focus {
-  outline: none;
 }
 
 /* Textarea Specifics */
@@ -78,19 +72,26 @@ form textarea::placeholder {
 }
 
 /* Submit Button */
-form button {
-  background-color: #098e31;
-  color: white;
-  padding: 14px;
-  font-size: 16px;
+.form-requirements {
+  text-align: center; /* Optional: helps ensure centering in some layouts */
+}
+
+.form-requirements button[type="submit"] {
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto; /* centers the button horizontally */
+  padding: 12px;
+  background-color: #28a745;
+  color: #fff;
+  font-size: 17px;
+  font-weight: bold;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
-
-form button:hover {
-  background-color: #00b318;
+.form-requirements button[type="submit"]:hover {
+  background-color: #1c7e32;
 }
 
 /* Popup Overlay */
@@ -159,40 +160,38 @@ form button:hover {
     opacity: 1;
   }
 }
-
-
 /* WhatsApp Chat Button */
 .whatsapp-chat-button {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #25D366;
+  background-color: #07d252;
   color: white;
   border-radius: 50px;
-  padding: 12px 18px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   gap: 8px;
   text-decoration: none;
   font-weight: 500;
   font-size: 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, background-color 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, background-color 0.3s ease;
   z-index: 1000;
   animation: bounce 2s infinite;
 }
 
-/* WhatsApp Icon */
-.whatsapp-icon {
-  width: 24px;
-  height: 24px;
-}
-
-/* WhatsApp Hover Effects */
+/* Hover effect */
 .whatsapp-chat-button:hover {
   background-color: #1ebe5d;
   transform: scale(1.05);
-  animation-play-state: paused;
+  animation-play-state: paused; /* Pause bounce on hover */
+}
+
+/* WhatsApp icon size */
+.whatsapp-icon {
+  width: 24px;
+  height: 24px;
 }
 
 /* Bounce Animation */
@@ -211,78 +210,68 @@ form button:hover {
   }
 }
 
-/* Responsive adjustments for tablet and mobile screens */
 @media (max-width: 768px) {
-  /* Contact Container */
   .contact-container {
-    margin-top: 90px;
-    margin-bottom: 180px;
-    padding: 0 20px;
-  }
-
-  /* Heading */
-  .contact-container h2 {
-    font-size: 22px;
-    padding: 10px 18px;
-    margin-bottom: 12px;
-  }
-
-  /* Form Box */
-  .form-box {
     padding: 20px;
-    width: 100%;
+    margin-top: 80px;
+    margin-bottom: 100px;
+    height: auto;
+    margin-left: 10px;
+    margin-right: 10px;
   }
 
-  /* Form Layout */
-  form {
-    gap: 12px;
-    margin-bottom: 15px;
+  .contact-container h2 {
+    font-size: 20px;
+    padding: 8px 16px;
   }
 
-  /* Input Fields and Textarea */
+  .contact-form-box {
+    padding: 20px;
+    box-shadow: none;
+    border-radius: 12px;
+  }
+
   form input,
   form textarea {
-    padding: 13px;
-    font-size: 15px;
+    font-size: 14px;
+    padding: 12px;
+    margin: 8px 0;
   }
 
-  /* Submit Button */
   form button {
-    padding: 13px;
-    font-size: 15px;
+    font-size: 16px;
+    padding: 10px;
   }
 
-  /* Popup Content */
   .popup-content {
-    padding: 25px 30px;
-    max-width: 90%;
+    padding: 20px;
+    width: 90%;
   }
 
   .popup-content h2 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .popup-content p {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .popup-close-button {
-    padding: 12px 22px;
-    font-size: 15px;
+    font-size: 14px;
+    padding: 10px 20px;
   }
 
-  /* WhatsApp Button */
   .whatsapp-chat-button {
+    padding: 10px 14px;
+    font-size: 13px;
+    gap: 6px;
     bottom: 15px;
     right: 15px;
-    padding: 10px 15px;
-    gap: 6px;
-    font-size: 13px;
   }
 
   .whatsapp-icon {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
   }
 }
 

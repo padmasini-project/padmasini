@@ -247,53 +247,53 @@ background-color: #03a020;
 }
 /* Different background colors */
 .tab-card:nth-child(1) {
-  background-color: #ff8484; /* Red */
+  background-color: #e3fcce; /* Red */
   transition: background-color 0.3s, transform 0.3s ease-in-out;
 }
 
 .tab-card:nth-child(1):hover {
-  background-color: #ff4d4d; /* Darker Red */
+  background-color: #c1fca9; /* Darker Red */
   transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
 .tab-card:nth-child(2) {
-  background-color: #a2fbf5; /* Teal */
+  background-color: #c1f7f3; /* Teal */
   transition: background-color 0.3s, transform 0.3s ease-in-out;
 }
 
 .tab-card:nth-child(2):hover {
-  background-color: #80e1e4; /* Darker Teal */
+  background-color: #b2f8fa; /* Darker Teal */
   transform: scale(1.05);
 }
 
 .tab-card:nth-child(3) {
-  background-color: #fce68d; /* Yellow */
+  background-color: #fdf2c3; /* Yellow */
   color: #333;
   transition: background-color 0.3s, transform 0.3s ease-in-out;
 }
 
 .tab-card:nth-child(3):hover {
-  background-color: #f1d15c; /* Darker Yellow */
+  background-color: #fce68d; /* Darker Yellow */
   transform: scale(1.05);
 }
 
 .tab-card:nth-child(4) {
-  background-color: #f78dd6; /* Blue */
+  background-color: #fdbee9; /* Blue */
   transition: background-color 0.3s, transform 0.3s ease-in-out;
 }
 
 .tab-card:nth-child(4):hover {
-  background-color: #f660b0; /* Darker Blue */
+  background-color: #dc86b4; /* Darker Blue */
   transform: scale(1.05);
 }
 
 .tab-card:nth-child(5) {
-  background-color: #9ff796; /* Purple */
+  background-color: #f7b896; /* Purple */
   transition: background-color 0.3s, transform 0.3s ease-in-out;
 }
 
 .tab-card:nth-child(5):hover {
-  background-color: #72e08c; /* Darker Purple */
+  background-color: #f8ac9e; /* Darker Purple */
   transform: scale(1.05);
 }
 
@@ -498,11 +498,12 @@ background-color: #03a020;
   border-radius: 15px;
   margin-top: 15px;
   background-color: #000000 ;
+  
 }
 
 .faq h2 {
   color: #ffffff; /* Orange color for FAQ heading */
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   background-color: #00000000;
   margin: auto;
@@ -529,8 +530,6 @@ background-color: #03a020;
   margin-left: 20px;
 }
 
-
-/* WhatsApp Chat Button */
 /* WhatsApp Chat Button */
 .whatsapp-chat-button {
   position: fixed;

@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Terms.css";
+import whatsappIcon from "../assets/WhatsApp_icon.png"; // Adjust path if needed
+
 
 const Terms = () => {
   const navigate = useNavigate(); // This hook will help us navigate to another page
@@ -92,6 +94,21 @@ const Terms = () => {
           </button>
         </div>
       </div>
+      {/* WhatsApp Chat Button */}
+            <a
+              href="https://wa.me/YOUR_PHONE_NUMBER"
+              className="whatsapp-chat-button"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chat with us on WhatsApp"
+            >
+              <img
+                src={whatsappIcon}
+                alt="WhatsApp"
+                className="whatsapp-icon"
+              />
+              <span>Chat with us on whatsapp</span>
+            </a>
     </div>
   );
 };

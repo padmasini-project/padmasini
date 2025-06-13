@@ -17,6 +17,7 @@ const RegistrationFlow = () => {
   const [mobile, setMobile] = useState("");
   const [emailError, setEmailError] = useState("");
   const [mobileError, setMobileError] = useState("");
+  
 
   // Step 2 states
   const [photo, setPhoto] = useState(null);
@@ -113,7 +114,7 @@ const RegistrationFlow = () => {
           <>
           
             <h2>Register Now</h2>
-            <div className="form-box">
+            <div className="Register-form-box">
               <form onSubmit={handleStepOneSubmit}>
                 <div className="name-container">
                   <input type="text" placeholder="Student First Name" value={firstname} onChange={(e) => setUsername(e.target.value)} required className="half-width" />
@@ -156,7 +157,10 @@ const RegistrationFlow = () => {
         )}
 
         {step === 2 && (
+          <div className="student-details">
+            <h2>Student Details</h2>
           <div className="student-details-wrapper">
+            
             <div className="left-section">
               <p className="upload-text">Upload Profile Picture *</p>
               <label htmlFor="file-input" className="custom-upload">
@@ -167,7 +171,8 @@ const RegistrationFlow = () => {
 
             <div className="right-section">
               <form onSubmit={handleFinalSubmit}>
-                <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} required />
+                
+                <input  type="date" value={dob} onChange={(e) => setDob(e.target.value)} required />
 
                 <select value={gender} onChange={(e) => setGender(e.target.value)} required>
                   <option value="">Gender</option>
@@ -195,19 +200,22 @@ const RegistrationFlow = () => {
                   </select>
                 )}
 
-                <div className="navigation-buttons">
+                <div className="student-navigation-buttons">
                   <button onClick={() => setStep(1)}>Previous</button>
-                  <button onClick={() => setStep(3)}>Proceed to Pay</button>
+<button type="submit">Next</button>
                 </div>
 
               </form>
+            </div>
             </div>
           </div>
         )}
 
         {step === 3 && (
+          <div className="payment-section">
+          <h2>Select Your Plan</h2>
           <div className="payment-selection">
-            <h2>Select Your Plan</h2>
+            
 
             <div className="plans">
               <label><input type="radio" name="plan" value="trial" checked={selectedPlan === "trial"} onChange={() => setSelectedPlan("trial")} /> 15-day Free Trial</label>
@@ -219,18 +227,7 @@ const RegistrationFlow = () => {
               <input type="text" placeholder="Enter Promo Code" value={promoCode} onChange={(e) => setPromoCode(e.target.value)} />
               <button onClick={() => alert("Promo Applied: " + promoCode)}>Apply</button>
             </div>
-
-            <div className="navigation-buttons">
-              <button onClick={() => setStep(2)}>Previous</button>
-              <button onClick={() => {
-                if (!selectedPlan) return alert("Please select a plan.");
-                setShowPaymentOptions(true);
-              }}>
-                Pay Now
-              </button>
-            </div>
-
-            {showPaymentOptions && (
+{showPaymentOptions && (
               <div className="payment-options-modal">
                 <h3>Select Payment Method</h3>
                 <div className="methods">
@@ -274,6 +271,18 @@ const RegistrationFlow = () => {
           )}
         </div>
             )}
+            <div className="plans-navigation-buttons">
+              <button onClick={() => setStep(2)}>Previous</button>
+              <button onClick={() => {
+                if (!selectedPlan) return alert("Please select a plan.");
+                setShowPaymentOptions(true);
+              }}>
+                Pay Now
+              </button>
+            </div>
+
+            
+          </div>
           </div>
         )}
       </div>

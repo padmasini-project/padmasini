@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ContactUs.css";
-import whatsappIcon from "../assets/WhatsApp_icon.png"; // Adjust path if needed
+import whatsappIcon from "../assets/WhatsApp_icon.png"; // Make sure this path is correct
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -25,13 +25,17 @@ const ContactUs = () => {
 
   const handleClose = () => {
     setSubmitted(false);
-    navigate("/"); // Navigate to home page
+    navigate("/"); // Redirect to homepage
   };
+
+  // Capitalize the name
+  const capitalizeName = (name) =>
+    name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 
   return (
     <div className="contact-container">
       <h2>Contact Us</h2>
-      <div className="form-box">
+      <div className="contact-form-box">
         <form onSubmit={handleSubmit}>
           <input
             className="form-name"
@@ -65,13 +69,28 @@ const ContactUs = () => {
             onChange={handleChange}
             required
           />
-          <button>Submit</button>
+          <div className="form-requirements">
+          <button type="submit">Submit</button>
+          </div>
         </form>
       </div>
 
+      {/* Thank You Popup */}
+      {submitted && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h2>Thank you {capitalizeName(formData.name)}, for reaching out!</h2>
+            <p>We appreciate your enquiry and will get back to you shortly.</p>
+            <button className="popup-close-button" onClick={handleClose}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* WhatsApp Chat Button */}
       <a
-        href="https://wa.me/YOUR_PHONE_NUMBER"
+        href="https://wa.me/YOUR_PHONE_NUMBER" // Replace with your number
         className="whatsapp-chat-button"
         target="_blank"
         rel="noopener noreferrer"
@@ -80,19 +99,6 @@ const ContactUs = () => {
         <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-icon" />
         <span>Chat with us on WhatsApp</span>
       </a>
-
-      {/* Thank You Popup */}
-      {submitted && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <h2>Thank you for reaching out!</h2>
-            <p>Our team will review your inquiry and get back to you soon.</p>
-            <button className="popup-close-button" onClick={handleClose}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
