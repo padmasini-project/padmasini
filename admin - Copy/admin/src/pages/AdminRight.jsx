@@ -21,17 +21,18 @@ const AdminRight = () => {
 const standards = location.state?.standards || []; // fallback to empty array if undefined
 
 const { cardId, subjectName, standard, examTitle,courseName } = location.state || {};
+const keyPrefix = `${examTitle}_${subjectName}_Std${standard}`;
   console.log(cardId,"  ",subjectName,"  ",standard," ",examTitle,"  ",courseName )
   
   const [newUnit, setNewUnit] = useState('');
 const [unitsMap, setUnitsMap] = useState(() => {
-  const saved = localStorage.getItem('admin_unitsMap');
+  const saved = localStorage.getItem(`admin_unitsMap_${keyPrefix}`);
   return saved ? JSON.parse(saved) : {};
 });
   const [selectedUnit, setSelectedUnit] = useState('');
   const [editingLessonIndex, setEditingLessonIndex] = useState(null);
 const [lessonSubtopicsMap, setLessonSubtopicsMap] = useState(() => {
-  const saved = localStorage.getItem('admin_subtopicsMap');
+  const saved = localStorage.getItem(`admin_subtopicsMap_${keyPrefix}`);
   return saved ? JSON.parse(saved) : {};
 });
   const [selectedSubtopic, setSelectedSubtopic] = useState(null);
@@ -49,7 +50,7 @@ const [lessonSubtopicsMap, setLessonSubtopicsMap] = useState(() => {
   const audioChunks = useRef([]);
   const recordingIntervalRef = useRef(null);
 const [lessonTestsMap, setLessonTestsMap] = useState(() => {
-  const saved = localStorage.getItem('admin_testsMap');
+  const saved = localStorage.getItem(`admin_testsMap_${keyPrefix}`);
   return saved ? JSON.parse(saved) : {};
 });
 const [selectedTest, setSelectedTest] = useState(null);
@@ -60,16 +61,20 @@ const [questions, setQuestions] = useState([]);
 const [editingQuestionIndex, setEditingQuestionIndex] = useState(null);
 const [passPercentage, setPassPercentage] = useState('');
 useEffect(() => {
-  localStorage.setItem('admin_unitsMap', JSON.stringify(unitsMap));
+  localStorage.setItem(`admin_unitsMap_${keyPrefix}`, JSON.stringify(unitsMap));
 }, [unitsMap]);
 
 useEffect(() => {
-  localStorage.setItem('admin_subtopicsMap', JSON.stringify(lessonSubtopicsMap));
+  localStorage.setItem(`admin_subtopicsMap_${keyPrefix}`, JSON.stringify(lessonSubtopicsMap));
 }, [lessonSubtopicsMap]);
 
 useEffect(() => {
-  localStorage.setItem('admin_testsMap', JSON.stringify(lessonTestsMap));
+  localStorage.setItem(`admin_testsMap_${keyPrefix}`, JSON.stringify(lessonTestsMap));
 }, [lessonTestsMap]);
+
+localStorage.removeItem(`admin_unitsMap_${keyPrefix}`);
+localStorage.removeItem(`admin_subtopicsMap_${keyPrefix}`);
+localStorage.removeItem(`admin_testsMap_${keyPrefix}`);
 
   const [currentQuestion, setCurrentQuestion] = useState({
     text: '',
@@ -107,43 +112,49 @@ useEffect(() => {
       clearInterval(recordingIntervalRef.current);
     }
   };
-  const handleAddUnit = () => {
-    if (!key || !newUnit.trim()) return;
-    const start = performance.now();
-    //fetch(`http://localhost:80/addNewUnit/${subjectName}`,{
-       fetch(`https://api-test.trilokinnovations.com/addNewUnit/${subjectName}`,{
-      //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/addNewUnit/${subjectName}`,{
-      method:'POST',
-      credentials:'include',
-            headers: {'Content-Type':'application/json'},
-            body:JSON.stringify({
-              unitName: newUnit,
-              database:courseName,
-            })
-    })
-    .then((resp)=>{
-      const end = performance.now(); // End time
+ const handleAddUnit = () => {
+  const key = standards.length > 0 ? selectedStandard : 'default'; // ✅ define key here
+
+  if (!key || !newUnit.trim()) return;
+
+  const start = performance.now();
+
+  fetch(`https://api-test.trilokinnovations.com/addNewUnit/${subjectName}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      unitName: newUnit,
+      database: courseName,
+    }),
+  })
+    .then((resp) => {
+      const end = performance.now();
       console.log(`Fetch for sending data from admin right took ${end - start} ms`);
-      console.log("add new unit resp",resp.text())
-       setUnitsMap((prev) => {
-      const updated = { ...prev };
-      const existingUnits = updated[key] || [];
-      const trimmed = newUnit.trim();
-      if (editingLessonIndex !== null) {
-        existingUnits[editingLessonIndex] = trimmed;
-      } else {
-        if (existingUnits.includes(trimmed)) return updated;
-        existingUnits.push(trimmed);
-      }
-      updated[key] = existingUnits;
-      return updated;
-    });
+      console.log("add new unit resp", resp.text());
+
+      setUnitsMap((prev) => {
+        const updated = { ...prev };
+        const existingUnits = updated[key] || [];
+        const trimmed = newUnit.trim();
+        if (editingLessonIndex !== null) {
+          existingUnits[editingLessonIndex] = trimmed;
+        } else {
+          if (existingUnits.includes(trimmed)) return updated;
+          existingUnits.push(trimmed);
+        }
+        updated[key] = existingUnits;
+        return updated;
+      });
+
       setNewUnit('');
-    setEditingLessonIndex(null);
-    }).catch(err=>{
-      console.log("new unit fetch error",err)
-    })    
-  };
+      setEditingLessonIndex(null);
+    })
+    .catch((err) => {
+      console.log("new unit fetch error", err);
+    });
+};
+
   const handleEditLesson = (index) => {
     const key = standards.length > 0 ? selectedStandard : 'default';
     const unitToEdit = unitsMap[key]?.[index] || '';

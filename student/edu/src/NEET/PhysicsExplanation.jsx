@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import './PhysicsExplanation.css';
 import { FaPlay, FaPause, FaCheckCircle } from 'react-icons/fa';
 
-import trailVideo from '../videos/trail.mp4';
 import trailAudio from "../audio/trail.mp3";
 
 const PhysicsExplanation = ({ explanation = '', subtopicTitle = '', onBack, onMarkComplete }) => {
@@ -171,17 +170,17 @@ const PhysicsExplanation = ({ explanation = '', subtopicTitle = '', onBack, onMa
             </div>
 
             <div className="video-container">
-              <video width="100%" controls>
-                <source src={trailVideo} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
+  <video width="100%" controls>
+    <source 
+      src="https://6853af65abe1d4e08e3dc3e6--prismatic-cocada-04d9b7.netlify.app/trail.mp4" 
+      type="video/mp4" 
+    />
+    Your browser does not support the video tag.
+  </video>
+</div>
           </>
         )}
       </div>
-
-    
-
         <button onClick={handleBack} className="back-btn">
           Back to Topics
         </button>
@@ -189,7 +188,6 @@ const PhysicsExplanation = ({ explanation = '', subtopicTitle = '', onBack, onMa
     </div>
   );
 };
-
 export default PhysicsExplanation;
 
 
