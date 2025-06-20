@@ -215,7 +215,7 @@ form button:hover {
 @media (max-width: 768px) {
   /* Contact Container */
   .contact-container {
-    margin-top: 70px;
+    margin-top: 90px;
     margin-bottom: 180px;
     padding: 0 20px;
   }
@@ -230,7 +230,7 @@ form button:hover {
   /* Form Box */
   .form-box {
     padding: 20px;
-    max-width: 90%;
+    width: 100%;
   }
 
   /* Form Layout */

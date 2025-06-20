@@ -43,20 +43,13 @@ const LoginPage = () => {
       return;
     }
 
-    if (!storedUser) {
-      alert("No registered user found. Please register first.");
-      return;
-    }
+if (!storedUser) return alert("No registered user found. Please register first.");
 
     if (storedUser.email === email && storedUser.password === password) {
       alert("✅ Login successful!");
-      if (storedUser.role === "jee") {
-        navigate("/jee");
-      } else if (storedUser.role === "neet") {
-        navigate("/neet");
-      } else {
-        navigate("/subjects");
-      }
+      if (storedUser.role === "jee") navigate("/jee");
+      else if (storedUser.role === "neet") navigate("/neet");
+      else navigate("/subjects");
     } else {
       alert("❌ Invalid email or password");
     }
@@ -72,16 +65,16 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="registration-container">
+    <div className="login-container">
       {/* Left Section */}
-      <div className="registration-illustration">
+      <div className="login-illustration">
         <img src={loginIllustration} alt="Login Illustration" />
         <h1>Welcome Back</h1>
         <p>Log in to continue learning and exploring!</p>
       </div>
 
       {/* Right Section */}
-      <div className="registration">
+      <div className="login">
         <h2>Student Login</h2>
         <div className="form-box">
           <form onSubmit={handleLogin}>

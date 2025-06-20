@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Registration from "./pages/Registration";
 import LoginPage from "./pages/LoginPage";
-import Studentdetails from "./pages/Studentdetails";
 import ResetPassword from "./pages/ResetPassword";
 import ContactUs from "./pages/ContactUs"; 
 import Terms from "./pages/terms";
@@ -34,7 +33,6 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} /> 
           <Route path="/home" element={<Home />} />
           <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/studentdetails" element={<Studentdetails />} />
           <Route path="/neet" element={<NEET />} />
           <Route path="/physics" element={<Physics />} />
           <Route path="/chemistry" element={<Chemistry />} />

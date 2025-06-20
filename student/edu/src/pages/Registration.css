@@ -5,7 +5,6 @@
   width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-top: 80px;
-
 }
 
 /* Left side - illustration */
@@ -51,11 +50,10 @@
   align-items: center;
   box-shadow: -5px 0 20px rgba(0, 0, 0, 0.05);
   border-radius: 20px;
-  background: linear-gradient(to bottom, #e9fdec, #ffffff); 
+  background: linear-gradient(to bottom, #e9fdec, #ffffff);
 }
-
 .registration h2 {
-  background-color: #0e651f;
+  background-color: #28a745; /* Green header */
   color: white;
   font-size: 24px;
   padding: 10px 20px;
@@ -65,32 +63,25 @@
 }
 
 .form-box {
-  background: rgba(255, 255, 255, 0.50);
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-
-}
-
-form input[type="text"]{
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid rgb(0, 255, 8);
-  border-radius: 5px;
-  font-size: 16px;
-  max-width: 300px;
+  max-width: 600px; /* Increased width */
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px 40px; /* Increased padding */
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  margin: 20px auto; /* Center horizontally with top margin */
 }
+/* Form Inputs */
+form input[type="text"],
 form input[type="email"],
 form input[type="tel"],
-form input[type="password"] { 
-  width: 100%;
-  padding: 10px;
+form input[type="password"] {
+    width: 100%;
+  padding: 14px;
   margin: 10px 0;
-  border: 1px solid rgb(0, 255, 68);
-  border-radius: 5px;
-  font-size: 16px;
-  max-width: 800px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
 }
 
 .name-container {
@@ -98,6 +89,7 @@ form input[type="password"] {
   justify-content: space-between;
   gap: 10px;
 }
+
 .name-container input {
   width: 48%;
 }
@@ -120,7 +112,7 @@ form input[type="password"] {
 .password-container input {
   width: 100%;
   padding: 10px;
-  border: 1px solid rgb(173, 230, 173);
+  border: 1px solid #a3e5a3;
   border-radius: 5px;
   font-size: 16px;
 }
@@ -132,9 +124,8 @@ form input[type="password"] {
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 18px;
-  color: rgb(4, 255, 0);
+  color: #28a745;
 }
-
 
 /* Form Actions Section (Checkbox) */
 .form-actions {
@@ -159,29 +150,31 @@ form input[type="password"] {
   height: 18px;
   cursor: pointer;
 }
+
 /* Checkbox Label */
 .checkbox-container label {
   margin: 0;
-  font-size: 15px; /* Increased font size */
+  font-size: 15px;
   margin-top: -10px;
-  text-align: center
+  text-align: center;
 }
 
 /* Terms and Conditions Link */
-.checkbox-container label link{
-  color: #007bff;
+.checkbox-container label link {
+  color: #28a745;
   text-decoration: underline;
   transition: color 0.3s ease;
 }
 
 .checkbox-container label a:hover {
-  color: #0056b3;
+  color: #1c7e32;
 }
+
 /* Submit Button */
 form button[type="submit"] {
   width: 100%;
   padding: 14px;
-  background-color: #007bff;
+  background-color: #28a745;
   color: white;
   font-size: 16px;
   border: none;
@@ -192,9 +185,8 @@ form button[type="submit"] {
 }
 
 form button[type="submit"]:hover {
-  background-color: #0056b3;
+  background-color: #1c7e32;
 }
-
 
 .form-actions button[type="submit"] {
   max-width: 300px;
@@ -207,14 +199,13 @@ form button[type="submit"]:hover {
 .login-text a {
   width: 100%;
   padding: 10px;
-  color: #0056b3;
+  color: #1c7e32;
   border-radius: 5px;
   font-size: 18px;
   cursor: pointer;
   margin-top: 10px;
   transition: background 0.3s ease-in-out;
 }
-
 
 /* WhatsApp Button */
 .whatsapp-chat {
@@ -234,19 +225,423 @@ form button[type="submit"]:hover {
   background-color: #1ebe5d;
 }
 
-/* Responsive Design */
+/* Wrapper Flexbox */
+.student-details-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.50);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+/* Profile Picture Upload Section */
+.left-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 250px;
+}
+
+.upload-text {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.custom-upload {
+  width: 150px;
+  height: 150px;
+  background-color: #ddd;
+  border-radius: 50%;
+  border: 2px solid #28a745; /* Green border */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: #28a745;
+  cursor: pointer;
+  overflow: hidden;
+  gap: 10px;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.upload-placeholder {
+  font-size: 48px;
+  color: lightgreen;
+}
+
+.profile-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hidden-input {
+  display: none;
+}
+
+/* Right Form Section */
+.right-section {
+  max-width: 600px;
+  width: 100%;
+}
+
+.right-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.right-section input,
+.right-section select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #28a745; /* Green */
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.right-section button {
+  width: 100%;
+  padding: 12px;
+  background-color: #28a745; /* Green */
+  color: white;
+  font-size: 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.right-section button:hover {
+  background-color: #1c7e32; /* Darker green */
+}
+.payment-selection {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+  margin: auto;
+  margin-top: 15px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.payment-selection h2 {
+  background-color: #28a745; /* Green header */
+  color: white;
+  font-size: 24px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  text-align: center;
+ width: fit-content;
+   align-items: center;
+  margin: auto;
+}
+
+.plans {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 25px;
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.plans label {
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+.promo-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  
+}
+
+.promo-section input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+.promo-section button {
+  padding: 10px 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s ease;
+  height: 40px;
+}
+
+.promo-section button:hover {
+  background-color: #218838;
+}
+
+/* Navigation Buttons */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  gap: 60px;
+}
+.navigation-buttons button {
+  width: 140px;
+  height: 45px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 2px solid #28a745;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.navigation-buttons button:first-child {
+  background-color: #fff;
+  color: #28a745;
+}
+
+.navigation-buttons button:last-child {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.navigation-buttons button:hover {
+  opacity: 0.9;
+}
+
+.payment-options-modal {
+  padding: 1.5rem;
+  border: 2px solid #4caf50;
+  border-radius: 10px;
+  background-color: #ffffff;
+  width: fit-content;
+  margin: auto;
+  text-align: center;
+  margin-top: 20px;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+}
+
+.payment-options-modal h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #000;
+}
+
+.methods {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.methods button {
+  padding: 0.6rem 1.2rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  width: 150px;
+  height: 50px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  min-width: 130px;
+}
+
+.methods button:hover {
+  background-color: #218838;
+}
+
+/* Optional inputs for UPI / Bank / Card */
+.payment-options-modal input,
+.payment-options-modal select {
+  width: 100%;
+  max-width: 300px;
+  margin: 0.5rem auto;
+  padding: 0.6rem;
+  border: 1px solid #4caf50;
+  border-radius: 6px;
+  font-size: 1rem;
+  display: block;
+}
+
+/* Final Pay Now button */
+.payment-options-modal > button:last-of-type {
+  margin-top: 1rem;
+  padding: 0.8rem 1.5rem;
+  background-color: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.payment-options-modal > button:last-of-type:hover {
+  background-color: #1b5e20;
+}
+/* ==== Responsive Mobile View without altering desktop layout ==== */
 @media (max-width: 768px) {
+  /* Registration container stacked */
   .registration-container {
     flex-direction: column;
+    margin-top: 20px;
+    width: 100%;
   }
 
   .registration-illustration,
   .registration {
     width: 100%;
-    padding: 30px 20px;
+    padding: 20px;
+    margin-top: 0;
   }
 
   .name-container {
     flex-direction: column;
+  }
+
+  .name-container input {
+    width: 100%;
+  }
+
+  .form-box {
+    padding: 20px;
+  }
+
+  /* Student Details Section */
+  .student-details-wrapper {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .left-section,
+  .right-section {
+    max-width: 100%;
+    width: 100%;
+    padding: 0;
+  }
+
+  .custom-upload {
+    width: 120px;
+    height: 120px;
+    font-size: 26px;
+    margin: 10px 0;
+  }
+
+  .right-section form {
+    width: 100%;
+    padding: 0 10px;
+    align-items: center;
+  }
+
+  .right-section input,
+  .right-section select {
+    font-size: 15px;
+    padding: 12px;
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .right-section button {
+    font-size: 16px;
+    padding: 12px;
+    width: 100%;
+    max-width: 350px;
+    margin-top: 10px;
+  }
+
+  .page-container {
+    margin: 60px auto;
+    padding: 0 10px;
+  }
+
+  .page-container h1 {
+    font-size: 20px;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+
+ 
+  /* Navigation Buttons stacked in mobile */
+  .navigation-buttons {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .navigation-buttons button {
+    width: 100% !important;
+    height: 45px;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+
+  .promo-section {
+    flex-direction: column;
+  }
+
+  .promo-section input{
+    width: 100%;
+    margin-bottom: -10px
+  }
+  .promo-section button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .methods {
+    flex-direction: column;
+  }
+
+  .methods button {
+    width: 100%;
+  }
+.payment-selection{
+  width: 100%;
+  padding: 20px;
+  margin: auto;
+}
+  .payment-options-modal input,
+  .payment-options-modal select {
+    width: 100%;
+  }
+
+  .payment-options-modal {
+    width: 90%;
+  }
+
+  .whatsapp-chat {
+    right: 15px;
+    bottom: 15px;
+    padding: 10px 14px;
+    font-size: 13px;
   }
 }
