@@ -410,9 +410,9 @@ html, body {
   margin-bottom: 10px;
   display: flex;
   justify-content: center;
-  gap: 10px;
-
 }
+
+
 .card-cancel-button {
   padding: 8px 16px;
   background-color: #f62626;
@@ -424,7 +424,6 @@ html, body {
 .card-cancel-button:hover {
   background-color: #7c7b7b;
 }
-
 .selected-info {
   margin-bottom: 8px;
   color: #0a5a0a;

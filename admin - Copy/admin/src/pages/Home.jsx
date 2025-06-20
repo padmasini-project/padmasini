@@ -1,31 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import backgroundImage from '../assets/admin-bg.jpg';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  // Load user from localStorage on mount
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('currentUser'));
-    setUser(storedUser);
-
-    // Listen for login events to update user
-    const handleUserLogin = () => {
-      const updatedUser = JSON.parse(localStorage.getItem('currentUser'));
-      setUser(updatedUser);
-    };
-
-    window.addEventListener('userLogin', handleUserLogin);
-
-    return () => {
-      window.removeEventListener('userLogin', handleUserLogin);
-    };
-  }, []);
 
   const handleButtonClick = () => {
+    const user = JSON.parse(localStorage.getItem('user')); // Adjust key if needed
     if (user && user.role === 'admin') {
       navigate('/adminhome');
     } else {
@@ -42,7 +24,7 @@ const Home = () => {
         <h1>Welcome to Admin Dashboard</h1>
         <p>You can manage all your content and settings here.</p>
         <button className="home-button" onClick={handleButtonClick}>
-          {user && user.role === 'admin' ? 'Go to Admin Panel' : 'Enter Admin Panel'}
+          Enter Admin Panel
         </button>
       </div>
     </div>

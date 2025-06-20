@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './ManageAccount.css';
+import { useNavigate } from 'react-router-dom';
 
 const defaultSubjects = {
   jee: ['Physics', 'Chemistry', 'Maths'],
@@ -38,12 +38,13 @@ const getCardsForMode = (mode) => {
 };
 
 const ManageAccount = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-
+  
   const [formData, setFormData] = useState({
     name: '',
-    phone: '',
+    phone:'',
     email: '',
     password: '',
     role: 'user',
@@ -52,36 +53,92 @@ const ManageAccount = () => {
       mode: '',
       cardId: '',
       subjects: [],
-      standard: [],
+      standards: [],
     },
   });
-
-  useEffect(() => {
-  const storedUsers = localStorage.getItem('users');
-  if (storedUsers) {
-    setUsers(JSON.parse(storedUsers));
-  }
+useEffect(() => {
+  const start = performance.now();
+  //fetch(`http://localhost:80/checkSession`, {
+     fetch(`https://api-test.trilokinnovations.com/checkSession`, {
+    //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/checkSession`, {
+    method: "GET",
+    credentials: 'include'
+  }).then(resp => resp.json())
+  .then(text => {
+     const end = performance.now(); // End time
+      console.log(`Fetch for chack sessio in manage user took ${end - start} ms`);
+    // console.log("checksession inside managae user",text)
+    if (text.status === 'failed') {
+      localStorage.removeItem('currentUser');
+      navigate('/signin');
+    } else {
+      getUsers()
+    }
+  }).catch(() => {}
+    // console.log("Session check failed:", err);
+  );
 }, []);
 
-useEffect(() => {
-  localStorage.setItem('users', JSON.stringify(users));
-}, [users]);
 
+const getUsers=()=>{
+  const start = performance.now();
+  //fetch(`http://localhost:80/getUsers`, {
+     fetch(`https://api-test.trilokinnovations.com/getUsers`, {
+    //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/getUsers`, {
+        method: "GET",
+        credentials: 'include'
+      })
+        .then(resp => {
+          //console.log('Getting users was successful');
+          return resp.json();
+        })
+        .then(data => {
+           const end = performance.now(); // End time
+      console.log(`Fetch for getting user in manager user took ${end - start} ms`);
+          //console.log(data)
+          const newUsers = data.map(user => ({
+            name: user.userName,
+            phone:user.phoneNumber,
+            email: user.gmail,
+            password: user.password,
+            role: user.role,
+            access: {
+              mode: user.coursetype||'',
+              cardId: user.courseName||'',
+              subjects: user.subjects||[],
+              standards: user.standards||[],
+            }
+          }));
 
+          setUsers(newUsers); // ✅ Replace the entire users list
+          
+        })
+        .catch(() => {
+          //console.log('Getting user from DB error', err);
+        });
+}
+  // const getUser=()=>{
+  //   fetch(`http://localhost:80/getUsers`,{
+  //     method:"GET",
+  //     credentials:'include'
+  //   }).then(resp=>{console.log('getting user from was successful')
+  //     console.log(resp)
+  //   })
+  //   .catch(err=>{console.log('getting user from db error')})
+  // }
   const handleCardChange = (e) => {
-  const cardId = e.target.value;
-  const defaultSubjs = defaultSubjects[cardId] || [];
-  setFormData((prev) => ({
-    ...prev,
-    access: {
-      ...prev.access,
-      cardId,
-      standards: [],
-      subjects: defaultSubjs,
-    },
-  }));
-};
-
+    const cardId = e.target.value;
+    const defaultSubjs = defaultSubjects[cardId] || [];
+    setFormData((prev) => ({
+      ...prev,
+      access: {
+        ...prev.access,
+        cardId,
+        standards: [],
+        subjects: defaultSubjs,
+      },
+    }));
+  };
 
   const handleSubjectChange = (subject) => {
     const current = formData.access.subjects;
@@ -99,33 +156,115 @@ useEffect(() => {
   };
 
   const handleSubmit = (e) => {
+    //console.log(users)
     e.preventDefault();
     const userToSave = { ...formData };
     delete userToSave.newSubject;
 
     if (editIndex !== null) {
-      const updated = [...users];
+      const start = performance.now();
+      //fetch(`http://localhost:80/updateUser/${users[editIndex].email}`,{
+         fetch(`https://api-test.trilokinnovations.com/updateUser/${users[editIndex].email}`,{
+        //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/updateUser/${users[editIndex].email}`,{
+        method:"PUT",
+    credentials:"include",
+    headers:{
+        "Content-Type": "application/json", // 👈 important
+      },
+      body:JSON.stringify({
+        databaseName:"users",
+        collectionName:"users",
+        user:{
+          userName:formData.name,
+          phoneNumber:formData.phone,
+          gmail:formData.email,
+          password:formData.password,
+          role:formData.role,
+          coursetype:formData.access.mode,
+          courseName:formData.access.cardId,
+          standards:formData.access.standards,
+          subjects:formData.access.subjects
+        }
+      })
+      }).then(resp=>{
+      return resp.text();
+    })
+    .then((data)=>{
+       if(data.status==='pass'){
+        const end = performance.now(); // End time
+      console.log(`Fetch for update user in manageuser took ${end - start} ms`);
+      //console.log(data)
+       const updated = [...users];
       updated[editIndex] = userToSave;
       setUsers(updated);
+      // fetchcodefor update
       setEditIndex(null);
-    } else {
-      setUsers([...users, userToSave]);
-    }
+       }
+    }).catch(()=>{
+      //console.log("error in update user",err)
+    })
 
+     
+    } else {
+     // console.log(users)
+      const start = performance.now();
+      //fetch(`http://localhost:80/newUser`,{
+         fetch(`https://api-test.trilokinnovations.com/newUser`,{
+        //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/newUser`,{
+    method:"POST",
+    credentials:"include",
+    headers:{
+        "Content-Type": "application/json", // 👈 important
+      },
+      body:JSON.stringify({
+        databaseName:"users",
+        collectionName:"users",
+        user:{
+          userName:formData.name,
+          phoneNumber:formData.phone,
+          gmail:formData.email,
+          password:formData.password,
+          role:formData.role,
+          coursetype:formData.access.mode,
+           courseName:formData.access.cardId,
+          standards:formData.access.standards,
+          subjects:formData.access.subjects
+        }
+      })
+    }).then(resp=>{
+      return resp.json();
+    })
+    .then(data=>{
+      //console.log(data)
+       const end = performance.now(); // End time
+      console.log(`Fetch for adding user in manage user took ${end - start} ms`);
+      //console.log(data)
+      if(data.status==='pass'){
+        setUsers([...users, userToSave]);
+        //console.log("data added successfully")
+      }
+      if(data.status==='failed'){
+        console.log("user already exist")
+         //setUsers(prev=>prev.filter(u=>u.email!==userToSave.email))
+      }
+    }).catch(()=>{
+      //setUsers(prev=>prev.filter(u=>u.email!==userToSave.email))
+    })
+    }
+    
     setFormData({
       name: '',
-      phone: '',
+      phone:'',
       email: '',
       password: '',
       role: 'user',
       newSubject: '',
       access: {
-  mode: '',
-  cardId: '',
-  subjects: [],
-  standards: [], // changed from standard: ''
-},
-
+        mode: '',
+        cardId: '',
+        subjects: [],
+        standards: [],
+      },
     });
   };
 
@@ -145,13 +284,29 @@ const handleStandardChange = (standard) => {
 };
 
   const handleDelete = (index) => {
-    const updated = [...users];
+    const start = performance.now();
+    //fetch(`http://localhost:80/deleteUser/${users[index].email}`,{
+        fetch(`https://api-test.trilokinnovations.com/deleteUser/${users[index].email}`,{
+        // fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/deleteUser/${users[index].email}`,{
+      method:"DELETE",
+      credentials:'include'
+    }).then(()=>{}).then(()=>{
+       const end = performance.now(); // End time
+      console.log(`Fetch for delete in manage user took ${end - start} ms`);
+       const updated = [...users];
     updated.splice(index, 1);
     setUsers(updated);
+    })
+    .catch(()=>{
+     // console.log(err)
+    })
+   
   };
 
   const handleEdit = (index) => {
+    
     setEditIndex(index);
+    //console.log(users[index].role)
     setFormData({ ...users[index], newSubject: '' });
   };
 
@@ -175,13 +330,12 @@ const handleStandardChange = (standard) => {
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
         />
-
         <input
-          type="phone"
-          placeholder="Phone Number"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          required
+        type="phone"
+        placeholder="Phone Number"//UPDATED phone number field
+        value={formData.phone}
+        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+        required
         />
 
         <input
@@ -340,7 +494,7 @@ const handleStandardChange = (standard) => {
           </div>
         )}
 
-        <button type="submit">{editIndex !== null ? 'Update User' : 'Create User'}</button>
+        <button type="submit" >{editIndex !== null ? 'Update User' : 'Create User'}</button>
       </form>
 
       <div className="user-list">
@@ -348,11 +502,15 @@ const handleStandardChange = (standard) => {
         <ul>
           {users.map((u, idx) => (
             <li key={idx}>
-              <strong>{u.name}</strong> ({u.email}) - {u.role}
+              👤 <strong>{u.name}</strong> ({u.email})<br />
+  📞 {u.phone}<br />
+  ✉ {u.email}<br />
+  🛡 {u.role}<br />
+
               {u.role === 'user' && (
                 <div className="access-summary">
                   Access: {u.access.mode}, {u.access.cardId},{' '}
-{u.access.subjects.join(', ')}, Std {u.access.standards.join(', ')}
+                  {u.access.subjects.join(', ')}, Std: {u.access.standards.join(',')}
                 </div>
               )}
               <button onClick={() => handleEdit(idx)}>Edit</button>

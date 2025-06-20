@@ -91,15 +91,21 @@ body, html {
   background: linear-gradient(90deg, #0f9d58, #27ae60);
 }
 
-/* Success Message */
-.signin-message.success {
-  color: #0f9d58; /* Green */
+.signin-message {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
 }
 
-/* Error Message */
-.signin-message.error {
-  color: #e53935; /* Red */
+.signin-message.success {
+  color: green;
 }
+
+.signin-message.error {
+  color: red;
+}
+
 .password-wrapper {
   position: relative;
   display: flex;
@@ -108,33 +114,15 @@ body, html {
 
 .password-wrapper input {
   width: 100%;
-  padding-right: 40px;
+  padding-right: 40px; /* space for the icon */
 }
 
 .toggle-icon {
   position: absolute;
-  right: 10px;
+  right: 15px;
   cursor: pointer;
-  color: #555;
+  color: #0b8308;
 }
-
-.loading-spinner {
-  padding: 14px;
-  background: linear-gradient(90deg, #0a5a0a, #2ecc40);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
