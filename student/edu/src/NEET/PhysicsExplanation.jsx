@@ -3,7 +3,8 @@ import './PhysicsExplanation.css';
 import { FaPlay, FaPause, FaCheckCircle } from 'react-icons/fa';
 
 import trailAudio from "../audio/trail.mp3";
-
+// Top of your file
+import trailvideo from '../videos/trail.mp4'; // adjust path if needed
 const PhysicsExplanation = ({ explanation = '', subtopicTitle = '', onBack, onMarkComplete }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voice, setVoice] = useState(null);
@@ -122,65 +123,61 @@ const PhysicsExplanation = ({ explanation = '', subtopicTitle = '', onBack, onMa
       <div className="explanation-content">
         <h2>{subtopicTitle}</h2>
           {/* Centered Buttons */}
-      <div className="centered-buttons">
-        <button
-          onClick={handleMarkComplete}
-          className={`complete-btn ${isComplete ? 'completed' : ''}`}
-          disabled={isComplete}
-        >
-          {isComplete ? (
-            <>
-              Completed <FaCheckCircle className="check-icon" />
-            </>
-          ) : (
-            'Mark as Complete'
-          )}
-        </button>
-        <p>
-          {before} <mark className="highlight">{highlight}</mark> {after}
-        </p>
-      </div>
+     <div className="centered-buttons">
+  <button
+    onClick={handleMarkComplete}
+    className={`complete-btn ${isComplete ? 'completed' : ''}`}
+    disabled={isComplete}
+  >
+    {isComplete ? (
+      <>
+        Completed <FaCheckCircle className="check-icon" />
+      </>
+    ) : (
+      'Mark as Complete'
+    )}
+  </button>
 
-      <div className="voice-controls-wrapper">
-        <button className="voice-play-button" onClick={handleTogglePlayPause}>
-          {isSpeaking ? <FaPause /> : <FaPlay />}
-        </button>
-
-        <div className="rate-control">
-          <label htmlFor="rate">Speech Speed: {rate.toFixed(2)}x</label>
-          <input
-            type="range"
-            id="rate"
-            min="0.25"
-            max="2"
-            step="0.05"
-            value={rate}
-            onChange={(e) => setRate(parseFloat(e.target.value))}
-          />
-        </div>
-
-        {subtopicTitle.trim().toLowerCase() === '1.1 introduction' && (
-          <>
-            <div className="audio-container">
-              <h4>Original Audio</h4>
-              <audio controls>
-                <source src={trailAudio} type="audio/mp3" />
-                Your browser does not support the audio tag.
-              </audio>
-            </div>
-
-            <div className="video-container">
-  <video width="100%" controls>
-    <source 
-      src="https://6853af65abe1d4e08e3dc3e6--prismatic-cocada-04d9b7.netlify.app/trail.mp4" 
-      type="video/mp4" 
-    />
-    Your browser does not support the video tag.
-  </video>
+  {subtopicTitle.trim().toLowerCase() !== '1.1 introduction' ? (
+    <p>
+      {before} <mark className="highlight">{highlight}</mark> {after}
+    </p>
+  ) : (
+    <div className="iframe-wrapper">
+      <iframe
+        src="https://scintillating-bienenstitch-4a86e8.netlify.app/"
+        title="External Resource"
+        className="embedded-iframe"
+        frameBorder="0"
+        allowFullScreen
+      ></iframe>
+    </div>
+  )}
 </div>
-          </>
-        )}
-      </div>
+
+
+
+      {subtopicTitle.trim().toLowerCase() !== '1.1 introduction' && (
+  <div className="voice-controls-wrapper">
+    <button className="voice-play-button" onClick={handleTogglePlayPause}>
+      {isSpeaking ? <FaPause /> : <FaPlay />}
+    </button>
+
+    <div className="rate-control">
+      <label htmlFor="rate">Speech Speed: {rate.toFixed(2)}x</label>
+      <input
+        type="range"
+        id="rate"
+        min="0.25"
+        max="2"
+        step="0.05"
+        value={rate}
+        onChange={(e) => setRate(parseFloat(e.target.value))}
+      />
+    </div>
+  </div>
+)}
+
         <button onClick={handleBack} className="back-btn">
           Back to Topics
         </button>

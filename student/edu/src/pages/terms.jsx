@@ -74,8 +74,8 @@ const Terms = () => {
         <section>
           <h2>7. Governing Law</h2>
           <p>
-            These Terms are governed by the laws of [Your Country]. Any disputes
-            will be resolved under the jurisdiction of the courts in [Your City/Country].
+            These Terms are governed by the laws of India. Any disputes
+            will be resolved under the jurisdiction of the courts in India.
           </p>
         </section>
 
@@ -83,7 +83,13 @@ const Terms = () => {
           <h2>8. Contact Us</h2>
           <p>
             If you have any questions about these Terms and Conditions, please
-            contact us at <a href="mailto:support@yourdomain.com">support@yourdomain.com</a>.
+            contact us at <a
+  href="https://mail.google.com/mail/?view=cm&to=sales@padmasini.com,support@padmasini.com"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  sales@padmasini.com, support@padmasini.com
+</a>.
           </p>
         </section>
 
@@ -94,21 +100,21 @@ const Terms = () => {
           </button>
         </div>
       </div>
-      {/* WhatsApp Chat Button */}
-            <a
-              href="https://wa.me/YOUR_PHONE_NUMBER"
-              className="whatsapp-chat-button"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Chat with us on WhatsApp"
-            >
-              <img
-                src={whatsappIcon}
-                alt="WhatsApp"
-                className="whatsapp-icon"
-              />
-              <span>Chat with us on whatsapp</span>
-            </a>
+ {/* WhatsApp Button */}
+      <a
+        href="https://wa.me/8248791389"
+        className="whatsapp-chat-button"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with us on WhatsApp"
+      >
+        <img
+          src={whatsappIcon}
+          alt="WhatsApp"
+          className="whatsapp-icon"
+        />
+        <span>Chat with us on whatsapp</span>
+      </a>
     </div>
   );
 };

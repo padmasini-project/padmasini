@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./Physics.css";
+import PadmasiniChat from "../components/PadmasiniChat";
 import { physicsExplanations } from "./PhysicsExplanation";
 import PhysicsExplanation from "./PhysicsExplanation";
 import PhysicsQuiz from "./Physicsquiz";
+import axios from "axios";
 
 const physicsTopics = [
   {
@@ -124,6 +126,7 @@ const Physics = () => {
     const [selectedSubtopic, setSelectedSubtopic] = useState(null);
     const [showTopics, setShowTopics] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
     const navigate = useNavigate();
 
     // User ID for tracking (replace with actual authentication logic)
@@ -302,6 +305,7 @@ const isTopicCompleted = (topic) => {
                     </div>
                 )}
             </div>
+            <PadmasiniChat subjectName="Physics" />
         </div>
     );
 };

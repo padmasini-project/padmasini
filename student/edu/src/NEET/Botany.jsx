@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import PadmasiniChat from "../components/PadmasiniChat";
 import "./Botany.css";  // Ensure that the CSS file is renamed as well
 import { botanyExplanations } from './BotanyExplanation';
 import BotanyExplanation from "./BotanyExplanation";  // Adjusted for BotanyExplanation1
@@ -308,6 +309,7 @@ const isTopicCompleted = (topic) => {
           </div>     
            )}
       </div>
+      <PadmasiniChat subjectName="Botany" />
     </div>
   );
 };

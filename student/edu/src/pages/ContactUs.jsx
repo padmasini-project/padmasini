@@ -10,18 +10,41 @@ const ContactUs = () => {
     phone: "",
     enquiry: "",
   });
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("User Enquiry Details:", formData);
-    setSubmitted(true);
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setSubmitting(true); // Start loading
+
+  try {
+    const response = await fetch("/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      setSubmitted(true);
+    } else {
+      alert("Failed to send email. Please try again.");
+    }
+  } catch (err) {
+    console.error("Request error:", err);
+    alert("Server not reachable.");
+  } finally {
+    setSubmitting(false); // Stop loading
+  }
+};
+
 
   const handleClose = () => {
     setSubmitted(false);
@@ -70,7 +93,9 @@ const ContactUs = () => {
             required
           />
           <div className="form-requirements">
-          <button type="submit">Submit</button>
+            <button type="submit" disabled={submitting}>
+              {submitting ? "Submitting..." : "Submit"}
+            </button>
           </div>
         </form>
       </div>
@@ -88,17 +113,21 @@ const ContactUs = () => {
         </div>
       )}
 
-      {/* WhatsApp Chat Button */}
-      <a
-        href="https://wa.me/YOUR_PHONE_NUMBER" // Replace with your number
-        className="whatsapp-chat-button"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat with us on WhatsApp"
-      >
-        <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-icon" />
-        <span>Chat with us on WhatsApp</span>
-      </a>
+       {/* WhatsApp Button */}
+            <a
+              href="https://wa.me/8248791389"
+              className="whatsapp-chat-button"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chat with us on WhatsApp"
+            >
+              <img
+                src={whatsappIcon}
+                alt="WhatsApp"
+                className="whatsapp-icon"
+              />
+              <span>Chat with us on whatsapp</span>
+            </a>
     </div>
   );
 };

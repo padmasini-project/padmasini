@@ -1,12 +1,16 @@
 /* General container for the Terms page */
   .terms-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    margin-top: 90px;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  margin: 0 auto; /* 🔄 Center horizontally */
+  width: 100%;
+  max-width: 1300px;
+  margin-top: 90px; /* Optional: offset if fixed header */
+}
+
   
   /* Content box for the terms */
   .terms-content {
@@ -110,8 +114,6 @@
   width: 24px;
   height: 24px;
 }
-
-  
   /* Responsive design for smaller screens */
   @media (max-width: 768px) {
     .terms-container {

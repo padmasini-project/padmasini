@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import PadmasiniChat from "../components/PadmasiniChat";
 import "./NEET.css";
-
 import physicsImg from "../assets/physics.jpg";
 import chemistryImg from "../assets/chemistry.jpg";
 import zoologyImg from "../assets/zoology.jpg";
@@ -152,8 +152,10 @@ const Subjects = () => {
               </div>
             ))}
           </div>
+
         </section>
       </main>
+            <PadmasiniChat subjectName="NEET" />
     </div>
   );
 };

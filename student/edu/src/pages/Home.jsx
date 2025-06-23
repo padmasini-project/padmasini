@@ -224,7 +224,7 @@ const Home = () => {
 
       {/* WhatsApp Button */}
       <a
-        href="https://wa.me/YOUR_PHONE_NUMBER"
+        href="https://wa.me/8248791389"
         className="whatsapp-chat-button"
         target="_blank"
         rel="noopener noreferrer"

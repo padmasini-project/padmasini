@@ -151,15 +151,6 @@ form textarea::placeholder {
   background-color: #00b351;
 }
 
-/* Fade-in Animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 /* WhatsApp Chat Button */
 .whatsapp-chat-button {
   position: fixed;
@@ -194,6 +185,15 @@ form textarea::placeholder {
   height: 24px;
 }
 
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 /* Bounce Animation */
 @keyframes bounce {
   0%, 100% {

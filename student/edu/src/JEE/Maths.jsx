@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import PadmasiniChat from "../components/PadmasiniChat";
 import "./Maths.css";
 import { mathsExplanations } from "./MathsExplanation";
 import MathsExplanation from "./MathsExplanation";
@@ -241,6 +242,7 @@ const isTopicCompleted = (topic) => {
                     </div>
                 )}
             </div>
+            <PadmasiniChat subjectName="Maths" />
         </div>
     );
 };

@@ -575,6 +575,7 @@ form button[type="submit"]:hover {
 .payment-options-modal > button:last-of-type:hover {
   background-color: #1b5e20;
 }
+
 /* WhatsApp Chat Button */
 .whatsapp-chat-button {
   position: fixed;

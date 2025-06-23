@@ -286,10 +286,20 @@ const RegistrationFlow = () => {
           </div>
         )}
       </div>
-
-      <a href="https://wa.me/YOUR_PHONE_NUMBER" className="whatsapp-chat-button" target="_blank" rel="noopener noreferrer">
-        <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-icon" />
-        <span>Chat with us on WhatsApp</span>
+ {/* WhatsApp Button */}
+      <a
+        href="https://wa.me/8248791389"
+        className="whatsapp-chat-button"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with us on WhatsApp"
+      >
+        <img
+          src={whatsappIcon}
+          alt="WhatsApp"
+          className="whatsapp-icon"
+        />
+        <span>Chat with us on whatsapp</span>
       </a>
     </div>
   );

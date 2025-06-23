@@ -181,23 +181,31 @@ localStorage.removeItem(`admin_testsMap_${keyPrefix}`);
       setEditingLessonIndex(null);
     }
   };
+  // Handle adding a new subtopic or updating an existing one
 const handleAddSubtopic = () => {
   if (!selectedUnit || !subTitle.trim()) {
     alert("Select a lesson and enter a title.");
     return;
   }
-  const newSub = {
-  title: subTitle,
-  description: subDesc,
-  voices: [...recordedVoiceFiles, ...uploadedVoiceFiles],
-  animation: animFiles,
-  children: [],
-  tests: [], // <-- Add this line
-};
 
-setLessonSubtopicsMap((prev) => {
+  setLessonSubtopicsMap((prev) => {
     const currentSubs = prev[selectedUnit] || [];
+
+    // Preserve existing children/tests if editing
+    let newSub = {
+      title: subTitle.trim(),
+      description: subDesc.trim(),
+      voices: [...recordedVoiceFiles, ...uploadedVoiceFiles],
+      animation: [...animFiles],
+      children: [],
+      tests: [],
+    };
+
     if (editingSubtopicIndex !== null) {
+      const existingSub = currentSubs[editingSubtopicIndex];
+      newSub.children = existingSub.children || [];
+      newSub.tests = existingSub.tests || [];
+
       const updated = [...currentSubs];
       updated[editingSubtopicIndex] = newSub;
       return { ...prev, [selectedUnit]: updated };
@@ -205,8 +213,10 @@ setLessonSubtopicsMap((prev) => {
       return { ...prev, [selectedUnit]: [...currentSubs, newSub] };
     }
   });
+
   resetExplanationForm();
 };
+
 const handleAddChildSubtopic = (parentSubtopic) => {
   if (!subTitle.trim()) {
     alert('Please enter a title for the subtopic');
@@ -285,6 +295,7 @@ const handleDeleteSubtopic = (unit, index) => {
   }));
   setSelectedSubtopic(null);
 };
+
   const handleAddQuestion = () => {
   if (!currentQuestion.text || currentQuestion.options.some(opt => !opt) || currentQuestion.correctIndex === null) {
     alert("Please complete the question and all options, and select a correct answer.");
@@ -306,14 +317,17 @@ const handleDeleteSubtopic = (unit, index) => {
     explanation: '',
   });
 };
-  const resetExplanationForm = () => {
+const resetExplanationForm = () => {
   setSubTitle('');
   setSubDesc('');
   setRecordedVoiceFiles([]);
   setUploadedVoiceFiles([]);
   setAnimFiles([]);
   setEditingSubtopicIndex(null);
+  setSelectedSubtopic(null); // Ensures you're not editing child by accident
 };
+
+
 const handleSaveTest = () => {
   if (!selectedUnit) {
     alert('Please select a lesson before saving the test.');
@@ -368,7 +382,7 @@ const handleDeleteTest = () => {
     setShowTestForm(false);
   };
   const currentUnits = standards.length > 0 ? unitsMap[selectedStandard] || [] : unitsMap.default || [];
-  const renderSubtopicsRecursive = (subtopics, depth = 0) => {
+const renderSubtopicsRecursive = (subtopics, depth = 0) => {
   return subtopics.map((sub, idx) => (
     <li key={`${sub.title}-${idx}`} style={{ marginTop: '5px', marginLeft: `${depth * 10}px` }}>
   <span
@@ -386,6 +400,7 @@ const handleDeleteTest = () => {
 </li>
   ));
 };
+
   return (
     <div className="adminright-container">
 <h2 className="title">
@@ -730,11 +745,13 @@ Back to Admin Home
   </div>
 )}
                 <div className="action-buttons">
-<button
+<button // 🆕 Add or Update Subtopic
   onClick={() =>
-    selectedSubtopic
-      ? handleAddChildSubtopic(selectedSubtopic)  // you define this function separately
-      : handleAddSubtopic()
+    editingSubtopicIndex !== null
+      ? handleAddSubtopic() // 🛠️ Edit main subtopic
+      : selectedSubtopic
+      ? handleAddChildSubtopic(selectedSubtopic) // ✅ Only add child if NOT editing
+      : handleAddSubtopic() // 🆕 Add new main subtopic
   }
 >
   {editingSubtopicIndex !== null
@@ -743,6 +760,7 @@ Back to Admin Home
     ? 'Add Child Subtopic'
     : 'Add Subtopic'}
 </button>
+
                   <button onClick={resetExplanationForm}>Cancel</button>
                 </div>
               </div>

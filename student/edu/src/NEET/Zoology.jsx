@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import PadmasiniChat from "../components/PadmasiniChat";
 import "./Zoology.css";
 import { zoologyExplanations } from "./ZoologyExplanation";
 import ZoologyExplanation from "./ZoologyExplanation";
@@ -320,6 +321,7 @@ const Zoology = () => {
           </div>     
            )}
       </div>
+      <PadmasiniChat subjectName="Zoology" />
     </div>
   );
 };
