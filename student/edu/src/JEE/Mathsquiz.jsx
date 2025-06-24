@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./MathsQuiz.css";
+import "./Mathsquiz.css";
 import { FaCheckCircle } from "react-icons/fa";
 
 const MathsQuiz = ({ topicTitle, subtopicTitle, onBack, onMarkComplete }) => {
