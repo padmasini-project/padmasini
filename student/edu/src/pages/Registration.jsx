@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Registration.css";
-import registerIllustration from "../assets/registerillustration.jpg";
+import registerIllustration from "../assets/registerIllustration.jpg";
 import whatsappIcon from "../assets/WhatsApp_icon.png";
 
 const RegistrationFlow = () => {

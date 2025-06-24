@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./Terms.css";
+import "./terms.css";
 import whatsappIcon from "../assets/WhatsApp_icon.png"; // Adjust path if needed
 
 

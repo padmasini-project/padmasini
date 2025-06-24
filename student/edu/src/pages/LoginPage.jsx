@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
-import loginIllustration from "../assets/registerillustration.jpg";
-import whatsappIcon from "../assets/WhatsApp_icon.png"; // Adjust path if needed
+
+// ✅ Use placeholder if image import fails (use fallback URLs in case Render fails to resolve local paths)
+import loginIllustration from "../assets/loginIllustration.jpg";
+import whatsappIcon from "../assets/WhatsApp_icon.png";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("demo@student.com"); // Pre-filled for demo
-  const [password, setPassword] = useState("demo1234");   // Pre-filled for demo
+  const [email, setEmail] = useState("demo@student.com");
+  const [password, setPassword] = useState("demo1234");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Scroll to top on load
     window.scrollTo(0, 0);
 
     const demoUser = {
@@ -20,7 +21,7 @@ const LoginPage = () => {
       email: "demo@student.com",
       password: "demo1234",
       mobile: "1234567890",
-      role: "neet" // or "jee"
+      role: "neet"
     };
 
     const storedUser = localStorage.getItem("registeredUser");
@@ -35,7 +36,6 @@ const LoginPage = () => {
 
     const demoEmail = "demo@student.com";
     const demoPassword = "demo1234";
-
     const storedUser = JSON.parse(localStorage.getItem("registeredUser"));
 
     if (email === demoEmail && password === demoPassword) {
@@ -44,7 +44,10 @@ const LoginPage = () => {
       return;
     }
 
-if (!storedUser) return alert("No registered user found. Please register first.");
+    if (!storedUser) {
+      alert("No registered user found. Please register first.");
+      return;
+    }
 
     if (storedUser.email === email && storedUser.password === password) {
       alert("✅ Login successful!");
@@ -69,7 +72,10 @@ if (!storedUser) return alert("No registered user found. Please register first."
     <div className="login-container">
       {/* Left Section */}
       <div className="login-illustration">
-        <img src={loginIllustration} alt="Login Illustration" />
+        <img
+          src={loginIllustration || "https://via.placeholder.com/400x300"}
+          alt="Login Illustration"
+        />
         <h1>Welcome Back</h1>
         <p>Log in to continue learning and exploring!</p>
       </div>
@@ -105,11 +111,9 @@ if (!storedUser) return alert("No registered user found. Please register first."
 
             <div className="form-actions">
               <button type="submit">Login</button>
-
               <p className="forgot-password" onClick={handleForgotPassword}>
                 Forgot Password?
               </p>
-
               <p className="login-text">
                 Don't have an account?{" "}
                 <a
@@ -126,7 +130,8 @@ if (!storedUser) return alert("No registered user found. Please register first."
           </form>
         </div>
       </div>
- {/* WhatsApp Button */}
+
+      {/* WhatsApp Button */}
       <a
         href="https://wa.me/8248791389"
         className="whatsapp-chat-button"
@@ -135,13 +140,12 @@ if (!storedUser) return alert("No registered user found. Please register first."
         aria-label="Chat with us on WhatsApp"
       >
         <img
-          src={whatsappIcon}
+          src={whatsappIcon || "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"}
           alt="WhatsApp"
           className="whatsapp-icon"
         />
-        <span>Chat with us on whatsapp</span>
+        <span>Chat with us on WhatsApp</span>
       </a>
-
     </div>
   );
 };
