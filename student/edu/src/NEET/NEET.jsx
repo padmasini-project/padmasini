@@ -8,49 +8,44 @@ import zoologyImg from "../assets/zoology.jpg";
 import botanyImg from "../assets/botany.jpg";
 
 const subjectList = [
-  { name: "Physics", route: "/physics", image: physicsImg, certified: false },
-  { name: "Chemistry", route: "/chemistry", image: chemistryImg, certified: false },
-  { name: "Zoology", route: "/zoology", image: zoologyImg, certified: false },
-  { name: "Botany", route: "/botany", image: botanyImg, certified: false },
+  { name: "Physics", image: physicsImg, certified: false },
+  { name: "Chemistry", image: chemistryImg, certified: false },
+  { name: "Zoology", image: zoologyImg, certified: false },
+  { name: "Botany", image: botanyImg, certified: false },
 ];
 
 const Subjects = () => {
   const navigate = useNavigate();
-
-  // State for start and end dates
+  const [standard, setStandard] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [subjectCompletion, setSubjectCompletion] = useState(subjectList);
-
-  // UseRef for scrolling to learning path section
   const learningPathRef = useRef(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const storedUser = JSON.parse(localStorage.getItem("registeredUser"));
+    if (storedUser) {
+      setStandard(storedUser.standard || "");
 
-    const today = new Date();
-    const oneYearLater = new Date();
-    oneYearLater.setFullYear(today.getFullYear() + 1);
+      const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+      };
 
-    const formatDate = (date) => {
-      return date.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      });
-    };
+      if (storedUser.startDate) setStartDate(formatDate(storedUser.startDate));
+      if (storedUser.endDate) setEndDate(formatDate(storedUser.endDate));
+    }
 
-    setStartDate(formatDate(today));
-    setEndDate(formatDate(oneYearLater));
-
-    // Load saved subject completion from localStorage
     const savedCompletion = JSON.parse(localStorage.getItem("subjectCompletion"));
     if (savedCompletion) {
       setSubjectCompletion(savedCompletion);
     }
   }, []);
 
-  // Handle scroll to learning path section
   const handleScrollToLearningPath = () => {
     if (learningPathRef.current) {
       learningPathRef.current.scrollIntoView({ behavior: "smooth" });
@@ -59,13 +54,11 @@ const Subjects = () => {
 
   const calculateProgress = () => {
     const completedSubjects = subjectCompletion.filter((subject) => subject.certified).length;
-    const totalSubjects = subjectCompletion.length;
-    return (completedSubjects / totalSubjects) * 100;
+    return (completedSubjects / subjectCompletion.length) * 100;
   };
 
   const progressPercentage = calculateProgress();
 
-  // Mark a subject as completed
   const handleSubjectCompletion = (subjectName) => {
     const updatedSubjects = subjectCompletion.map((subject) =>
       subject.name === subjectName ? { ...subject, certified: true } : subject
@@ -74,12 +67,13 @@ const Subjects = () => {
     localStorage.setItem("subjectCompletion", JSON.stringify(updatedSubjects));
   };
 
-  // Check if Physics is completed
   useEffect(() => {
-    // Get the physics progress from localStorage
     const completedSubtopics = JSON.parse(localStorage.getItem("completedSubtopics"));
-    if (completedSubtopics && Object.keys(completedSubtopics["UNIT AND MEASURE"] || {}).length === 6) {
-      handleSubjectCompletion("Physics"); // Mark Physics as certified when all subtopics are completed
+    if (
+      completedSubtopics &&
+      Object.keys(completedSubtopics["UNIT AND MEASURE"] || {}).length === 6
+    ) {
+      handleSubjectCompletion("Physics");
     }
   }, []);
 
@@ -87,13 +81,24 @@ const Subjects = () => {
     <div className="subjects-page">
       <aside className="sidebar">
         <h2>NEET</h2>
+
+        {standard && (
+          <p>
+            <strong>Standard:</strong>{" "}
+            {standard === "11th" ? "Class 11" : standard === "12th" ? "Class 12" : standard}
+          </p>
+        )}
+
         <span className="badge certified">Certified</span>
         <span className="badge limited">Limited Access Only</span>
-        <div className="cohort-details">
-          <h4>Your Batch</h4>
-          <p><strong>Start Date:</strong> {startDate}</p>
-          <p><strong>End Date:</strong> {endDate}</p>
-        </div>
+
+        {startDate && endDate && (
+          <div className="cohort-details">
+            <h4>Your Batch</h4>
+            <p><strong>Start Date:</strong> {startDate}</p>
+            <p><strong>End Date:</strong> {endDate}</p>
+          </div>
+        )}
       </aside>
 
       <main className="content">
@@ -101,27 +106,41 @@ const Subjects = () => {
           <h3>My Completion Progress</h3>
           <div className="progress-header">
             <div className="progress-info">
-              <p>{subjectCompletion.filter((subject) => subject.certified).length} of {subjectCompletion.length} subjects completed</p>
+              <p>{subjectCompletion.filter((s) => s.certified).length} of {subjectCompletion.length} subjects completed</p>
+
               <div className="progress-bar-container">
-                <div
-                  className="progress-bar"
-                  style={{
-                    width: `${progressPercentage}%`,
-                    backgroundColor: progressPercentage === 100 ? '#4CAF50' : progressPercentage > 50 ? '#FFEB3B' : '#B0BEC5',
-                  }}
-                  title={`Completed: ${Math.round(progressPercentage)}%`}
-                >
-                  <div className="progress-filled"></div>
-                </div>
-              </div>
+  <div
+    className="progress-bar"
+    style={{
+      width: `${progressPercentage}%`,
+      backgroundColor:
+        progressPercentage === 100
+          ? "#4CAF50"
+          : progressPercentage > 50
+          ? "#FFEB3B"
+          : "#B0BEC5",
+    }}
+    title={`Completed: ${Math.round(progressPercentage)}%`}
+  >
+    <div className="progress-filled">
+      <span className="progress-percentage">{Math.round(progressPercentage)}%</span>
+    </div>
+  </div>
+</div>
+
+
               <p className="subtext">
-                {progressPercentage === 100 ? "You've completed all subjects!" : "Complete all mandatory subjects to earn your certificate"}
+                {progressPercentage === 100
+                  ? "You've completed all subjects!"
+                  : "Complete all mandatory subjects to earn your certificate"}
               </p>
             </div>
 
             <div className="certificate-box">
               <button
-                className={`certificate-btn ${progressPercentage === 100 ? 'btn-completed' : 'btn-continue'}`}
+                className={`certificate-btn ${
+                  progressPercentage === 100 ? "btn-completed" : "btn-continue"
+                }`}
                 onClick={handleScrollToLearningPath}
               >
                 {progressPercentage === 100 ? "Download Certificate" : "Continue Learning"}
@@ -133,7 +152,7 @@ const Subjects = () => {
         <section className="learning-path" ref={learningPathRef}>
           <h3>Learning Path</h3>
           <div className="timeline">
-            {subjectList.map((subject, index) => (
+            {subjectCompletion.map((subject, index) => (
               <div key={subject.name} className="timeline-item">
                 <div className="timeline-dot"></div>
                 <div className="timeline-content">
@@ -144,7 +163,10 @@ const Subjects = () => {
                       <h4 className="subject-title">{subject.name}</h4>
                       {subject.certified && <span className="certified-badge">Certified</span>}
                     </div>
-                    <button className="continue-btn" onClick={() => navigate(subject.route)}>
+                    <button
+                      className="continue-btn"
+                      onClick={() => navigate("/NeetLearn", { state: { subject: subject.name } })}
+                    >
                       {subject.certified ? "Review" : "Learn More"}
                     </button>
                   </div>
@@ -152,10 +174,10 @@ const Subjects = () => {
               </div>
             ))}
           </div>
-
         </section>
       </main>
-            <PadmasiniChat subjectName="NEET" />
+
+      <PadmasiniChat subjectName="NEET" />
     </div>
   );
 };

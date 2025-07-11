@@ -64,19 +64,16 @@ const PadmasiniChat = ({ subjectName = "" }) => {
           </div>
 
           <div className="chat-body">
-       <div className="chat-body-header">
-  <button
-    className="chat-clear"
-    onClick={() => {
-      if (window.confirm("Clear entire chat?")) {
-        setMessages([{ role: "assistant", content: "Hi! How can I help you today?" }]);
-      }
-    }}
-  >
-    🗑️
-  </button>
-</div>
-
+           <button
+  className="chat-clear"
+  onClick={() => {
+    if (window.confirm("Clear entire chat?")) {
+      setMessages([{ role: "assistant", content: "Hi! How can I help you today?" }]);
+    }
+  }}
+>
+  🗑️
+</button>
 
 
             <div className="chat-messages">

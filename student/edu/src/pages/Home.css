@@ -869,3 +869,131 @@ background-color: #03a020;
     gap: 10px;
   }
 }
+/* Medium desktop (half screen) responsiveness */
+@media (max-width: 1200px) {
+  .head {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 0 20px;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .head-text {
+    font-size: 32px;
+  }
+
+  .sub-text {
+    font-size: 18px;
+  }
+
+  .head-image {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    margin: 40px 0 20px;
+  }
+
+  .course-button {
+    width: 60%;
+    font-size: 14px;
+  }
+
+  .tabs-container {
+    gap: 16px;
+    padding: 0 24px;
+  }
+
+  .tab-card {
+    min-width: 320px;
+  }
+
+  .circle-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    gap: 20px;
+    height: auto;
+  }
+
+  .center-logo {
+    display: none; /* Hide central logo */
+  }
+
+  .circle-feature {
+    position: static;
+    width: 95%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 12px;
+    gap: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  .circle-feature img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.1),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.05),
+      inset 0 2px 4px rgba(255, 255, 255, 0.6);
+  }
+
+  .circle-feature h4 {
+    font-size: 20px;
+    margin: 0 0 5px;
+  }
+
+  .circle-feature p {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+  }
+
+  .top,
+  .top-right,
+  .bottom-right,
+  .bottom,
+  .bottom-left,
+  .top-left {
+    position: static;
+    transform: none;
+  }
+
+  .faq h2 {
+    font-size: 20px;
+  }
+
+  .faq summary {
+    font-size: 16px;
+  }
+
+  .faq p {
+    font-size: 14px;
+  }
+
+  .chat-window {
+    width: 280px;
+  }
+
+  .chat-footer input {
+    font-size: 13px;
+  }
+
+  .chat-footer button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}

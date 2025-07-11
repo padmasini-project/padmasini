@@ -102,14 +102,14 @@ margin-top: 10px;}
   position: relative;
   height: 20px;
   width: 40%;
-  background-color: #e0e0e0;
+  background-color: #a0f4a0;
   border-radius: 10px;
   margin-top: 15px;
   margin-right: 20px;
 
 }
 .progress-bar {
-  background: #cde2f8;
+  background: #a0f4a0;
   border-radius: 10px;
   overflow: hidden;
   height: 10px;
@@ -117,10 +117,19 @@ margin-top: 10px;}
 }
 
 .progress-filled {
-  background: #007bff;
+  background: #166b07;
   height: 100%;
   transition: width 0.4s ease;
 }
+.progress-percentage {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  color: #000;
+  font-weight: bold;
+  margin-top: -5px;
+}
+
 .subtext {
   font-size: 0.85rem;
   color: #535354;
@@ -439,5 +448,96 @@ margin-top: 10px;}
   .badge {
     font-size: 0.7rem;
     padding: 3px 6px;
+  }
+}
+@media (max-width: 1100px) {
+  .subjects-page {
+    flex-direction: column;
+    padding: 1rem;
+    margin-top: 90px;
+  }
+
+  .sidebar {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .content {
+    padding: 1rem;
+    width: 100%;
+    background-color: #e9fbf5;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+
+  .progress-section {
+    padding: 1rem;
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .progress-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .certificate-btn {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .learning-path {
+    padding: 1rem;
+  }
+
+  .timeline-content {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+  }
+
+  .timeline {
+    padding-left: 10px;
+  }
+
+  .timeline-dot {
+    left: -4px;
+  }
+
+  .timeline-item {
+    padding-left: 30px;
+  }
+
+  .subject-card {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+  }
+
+  .subject-thumbnail {
+    width: 100px;
+    height: 100px;
+  }
+
+  .subject-title {
+    font-size: 1.1rem;
+    margin-top: 5px;
+  }
+
+  .continue-btn {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+  }
+
+  .badge {
+    font-size: 0.7rem;
   }
 }

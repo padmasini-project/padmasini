@@ -7,9 +7,6 @@ import logo from '../assets/logo2.png';
 import headImage from '../assets/head.png';
 
 // Study Material Cards
-import ncertImg from '../assets/kid.jpg';
-import previousImg from '../assets/first.jpg';
-import sampleImg from '../assets/six.jpg';
 import booksImg from '../assets/jee.jpg';
 import importantImg from '../assets/neet.jpg';
 
@@ -21,64 +18,75 @@ import icon4 from '../assets/icon4.png';
 import icon5 from '../assets/icon5.png';
 import icon6 from '../assets/icon6.png';
 
-import whatsappIcon from "../assets/WhatsApp_icon.png"; // Adjust path if needed
+import whatsappIcon from "../assets/WhatsApp_icon.png";
 
 const Home = () => {
   const navigate = useNavigate();
 
-  // Scroll to top on component load
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  const handleLearnMore = () => {
-    navigate("/register");
-  };
-
-  // Chatbot state
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [userMessage, setUserMessage] = useState("");
 
-  const toggleChat = () => {
-    setIsChatOpen(!isChatOpen);
-  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const toggleChat = () => setIsChatOpen(!isChatOpen);
 
   const handleSendMessage = () => {
     if (userMessage.trim()) {
       setMessages([...messages, { sender: "user", text: userMessage }]);
       setUserMessage("");
-      // Simulate AI response after user sends a message
       setTimeout(() => {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "ai", text: "I'm here to help! How can I assist you today?" },
-        ]);
+        setMessages((prev) => [...prev, { sender: "ai", text: "I'm here to help! How can I assist you today?" }]);
       }, 1000);
     }
   };
+const handleLearnMore = (courseType) => {
+  const user = JSON.parse(localStorage.getItem("registeredUser"));
+
+  if (!user) {
+    alert("Please login to access the content.");
+    navigate("/login");
+    return;
+  }
+
+  const registeredCourse = user.courseName?.toLowerCase();
+  const requestedCourse = courseType.toLowerCase();
+
+  if (!registeredCourse) {
+    alert("Course access not set for your account.");
+    navigate("/register");
+    return;
+  }
+
+  // ✅ MAIN FIX: check if registeredCourse is "both"
+  if (
+    registeredCourse === requestedCourse ||
+    registeredCourse === "both"
+  ) {
+    navigate(`/${requestedCourse}`);
+  } else {
+    alert(`❌ Access denied. You are registered for ${user.courseName?.toUpperCase()}.`);
+  }
+};
 
   return (
     <div className="container">
       {/* Header */}
       <div className="header">
         <div className="head">
-          <img src={headImage} alt="NEET Preparation" className="head-image" />
+          <img src={headImage} alt="Header" className="head-image" />
           <div className="head-content">
             <p className="head-text">
               PREPARE STUDENTS TODAY FOR THE CHALLENGES OF TOMORROW
             </p>
             <p className="sub-text">
-              It is a powerful learning app designed to help aspiring students crack any competitive exam like NEET, JEE with ease. With expert-curated study materials, mock tests, and AI-driven personalized learning, we ensure you stay ahead in your preparation.
+              A powerful learning app to crack NEET & JEE with expert study material, mock tests, and AI-driven guidance.
             </p>
             <button
               className="course-button"
-              onClick={() => {
-                const section = document.getElementById("course-section");
-                if (section) {
-                  section.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
+              onClick={() => document.getElementById("course-section")?.scrollIntoView({ behavior: "smooth" })}
             >
               Course
             </button>
@@ -86,45 +94,31 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Study Materials Section */}
+      {/* Course Section */}
       <div className="study-materials">
         <h2 id="course-section">Course</h2>
         <div className="tabs-wrapper">
           <button
             className="scroll-left"
-            onClick={() => {
-              document.getElementById("tabScroll").scrollBy({ left: -300, behavior: "smooth" });
-            }}
+            onClick={() => document.getElementById("tabScroll").scrollBy({ left: -300, behavior: "smooth" })}
           >
             &lt;
           </button>
 
           <div className="tabs-container" id="tabScroll">
-            {[/*{
-              title: "Bright Beginnings",
-              range: "Kindergarten",
-              tags: ["Reading", "Writing", "Basics"],
-              img: ncertImg
-            }, {
-              title: "Practice Zone",
-              range: "Class 1 - 5",
-              tags: ["Learning", "Practice", "Basic Tests"],
-              img: previousImg
-            }, {
-              title: "Board Exam Kit",
-              range: "Class 6 - 12",
-              tags: ["CBSE", "ICSE", "Boards"],
-              img: sampleImg
-            },*/ {
+            {[{
               title: "JEE Prep Material",
               range: "JEE Exam",
               tags: ["Reference", "Advanced", "Textbooks"],
-              img: booksImg
-            }, {
+              img: booksImg,
+              courseType: "jee"
+            },
+            {
               title: "NEET Ready Papers",
               range: "NEET Exam",
               tags: ["Mock Tests", "Practice", "Important"],
-              img: importantImg
+              img: importantImg,
+              courseType: "neet"
             }].map((card, index) => (
               <div key={index} className="tab-card updated-card">
                 <div className="card-header">
@@ -137,7 +131,7 @@ const Home = () => {
                   ))}
                 </div>
                 <img className="card-image" src={card.img} alt={card.title} />
-                <button className="explore-btn" onClick={handleLearnMore}>
+                <button className="explore-btn" onClick={() => handleLearnMore(card.courseType)}>
                   Learn More
                 </button>
               </div>
@@ -146,21 +140,18 @@ const Home = () => {
 
           <button
             className="scroll-right"
-            onClick={() => {
-              document.getElementById("tabScroll").scrollBy({ left: 300, behavior: "smooth" });
-            }}
+            onClick={() => document.getElementById("tabScroll").scrollBy({ left: 300, behavior: "smooth" })}
           >
             &gt;
           </button>
         </div>
       </div>
 
-      {/* Why Choose Us Section */}
+      {/* Why Choose Us */}
       <section className="why-choose-us">
         <h2 className="heading">Why Choose Us</h2>
         <p className="why">
-          An advanced AI-powered learning app designed to boost your exam preparation.
-          It offers personalized study plans, expert-curated materials, and smart analytics to help students learn faster and smarter. Perfect for NEET, JEE, and school exams.
+          An AI-powered learning app offering personalized plans, mock tests, analytics, and more.
         </p>
         <div className="circle-layout">
           <div className="center-logo">
@@ -172,40 +163,35 @@ const Home = () => {
             <h4>Mobile App</h4>
             <p>Learn from anywhere at your convenience</p>
           </div>
-
           <div className="circle-feature top-right">
             <img src={icon2} alt="Intelligent Tutoring System" />
-            <h4>Intelligent Tutoring System</h4>
-            <p>ITS leverage AI to provide personalised guidance and support, mimicking one-on-one human tutoring</p>
+            <h4>Intelligent Tutoring</h4>
+            <p>AI provides personalized guidance, just like a human tutor.</p>
           </div>
-
           <div className="circle-feature bottom-right">
             <img src={icon3} alt="Personalised Learning" />
-            <h4>Personalised Learning</h4>
-            <p>Students can typically pause, rewind, and rewatch sections of the lecture as needed, aiding comprehension and retention.</p>
+            <h4>Personalized Learning</h4>
+            <p>Pause, rewind, and learn at your pace.</p>
           </div>
-
           <div className="circle-feature bottom">
             <img src={icon4} alt="Budget Friendly" />
             <h4>Budget Friendly</h4>
-            <p>Get quality learning at an affordable price. Our app offers top-notch educational content and features.</p>
+            <p>Affordable learning with top-notch quality.</p>
           </div>
-
           <div className="circle-feature bottom-left">
             <img src={icon5} alt="Mock Test" />
-            <h4>Mock Test</h4>
-            <p>Practice with real exam-style questions to boost your confidence and improve performance.</p>
+            <h4>Mock Tests</h4>
+            <p>Practice real exam-style questions.</p>
           </div>
-
           <div className="circle-feature top-left">
-            <img src={icon6} alt="24/7 Support" />
+            <img src={icon6} alt="Support" />
             <h4>24/7 Support</h4>
-            <p>Get help anytime with our round-the-clock support for all your learning needs.</p>
+            <p>Round-the-clock help for all learners.</p>
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* FAQ Section */}
       <div className="faq">
         <h2>Frequently Asked Questions ❓</h2>
         <details>
@@ -230,21 +216,17 @@ const Home = () => {
         rel="noopener noreferrer"
         aria-label="Chat with us on WhatsApp"
       >
-        <img
-          src={whatsappIcon}
-          alt="WhatsApp"
-          className="whatsapp-icon"
-        />
-        <span>Chat with us on whatsapp</span>
+        <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-icon" />
+        <span>Chat with us on WhatsApp</span>
       </a>
 
-      {/* 24/7 AI Bot Label */}
+      {/* Chat Button */}
       <div className="ai-status-label" onClick={toggleChat}>
         <span className="ai-icon">🤖</span>
         <span className="ai-text">I'm online 24/7</span>
       </div>
 
-      {/* Chat Window */}
+      {/* AI Chat Window */}
       {isChatOpen && (
         <div className="chat-window">
           <div className="chat-header">
@@ -255,7 +237,6 @@ const Home = () => {
             <div className="chat-intro">
               <p>Hi! I'm your AI assistant. How can I help you today?</p>
             </div>
-            {/* Chat Messages */}
             <div className="messages">
               {messages.map((message, index) => (
                 <div key={index} className={`message ${message.sender}`}>
@@ -275,7 +256,6 @@ const Home = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

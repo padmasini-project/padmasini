@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import "./Registration.css";
 import registerIllustration from "../assets/registerIllustration.jpg";
 import whatsappIcon from "../assets/WhatsApp_icon.png";
 
 const RegistrationFlow = () => {
   const [step, setStep] = useState(1);
-
-  // Step 1 states
   const [firstname, setUsername] = useState("");
   const [lastname, setStudentName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,16 +15,11 @@ const RegistrationFlow = () => {
   const [mobile, setMobile] = useState("");
   const [emailError, setEmailError] = useState("");
   const [mobileError, setMobileError] = useState("");
-  
-
-  // Step 2 states
   const [photo, setPhoto] = useState(null);
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("");
-
-  // Step 3 states
   const [selectedPlan, setSelectedPlan] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
@@ -39,15 +32,22 @@ const RegistrationFlow = () => {
   const [cvv, setCvv] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const stepFromURL = parseInt(queryParams.get("step"));
+  const isUpgrade = queryParams.get("upgrade") === "true";
 
   useEffect(() => {
+    if (stepFromURL === 3) setStep(3);
     window.scrollTo(0, 0);
-  }, [step]);
+  }, [step, stepFromURL]);
 
-  const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email);
+  const validateEmail = (email) =>
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email);
+
   const validateMobile = (mobile) => /^[0-9]{10}$/.test(mobile);
 
- const handleStepOneSubmit = (e) => {
+  const handleStepOneSubmit = (e) => {
     e.preventDefault();
     if (!validateEmail(email)) return setEmailError("Please enter a valid email address.");
     else setEmailError("");
@@ -65,42 +65,61 @@ const RegistrationFlow = () => {
 
   const handleFinalSubmit = (e) => {
     e.preventDefault();
-    if (!photo || !dob || !gender || !selectedCourse) return alert("Please fill in all required fields.");
-    if ((selectedCourse === "JEE" || selectedCourse === "NEET") && !selectedStandard) return alert("Please select your standard (11th or 12th).");
-    const updatedUser = JSON.parse(localStorage.getItem("registeredUser"));
-    updatedUser.dob = dob;
-    updatedUser.gender = gender;
-    updatedUser.course = selectedCourse;
-    updatedUser.standard = selectedStandard;
-    updatedUser.role = selectedCourse.toLowerCase();
-    localStorage.setItem("registeredUser", JSON.stringify(updatedUser));
+    if (!photo || !dob || !gender || !selectedCourse)
+      return alert("Please fill in all required fields.");
+
+    const normalizedCourse = selectedCourse.toLowerCase();
+
+    if (["jee", "neet", "both"].includes(normalizedCourse) && !selectedStandard)
+      return alert("Please select your standard (11th or 12th).");
+
+    const user = JSON.parse(localStorage.getItem("registeredUser") || "{}");
+    user.dob = dob;
+    user.gender = gender;
+    user.courseName = normalizedCourse; // ✅ Store lowercase
+    user.standard = selectedStandard;
+    user.role = normalizedCourse === "both" ? "jee_neet" : normalizedCourse;
+
+    localStorage.setItem("registeredUser", JSON.stringify(user));
     setStep(3);
   };
 
- const completePayment = (method) => {
-    setPaymentMethod(method);
-  };
-
-  const handlePayNowClick = () => {
-    if (!selectedPlan) return alert("Please select a plan.");
-    setShowPaymentOptions(true);
-  };
+  const completePayment = (method) => setPaymentMethod(method);
 
   const handleFinalPayment = () => {
     if (paymentMethod === "UPI" && !upiId) return alert("Enter UPI ID");
     if (paymentMethod === "Net Banking" && !bank) return alert("Select a bank");
-    if (paymentMethod === "Credit/Debit Card" && (!cardNumber || !expiry || !cvv)) return alert("Fill all card details");
+    if (paymentMethod === "Credit/Debit Card" && (!cardNumber || !expiry || !cvv))
+      return alert("Fill all card details");
 
     setIsPaying(true);
+
     setTimeout(() => {
       setIsPaying(false);
+
+      const user = JSON.parse(localStorage.getItem("registeredUser") || "{}");
+      const startDate = new Date();
+      let endDate;
+
+      if (selectedPlan === "trial") {
+        endDate = new Date(startDate.getTime() + 15 * 24 * 60 * 60 * 1000);
+      } else if (selectedPlan === "monthly") {
+        endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+      } else if (selectedPlan === "yearly") {
+        endDate = new Date(startDate.getTime() + 365 * 24 * 60 * 60 * 1000);
+      }
+
+      user.plan = selectedPlan;
+      user.startDate = startDate.toISOString().split("T")[0];
+      user.endDate = endDate.toISOString().split("T")[0];
+      localStorage.setItem("registeredUser", JSON.stringify(user));
+
       alert(`Payment successful using ${paymentMethod}`);
-      const user = JSON.parse(localStorage.getItem("registeredUser"));
       alert(`Login successful! Welcome ${user.firstname}`);
       navigate("/login");
     }, 2000);
   };
-
+  
   return (
     <div className="registration-container">
       <div className="registration-illustration">
@@ -110,9 +129,9 @@ const RegistrationFlow = () => {
       </div>
 
       <div className="registration">
+        {/* Step 1 */}
         {step === 1 && (
           <>
-          
             <h2>Register Now</h2>
             <div className="Register-form-box">
               <form onSubmit={handleStepOneSubmit}>
@@ -156,137 +175,137 @@ const RegistrationFlow = () => {
           </>
         )}
 
+        {/* Step 2 */}
         {step === 2 && (
           <div className="student-details">
             <h2>Student Details</h2>
-          <div className="student-details-wrapper">
-            
-            <div className="left-section">
-              <p className="upload-text">Upload Profile Picture *</p>
-              <label htmlFor="file-input" className="custom-upload">
-                {photo ? <img src={photo} alt="Profile" className="profile-preview" /> : <span className="upload-placeholder">+</span>}
-              </label>
-              <input id="file-input" type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden-input" />
-            </div>
+            <div className="student-details-wrapper">
+              <div className="left-section">
+                <p className="upload-text">Upload Profile Picture *</p>
+                <label htmlFor="file-input" className="custom-upload">
+                  {photo ? <img src={photo} alt="Profile" className="profile-preview" /> : <span className="upload-placeholder">+</span>}
+                </label>
+                <input id="file-input" type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden-input" />
+              </div>
 
-            <div className="right-section">
-              <form onSubmit={handleFinalSubmit}>
-                
-                <input  type="date" value={dob} onChange={(e) => setDob(e.target.value)} required />
+              <div className="right-section">
+                <form onSubmit={handleFinalSubmit}>
+                  <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} required />
 
-                <select value={gender} onChange={(e) => setGender(e.target.value)} required>
-                  <option value="">Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-
-                <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)} required>
-                  <option value="">Course</option>
-                  <option value="kid">Kindergarten</option>
-                  <option value="first">Class 1-5</option>
-                  <option value="six">Class 6-12</option>
-                  <option value="JEE">JEE</option>
-                  <option value="NEET">NEET</option>
-                  <option value="Other">Other</option>
-                </select>
-
-                {(selectedCourse === "first" || selectedCourse === "six" || selectedCourse === "JEE" || selectedCourse === "NEET") && (
-                  <select value={selectedStandard} onChange={(e) => setSelectedStandard(e.target.value)} required>
-                    <option value="">Select Standard</option>
-                    {selectedCourse === "first" && [1,2,3,4,5].map(n => <option key={n}>{n}</option>)}
-                    {selectedCourse === "six" && [6,7,8,9,10,11,12].map(n => <option key={n}>{n}</option>)}
-                    {(selectedCourse === "JEE" || selectedCourse === "NEET") && ["11th", "12th"].map(std => <option key={std}>{std}</option>)}
+                  <select value={gender} onChange={(e) => setGender(e.target.value)} required>
+                    <option value="">Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
                   </select>
-                )}
+                  <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value.toLowerCase())} required>
+                    <option value="">Course</option>
+                    {/* <option value="kid">Kindergarten</option> */}
+                    {/* <option value="first">Class 1-5</option> */}
+                    {/* <option value="six">Class 6-12</option> */}
+                    <option value="JEE">JEE</option>
+                    <option value="NEET">NEET</option>
+                    <option value="both">JEE + NEET</option>
+                  </select>
 
-                <div className="student-navigation-buttons">
-                  <button onClick={() => setStep(1)}>Previous</button>
-<button type="submit">Next</button>
-                </div>
+                  {["first", "six", "JEE", "NEET", "both"].includes(selectedCourse) && (
+                    <select value={selectedStandard} onChange={(e) => setSelectedStandard(e.target.value)} required>
+                      <option value="">Select Standard</option>
+                      {selectedCourse === "first" && [1, 2, 3, 4, 5].map(n => <option key={n}>{n}</option>)}
+                      {selectedCourse === "six" && [6, 7, 8, 9, 10, 11, 12].map(n => <option key={n}>{n}</option>)}
+                      {["JEE", "NEET", "both"].includes(selectedCourse) && ["11th", "12th"].map(std => <option key={std}>{std}</option>)}
+                    </select>
+                  )}
 
-              </form>
-            </div>
+                  <div className="student-navigation-buttons">
+                    <button onClick={() => setStep(1)}>Previous</button>
+                    <button type="submit">Next</button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         )}
 
+        {/* Step 3 */}
         {step === 3 && (
           <div className="payment-section">
-          <h2>Select Your Plan</h2>
-          <div className="payment-selection">
-            
+            <h2>Select Your Plan</h2>
+            <div className="payment-selection">
+              <div className="plans">
+                {!isUpgrade && (
+                  <label>
+                    <input type="radio" name="plan" value="trial" checked={selectedPlan === "trial"} onChange={() => setSelectedPlan("trial")} />
+                    15-day Free Trial
+                  </label>
+                )}
+                <label>
+                  <input type="radio" name="plan" value="monthly" checked={selectedPlan === "monthly"} onChange={() => setSelectedPlan("monthly")} />
+                  1 Month – ₹1000
+                </label>
+                <label>
+                  <input type="radio" name="plan" value="yearly" checked={selectedPlan === "yearly"} onChange={() => setSelectedPlan("yearly")} />
+                  1 Year – ₹12000
+                </label>
+              </div>
 
-            <div className="plans">
-              <label><input type="radio" name="plan" value="trial" checked={selectedPlan === "trial"} onChange={() => setSelectedPlan("trial")} /> 15-day Free Trial</label>
-              <label><input type="radio" name="plan" value="monthly" checked={selectedPlan === "monthly"} onChange={() => setSelectedPlan("monthly")} /> 1 Month – ₹1000</label>
-              <label><input type="radio" name="plan" value="yearly" checked={selectedPlan === "yearly"} onChange={() => setSelectedPlan("yearly")} /> 1 Year – ₹12000</label>
-            </div>
+              <div className="promo-section">
+                <input type="text" placeholder="Enter Promo Code" value={promoCode} onChange={(e) => setPromoCode(e.target.value)} />
+                <button onClick={() => alert("Promo Applied: " + promoCode)}>Apply</button>
+              </div>
 
-            <div className="promo-section">
-              <input type="text" placeholder="Enter Promo Code" value={promoCode} onChange={(e) => setPromoCode(e.target.value)} />
-              <button onClick={() => alert("Promo Applied: " + promoCode)}>Apply</button>
-            </div>
-{showPaymentOptions && (
-              <div className="payment-options-modal">
-                <h3>Select Payment Method</h3>
-                <div className="methods">
-                  <button onClick={() => completePayment("Google Pay")}>Google Pay</button>
-                  <button onClick={() => completePayment("PhonePe")}>PhonePe</button>
-                  <button onClick={() => completePayment("Paytm")}>Paytm</button>
-                 <button onClick={() => setPaymentMethod("UPI")}>UPI</button>
-            <button onClick={() => setPaymentMethod("Net Banking")}>Net Banking</button>
-            <button onClick={() => setPaymentMethod("Credit/Debit Card")}>Credit/Debit Card</button>
+              {showPaymentOptions && (
+                <div className="payment-options-modal">
+                  <h3>Select Payment Method</h3>
+                  <div className="methods">
+                    <button onClick={() => completePayment("Google Pay")}>Google Pay</button>
+                    <button onClick={() => completePayment("PhonePe")}>PhonePe</button>
+                    <button onClick={() => completePayment("Paytm")}>Paytm</button>
+                    <button onClick={() => setPaymentMethod("UPI")}>UPI</button>
+                    <button onClick={() => setPaymentMethod("Net Banking")}>Net Banking</button>
+                    <button onClick={() => setPaymentMethod("Credit/Debit Card")}>Credit/Debit Card</button>
+                  </div>
+
+                  {paymentMethod === "UPI" && (
+                    <div><input type="text" placeholder="Enter UPI ID" value={upiId} onChange={(e) => setUpiId(e.target.value)} /></div>
+                  )}
+                  {paymentMethod === "Net Banking" && (
+                    <div>
+                      <select value={bank} onChange={(e) => setBank(e.target.value)}>
+                        <option value="">-- Select Bank --</option>
+                        <option value="SBI">State Bank of India</option>
+                        <option value="HDFC">HDFC Bank</option>
+                        <option value="ICICI">ICICI Bank</option>
+                        <option value="Axis">Axis Bank</option>
+                      </select>
+                    </div>
+                  )}
+                  {paymentMethod === "Credit/Debit Card" && (
+                    <div>
+                      <input type="text" placeholder="Card Number" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} />
+                      <input type="month" value={expiry} onChange={(e) => setExpiry(e.target.value)} />
+                      <input type="password" placeholder="CVV" value={cvv} onChange={(e) => setCvv(e.target.value)} maxLength={3} />
+                    </div>
+                  )}
+
+                  {paymentMethod && (
+                    <button onClick={handleFinalPayment} disabled={isPaying}>
+                      {isPaying ? "Processing..." : "Pay Now"}
+                    </button>
+                  )}
                 </div>
-                          {paymentMethod === "UPI" && (
-            <div>
-              <input type="text" placeholder="Enter UPI ID" value={upiId} onChange={(e) => setUpiId(e.target.value)} />
-            </div>
-          )}
+              )}
 
-          {paymentMethod === "Net Banking" && (
-            <div>
-              <select value={bank} onChange={(e) => setBank(e.target.value)}>
-                <option value="">-- Select Bank --</option>
-                <option value="SBI">State Bank of India</option>
-                <option value="HDFC">HDFC Bank</option>
-                <option value="ICICI">ICICI Bank</option>
-                <option value="Axis">Axis Bank</option>
-              </select>
+              <div className="plans-navigation-buttons">
+                <button onClick={() => { isUpgrade ? navigate("/home") : setStep(2); }}>Previous</button>
+                <button onClick={() => { if (!selectedPlan) return alert("Please select a plan."); setShowPaymentOptions(true); }}>Pay Now</button>
+              </div>
             </div>
-          )}
-
-          {paymentMethod === "Credit/Debit Card" && (
-            <div>
-              <input type="text" placeholder="Card Number" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} />
-              <input type="month" value={expiry} onChange={(e) => setExpiry(e.target.value)} />
-              <input type="password" placeholder="CVV" value={cvv} onChange={(e) => setCvv(e.target.value)} maxLength={3} />
-            </div>
-          )}
-
-          {paymentMethod && (
-            <button onClick={handleFinalPayment} disabled={isPaying}>
-              {isPaying ? "Processing..." : "Pay Now"}
-            </button>
-          )}
-        </div>
-            )}
-            <div className="plans-navigation-buttons">
-              <button onClick={() => setStep(2)}>Previous</button>
-              <button onClick={() => {
-                if (!selectedPlan) return alert("Please select a plan.");
-                setShowPaymentOptions(true);
-              }}>
-                Pay Now
-              </button>
-            </div>
-
-            
-          </div>
           </div>
         )}
       </div>
- {/* WhatsApp Button */}
+
+      {/* WhatsApp Button */}
       <a
         href="https://wa.me/8248791389"
         className="whatsapp-chat-button"
