@@ -335,7 +335,22 @@ const NeetLearn = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+useEffect(()=>{
+      const courseName ='professional'
+  const subjectName = subject;
+  const stringStandard = selectedStandard;
+  const standard = stringStandard.replace(/\D/g, '');
+  console.log(standard," ", courseName," ",subjectName )
+    const getAllSujectDetails=()=>{
+    fetch(`http://localhost:3000/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,{
+      method:'GET',
+      credentials:'include'
+    }).then(resp=>resp.json())
+    .then(data=>console.log('details of units: ',data))
+    .catch(err=>console.log('getting units error: ',err))
+  }
+  getAllSujectDetails();
+  },[])
   // Load progress from sessionStorage
   useEffect(() => {
     const loadProgressFromSessionStorage = () => {
