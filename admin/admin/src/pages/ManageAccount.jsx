@@ -59,7 +59,7 @@ const ManageAccount = () => {
 useEffect(() => {
   const start = performance.now();
   fetch(`http://localhost:80/checkSession`, {
-    // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/checkSession`, {
+    // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/checkSession`, {
     //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/checkSession`, {
     method: "GET",
     credentials: 'include'
@@ -83,7 +83,7 @@ useEffect(() => {
 const getUsers=()=>{
   const start = performance.now();
   fetch(`http://localhost:80/getUsers`, {
-    // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/getUsers`, {
+    // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/getUsers`, {
     //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/getUsers`, {
         method: "GET",
         credentials: 'include'
@@ -164,7 +164,7 @@ const getUsers=()=>{
     if (editIndex !== null) {
       const start = performance.now();
       fetch(`http://localhost:80/updateUser/${users[editIndex].email}`,{
-        // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/updateUser/${users[editIndex].email}`,{
+        // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/updateUser/${users[editIndex].email}`,{
         //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/updateUser/${users[editIndex].email}`,{
         method:"PUT",
     credentials:"include",
@@ -212,7 +212,7 @@ const getUsers=()=>{
      // console.log(users)
       const start = performance.now();
       fetch(`http://localhost:80/newUser`,{
-        // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/newUser`,{
+        // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/newUser`,{
         //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/newUser`,{
     method:"POST",
     credentials:"include",
@@ -293,7 +293,7 @@ const handleStandardChange = (standard) => {
     if(!confirmed)return
     const start = performance.now();
     fetch(`http://localhost:80/deleteUser/${users[index].email}`,{
-      //  fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/deleteUser/${users[index].email}`,{
+      //  fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/deleteUser/${users[index].email}`,{
         // fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/deleteUser/${users[index].email}`,{
       method:"DELETE",
       credentials:'include'

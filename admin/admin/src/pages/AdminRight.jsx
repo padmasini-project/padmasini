@@ -11,7 +11,7 @@ const AdminRight = () => {
   const navigate = useNavigate();
   useEffect(()=>{
       fetch(`http://localhost:80/checkSession`,{
-        // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/checkSession`,{
+        // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/checkSession`,{
         // fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/checkSession`,{
         method:"GET",
         credentials:'include'
@@ -88,7 +88,7 @@ localStorage.removeItem(`admin_testsMap_${keyPrefix}`);
 const getAllData=()=>{
    const start=performance.now()
     fetch(`http://localhost:80/getAllUnits/${courseName}/${subjectName}/${standard}`,{
-      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/getAllUnits/${courseName}/${subjectName}/${standard}`,{
+      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/getAllUnits/${courseName}/${subjectName}/${standard}`,{
       method:"GET",
       credentials:"include"
     })
@@ -190,7 +190,7 @@ const getAllData=()=>{
     }
     else {
       fetch(`http://localhost:80/addNewHeadUnit`,{
-      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/addNewUnit/${subjectName}`,{
+      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/addNewUnit/${subjectName}`,{
       //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/addNewUnit/${subjectName}`,{
       method:'POST',
       credentials:'include',
@@ -250,7 +250,7 @@ const getAllData=()=>{
     setOldHeadUnitName(unitToEdit)
   // console.log(unitToEdit)
      fetch(`http://localhost:80/deleteHeadUnit`,{
-      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/addNewUnit/${subjectName}`,{
+      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/addNewUnit/${subjectName}`,{
       //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/addNewUnit/${subjectName}`,{
       method:'DELETE',
       credentials:'include',
@@ -475,6 +475,10 @@ const handleSaveTest = () => {
     alert('Add at least one question before saving the test.');
     return;
   }
+    // const formattedTestName = testName.trim().toLowerCase().endsWith(' - assessment')
+    // ? testName.trim()
+    // : ${testName.trim()} - assessment;
+
   const testData = {
     name: testName,
     timeLimit: testTimeLimit,
@@ -527,7 +531,7 @@ if(editingTestIndex ==='value'){
   try {
   const json = JSON.stringify(testDatas); // This should not throw
   fetch(`http://localhost:80/updateQuestion/${lastClicked}/${oldQuestionForDeletion}`, {
-    // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/updateQuestion/${lastClicked}/${oldQuestionForDeletion}`,{
+    // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/updateQuestion/${lastClicked}/${oldQuestionForDeletion}`,{
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
@@ -552,7 +556,7 @@ else {
   try {
   const json = JSON.stringify(testDatas); // This should not throw
   fetch(`http://localhost:80/addQuestion/${lastClicked}`, {
-    //  fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/addQuestion/${lastClicked}`,{
+    //  fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/addQuestion/${lastClicked}`,{
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -608,7 +612,7 @@ if(!confirmed)return
   try {
   const json = JSON.stringify(testDatas); // This should not throw
   fetch(`http://localhost:80/deleteQuestion/${lastClicked}`, {
-  //  fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/deleteQuestion/${lastClicked}`,{
+  //  fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/deleteQuestion/${lastClicked}`,{
     method: "DELETE",
     headers: {
       "Content-Type": "application/json"
@@ -694,7 +698,7 @@ if(!confirmed)return
 }
 //console.log(currentdata)
 fetch(`http://localhost:80/deleteUnit`,{
-  // fetch('https://trilokinnovations-api-prod.trilokinnovations.com/deleteUnit',{
+  // fetch('https://trilokinnovations-api-prod.trilokinnovations.com/test/deleteUnit',{
   method:'DELETE',
       credentials:'include',
             headers: {'Content-Type':'application/json'},
@@ -752,7 +756,7 @@ for (const file of allAudioFiles) {
     const fileType = encodeURIComponent(file.type);
   //console.log("inside audio sending to pre signed ",fileName)
     // 🔸 Get presigned PUT URL from backend
-   // const res = await fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/api/audio/presigned-url?fileName=${fileName}&fileType=${fileType}`);
+  //  const res = await fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/api/audio/presigned-url?fileName=${fileName}&fileType=${fileType}`);
     
     const res = await fetch(`http://localhost:80/api/audio/presigned-url?fileName=${fileName}&fileType=${fileType}`);
     const { uploadUrl, fileUrl } = await res.json();
@@ -802,8 +806,8 @@ formData.append("unit", new Blob([JSON.stringify(currentdata)], { type: "applica
 const url = editSelecetedSubUnit === 'value'
     ? 'http://localhost:80/updateSubsection'
     : 'http://localhost:80/addNewSubsection';
-    // ?`https://trilokinnovations-api-prod.trilokinnovations.com/updateSubsection`
-    // :`https://trilokinnovations-api-prod.trilokinnovations.com/addNewSubsection`
+    // ?`https://trilokinnovations-api-prod.trilokinnovations.com/test/updateSubsection`
+    // :`https://trilokinnovations-api-prod.trilokinnovations.com/test/addNewSubsection`
 
   fetch(url, {
     method: 'POST',
@@ -849,7 +853,7 @@ const handleAddheadUnit=()=>{
 //console.log("inside editing")
   //   console.log(oldHeadUnitName,"    ",newUnit)
     fetch(`http://localhost:80/updateHeadUnit/${newUnit}`,{
-      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/updateHeadUnit/${newUnit}`,{
+      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/updateHeadUnit/${newUnit}`,{
       //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/updateHeadUnit/${newUnit}`,{
       method:'PUT',
       credentials:'include',
@@ -887,7 +891,7 @@ const handleAddheadUnit=()=>{
   else {
    // console.log("inside adding")
     fetch(`http://localhost:80/addNewHeadUnit`,{
-      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/addNewHeadUnit`,{
+      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/addNewHeadUnit`,{
       //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/addNewHeadUnit`,{
       method:'POST',
       credentials:'include',
@@ -931,7 +935,7 @@ const handleDeleteHeadLesson=(unitName)=>{
 const confirmed=window.confirm("Are you sure You want to Delete this whole unit")
 if(!confirmed)return
 fetch(`http://localhost:80/deleteHeadUnit`,{
-      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/deleteHeadUnit`,{
+      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/deleteHeadUnit`,{
       //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/deleteHeadUnit`,{
       method:'DELETE',
       credentials:'include',
@@ -1067,7 +1071,7 @@ const renderUnitTree = (units, parentPath = '') => (
                         }}
                         style={{ padding: '0px', marginLeft: '0px', background: 'none', color: 'blue' }}
                       >
-                        📝 {test.testName}
+                        📝 {test.testName} - Assessment
                       </button>
                     ))}
                 </div>
@@ -1185,7 +1189,7 @@ const handleDeleteServerAudio = (fileUrl) => {
 //       alert("Failed to delete audio");
 //     });
     fetch("http://localhost:80/api/audio/delete-file", {
-      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/api/audio/delete-file`,{
+      // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/api/audio/delete-file`,{
   method: "DELETE",
   headers: {
     "Content-Type": "application/json",
@@ -1311,6 +1315,18 @@ const parseTextWithFormulas = (texts) => {
     }
   });
 };
+//////////////////image part//////////////
+
+
+
+
+
+
+
+
+
+
+
 
 
 

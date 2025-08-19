@@ -54,7 +54,7 @@ const[currStandards,setCurrStandards]=useState();
     }
      const start = performance.now(); 
     fetch(`http://localhost:80/checkSession`,{
-        // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/checkSession`,{
+        // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/checkSession`,{
         //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/checkSession`,{
       method:"GET",
       credentials:'include'
@@ -78,7 +78,7 @@ const[currStandards,setCurrStandards]=useState();
   }
    const start1 = performance.now(); 
   fetch('http://localhost:80/UserSubjectStd',{
-    // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/UserSubjectStd`,{
+    // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/UserSubjectStd`,{
     //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/UserSubjectStd`,{
      method:"GET",
       credentials:'include'

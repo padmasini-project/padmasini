@@ -13,7 +13,7 @@ useEffect(()=>{
     navigate('/adminhome')
   }
   const start = performance.now();
-  // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/checkSession`,{
+  // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/checkSession`,{
    fetch(`http://localhost:80/checkSession`,{
   // fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/checkSession`,{
     method:"GET",
@@ -57,7 +57,7 @@ useEffect(()=>{
     e.preventDefault();
   const start = performance.now();
     //const users = JSON.parse(localStorage.getItem('users')) || [];
-  // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/signIn`,{
+  // fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/signIn`,{
   fetch(`http://localhost:80/signIn`,{
   //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/signIn`,{
   method:"POST",

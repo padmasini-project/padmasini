@@ -18,7 +18,7 @@ const Navbar = () => {
 useEffect(() => {
     // Always check server-side session to prevent showing old user
     fetch(`http://localhost:80/checkSession`, {
-      // fetch('https://trilokinnovations-api-prod.trilokinnovations.com/checkSession',{
+      // fetch('https://trilokinnovations-api-prod.trilokinnovations.com/test/checkSession',{
       method: "GET",
       credentials: 'include'
     })
@@ -71,7 +71,7 @@ useEffect(() => {
      const start = performance.now();
     fetch(`http://localhost:80/logout`,{
      // fetch(`https://api-test.trilokinnovations.com/logout`,{
-      // fetch('https://trilokinnovations-api-prod.trilokinnovations.com/logout',{
+      // fetch('https://trilokinnovations-api-prod.trilokinnovations.com/test/logout',{
       method:"GET",
       credentials:'include'
     }).then(resp=> resp.text())

@@ -128,7 +128,8 @@ const sendUserDetails=async () => {
 
   try {
     // const response = await fetch('http://localhost:3000/register/newUser', {
-      const response = await fetch('https://studentpadmasini.onrender.com/register/newUser', {
+      // const response = await fetch('https://studentpadmasini.onrender.com/register/newUser', {
+      const response = await fetch('https://padmasini-prod-api.padmasini.com/register/newUser', {
       method: 'POST',
       body: formData, // Do not set Content-Type; browser sets it with boundary
     });
@@ -136,6 +137,7 @@ const sendUserDetails=async () => {
     const data = await response.json();
 
     if (response.ok) {
+     // localStorage.removeItem("registeredUser")
       alert(data.message);
       navigate('/Login')
       // optionally redirect or reset form here
@@ -151,7 +153,7 @@ const sendUserDetails=async () => {
     e.preventDefault();
     if ( !dob || !gender || !selectedCourse) return alert("Please fill in all required fields.");//removed !photo||
     if ((selectedCourse === "JEE" || selectedCourse === "NEET") && !selectedStandard) return alert("Please select your standard (11th or 12th).");
-    const updatedUser = JSON.parse(sessionStorage.getItem("registeredUser") || "{}");
+    const updatedUser = JSON.parse(localStorage.getItem("registeredUser") || "{}");
     updatedUser.dob = dob;
     updatedUser.gender = gender;
     updatedUser.course = selectedCourse;
@@ -164,7 +166,7 @@ const sendUserDetails=async () => {
       updatedUser.gender = gender;
     }
 
-    sessionStorage.setItem("registeredUser", JSON.stringify(updatedUser));
+    localStorage.setItem("registeredUser", JSON.stringify(updatedUser));
     
     setStep(3);
   };
@@ -187,7 +189,7 @@ const sendUserDetails=async () => {
     setTimeout(() => {
       setIsPaying(false);
       alert(`Payment successful using ${paymentMethod}`);
-      const user = JSON.parse(sessionStorage.getItem("registeredUser") || "{}");
+      const user = JSON.parse(localStorage.getItem("registeredUser") || "{}");
       const startDate = new Date();
       let endDate;
 
@@ -202,8 +204,9 @@ const sendUserDetails=async () => {
       user.plan = selectedPlan;
       user.startDate = startDate.toISOString().split("T")[0];
       user.endDate = endDate.toISOString().split("T")[0];
-      sessionStorage.setItem("registeredUser", JSON.stringify(user));
+      localStorage.setItem("registeredUser", JSON.stringify(user));
       sendUserDetails()
+      console.log(JSON.stringify(user))
       alert(`Login successful! Welcome ${user.firstname}`);
       
     }, 2000);
