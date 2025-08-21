@@ -17,9 +17,14 @@ const SubtopicTree = ({
   const [expandedSub, setExpandedSub] = useState(null);
 
   const handleSubClick = (sub, idx) => {
-    if (sub.units && sub.units.length > 0) {
-      setExpandedSub(expandedSub === idx ? null : idx);
+    // Expand if children/tests exist
+    if (
+      (sub.units && sub.units.length > 0) ||
+      (sub.test && sub.test.length > 0)
+    ) {
+      setExpandedSub((prev) => (prev === idx ? null : idx));
     }
+    // Always open explanation as well
     onClick(sub, parentIndex);
   };
 
@@ -43,21 +48,25 @@ const SubtopicTree = ({
             style={{ marginLeft: `${level * 20}px` }}
             onClick={() => handleSubClick(sub, idx)}
           >
-            {sub.unitName}
+            📄 {sub.unitName}
           </div>
 
-          {sub.test &&
+          {/* Show tests when expanded */}
+          {expandedSub === idx &&
+            sub.test &&
             sub.test.length > 0 &&
             sub.test.map((test, tIdx) => (
               <div
                 key={tIdx}
                 className="subtopic-title test-title"
+                style={{ marginLeft: `${(level + 1) * 20}px` }}
                 onClick={() => handleTestClick(test, tIdx, sub)}
               >
-                {test.testName}
+                📝 {test.testName} - Assessment
               </div>
             ))}
 
+          {/* Recursive children */}
           {expandedSub === idx && sub.units && (
             <SubtopicTree
               subtopics={sub.units}
@@ -85,7 +94,7 @@ const JeeLearn = () => {
       ? 12
       : null;
   const userId = currentUser?.id || "guest";
-  const [topics, setTopics] = useState([]);
+  const [fetchedUnits, setFetchedUnits] = useState([]);
   const [expandedTopic, setExpandedTopic] = useState(null);
   const [selectedSubtopic, setSelectedSubtopic] = useState(null);
   const [showTopics, setShowTopics] = useState(true);
@@ -110,48 +119,53 @@ const JeeLearn = () => {
     const stringStandard = currentUser.selectedStandard;
     const standard = stringStandard?.replace(/\D/g, "");
 
-    fetch(
-      `http://localhost:3000/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    )
-      .then((resp) => resp.json())
-      .then((data) => {
-        console.log("details of units: ", data);
-        setTopics(data);
-      })
-      .catch((err) => console.log("getting units error: ", err));
+    const getAllSubjectDetails = () => {
+      fetch(
+        `http://localhost:3000/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      )
+        .then((resp) => resp.json())
+        .then((data) => {
+          console.log("details of units: ", data);
+          setFetchedUnits(data);
+        })
+        .catch((err) => console.log("getting units error: ", err));
+    };
+
+    getAllSubjectDetails();
+
+    // Load saved progress
+    const savedProgress = JSON.parse(
+      localStorage.getItem(`completedSubtopics_${userId}_jee`) || "{}"
+    );
+    setCompletedSubtopics(savedProgress);
   }, []);
 
-  useEffect(() => {
-    const updated = {};
-    const traverse = (subs, topicName) => {
-      for (const sub of subs) {
-        if (sub.units) traverse(sub.units, topicName);
-        const key = `jee-completed-${sub.unitName}`;
-        if (localStorage.getItem(key) === "true") {
-          if (!updated[topicName]) updated[topicName] = {};
-          updated[topicName][sub.unitName] = true;
-        }
-      }
-    };
-    topics.forEach((topic) => traverse(topic.units, topic.unitName));
-    setCompletedSubtopics(updated);
-  }, [topics]);
-
+  // Recursively flatten all subtopics
   const collectAllSubtopics = (subs = []) =>
     subs.flatMap((s) => [s, ...(s.units ? collectAllSubtopics(s.units) : [])]);
 
-  const isTopicCompleted = (topic) => {
-    const completed = completedSubtopics[topic.unitName] || {};
+  const calculateProgress = (topic) => {
+    if (!topic || !topic.units) return 0;
     const allSubs = collectAllSubtopics(topic.units);
-    return allSubs.every((sub) => completed[sub.unitName]);
+    const completedCount = allSubs.filter(
+      (sub) => completedSubtopics[topic.unitName]?.[sub.unitName]
+    ).length;
+    const totalCount = allSubs.length;
+    return totalCount === 0
+      ? 0
+      : Math.round((completedCount / totalCount) * 100);
   };
 
-  const isTopicUnlocked = (index) =>
-    index === 0 || isTopicCompleted(topics[index - 1]);
+  const isTopicCompleted = (topic) => calculateProgress(topic) === 100;
+
+  const isTopicUnlocked = (index) => {
+    if (index === 0) return true;
+    return isTopicCompleted(fetchedUnits[index - 1]);
+  };
 
   const toggleTopic = (index) => {
     if (!isTopicUnlocked(index)) return;
@@ -172,18 +186,9 @@ const JeeLearn = () => {
 
   const handleBackToSubjects = () => navigate("/Jee");
 
-  const calculateProgress = (topic) => {
-    const allSubs = collectAllSubtopics(topic.units);
-    const completedCount = allSubs.filter(
-      (sub) => completedSubtopics[topic.unitName]?.[sub.unitName]
-    ).length;
-    const totalCount = allSubs.length;
-    return totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
-  };
-
   const markSubtopicComplete = () => {
     if (!selectedSubtopic || expandedTopic === null) return;
-    const topicTitle = topics[expandedTopic].unitName;
+    const topicTitle = fetchedUnits[expandedTopic].unitName;
     const subtopicTitle = selectedSubtopic.unitName;
 
     localStorage.setItem(`jee-completed-${subtopicTitle}`, "true");
@@ -221,22 +226,25 @@ const JeeLearn = () => {
     setCompletedSubtopics({});
     setExpandedTopic(null);
     setSelectedSubtopic(null);
+
     alert("Your JEE progress has been reset successfully.");
   };
 
   return (
     <div className="Jee-container">
       {isMobile && (
-        <button className="toggle-btn" onClick={() => setShowTopics(!showTopics)}>
+        <button
+          className="toggle-btn"
+          onClick={() => setShowTopics(!showTopics)}
+        >
           <FaBars />
           <h2>{subject} Topics</h2>
         </button>
       )}
-
       {showTopics && (
         <div className="topics-list">
           <ul>
-            {topics.map((topic, index) => (
+            {fetchedUnits.map((topic, index) => (
               <li key={index}>
                 <div
                   className={`topic-title ${
@@ -285,9 +293,11 @@ const JeeLearn = () => {
                         <li
                           key={tIdx}
                           className="subtopic-title test-title"
-                          onClick={() => handleSubtopicClick(testSubtopic, index)}
+                          onClick={() =>
+                            handleSubtopicClick(testSubtopic, index)
+                          }
                         >
-                          {test.testName}
+                          📝 {test.testName} - Assessment
                         </li>
                       );
                     })}
@@ -306,12 +316,11 @@ const JeeLearn = () => {
           </div>
         </div>
       )}
-
       <div className="explanation-container">
         {selectedSubtopic ? (
           selectedSubtopic.unitName.includes("Assessment") ? (
             <JeeQuiz
-              topicTitle={topics[expandedTopic]?.unitName}
+              topicTitle={fetchedUnits[expandedTopic]?.unitName}
               subtopicTitle={selectedSubtopic.unitName}
               test={selectedSubtopic.test || []}
               onBack={handleBackToTopics}
@@ -319,7 +328,7 @@ const JeeLearn = () => {
             />
           ) : (
             <JeeExplanation
-              topicTitle={topics[expandedTopic]?.unitName}
+              topicTitle={fetchedUnits[expandedTopic]?.unitName}
               subtopicTitle={selectedSubtopic.unitName}
               subject={subject}
               explanation={selectedSubtopic.explanation || ""}
@@ -330,12 +339,13 @@ const JeeLearn = () => {
           )
         ) : (
           <div className="no-explanation">
-            <h2>Welcome to {subject} - Std {selectedStandard}</h2>
+            <h2>
+              Welcome to {subject} - Std {selectedStandard}
+            </h2>
             <p>Select a topic and subtopic to begin your learning journey.</p>
           </div>
         )}
       </div>
-
       <PadmasiniChat subjectName={subject} />
     </div>
   );

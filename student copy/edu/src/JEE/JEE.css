@@ -218,6 +218,7 @@ margin-top: 10px;}
 }
 
 .subject-card {
+  background-color: #003366;
   border-radius: 20px;
   padding: 0.8rem;
   text-align: center;
@@ -276,7 +277,7 @@ margin-top: 10px;}
   margin-bottom: 1rem;
 }
 
-.jee-course-number {
+.course-number {
   color: #050505;
   font-size: 1.3rem;
   font-weight: bold;
@@ -316,6 +317,7 @@ margin-top: 10px;}
 .continue-btn:hover {
   background-color: #33ff58;
 }
+
 
 @media (max-width: 768px) {
   /* Overall Layout */
@@ -511,6 +513,7 @@ margin-top: 10px;}
   .timeline-item {
     padding-left: 30px;
   }
+
   .subject-card {
     width: 100%;
     max-width: 300px;

@@ -83,52 +83,59 @@ const Navbar = () => {
         {currentUser && (
           <li className="dropdown">
             <div
-              className="dropdown-toggle"
-              onClick={() => {
-                setCoursesOpen((prev) => !prev);
-                setUserDropdownOpen(false);
-              }}
-            >
-              Courses {coursesOpen ? <FaChevronUp /> : <FaChevronDown />}
-            </div>
-            {coursesOpen && (
-              <ul className="dropdown-menu">
-                {selectedCourse === "NEET" && (
-                  <li>
-                    <Link to="/NEET" onClick={() => setMenuOpen(false)}>
-                      NEET
-                    </Link>
-                  </li>
-                )}
-                {selectedCourse === "JEE" && (
-                  <li>
-                    <Link to="/JEE" onClick={() => setMenuOpen(false)}>
-                      JEE
-                    </Link>
-                  </li>
-                )}
-              </ul>
-            )}
+  className="dropdown-toggle"
+  onClick={() => {
+    setCoursesOpen((prev) => !prev);
+    setUserDropdownOpen(false);
+  }}
+>
+  <span>Courses</span>
+  <span className="dropdown-icon">
+    {coursesOpen ? <FaChevronUp /> : <FaChevronDown />}
+  </span>
+</div>
+
+{coursesOpen && (
+  <ul className="dropdown-menu">
+    {(selectedCourse === "NEET" || selectedCourse === "Both") && (
+      <li>
+        <Link to="/NEET" onClick={() => setMenuOpen(false)}>
+          NEET
+        </Link>
+      </li>
+    )}
+    {(selectedCourse === "JEE" || selectedCourse === "Both") && (
+      <li>
+        <Link to="/JEE" onClick={() => setMenuOpen(false)}>
+          JEE
+        </Link>
+      </li>
+    )}
+  </ul>
+)}
+
           </li>
         )}
 
         <li className="dropdown">
-          {currentUser ? (
-            <>
-              <div
-                className="dropdown-toggle"
-                onClick={() => {
-                  setUserDropdownOpen((prev) => !prev);
-                  setCoursesOpen(false);
-                }}
-              >
-                Hi, {currentUser.firstname}{" "}
-                {userDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-              </div>
+  {currentUser ? (
+    <>
+      <div
+        className="dropdown-toggle"
+        onClick={() => {
+          setUserDropdownOpen((prev) => !prev);
+          setCoursesOpen(false);
+        }}
+      >
+        <span>Hi, {currentUser.firstname}</span>
+        <span className="dropdown-icon">
+          {userDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+        </span>
+      </div>
 
-              {userDropdownOpen && (
-                <ul className="dropdown-menu user-details-dropdown">
-                  <div className="user-details-header">
+      {userDropdownOpen && (
+        <ul className="dropdown-menu user-details-dropdown">
+           <div className="user-details-header">
                     <li>
                       <img
                         src={currentUser.photo}
@@ -171,15 +178,16 @@ const Navbar = () => {
                       </button>
                     </li>
                   </div>
-                </ul>
-              )}
-            </>
-          ) : (
-            <Link to="/login" onClick={() => setMenuOpen(false)}>
-              Sign In
-            </Link>
-          )}
-        </li>
+        </ul>
+      )}
+    </>
+  ) : (
+    <Link to="/login" onClick={() => setMenuOpen(false)}>
+      Sign In
+    </Link>
+  )}
+</li>
+
       </ul>
     </nav>
   );

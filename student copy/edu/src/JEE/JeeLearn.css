@@ -237,7 +237,7 @@
 
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
-  .Jee-container {
+  .jee-container {
     flex-direction: column;
     padding: 10px;
     margin-top: 80px;
@@ -339,74 +339,95 @@
 @media (max-width: 1100px) {
   .Jee-container {
     flex-direction: column;
-    padding: 12px;
+    padding: 15px;
     margin-top: 90px;
     width: 100%;
   }
 
   .toggle-btn {
     display: flex;
-    width: 100%;
-    justify-content: flex-start;
-    margin-bottom: 10px;
   }
 
   .topics-list {
     width: 100%;
-    max-width: 100%;
-    height: auto;
+    padding: 0;
     margin: 0;
-    padding: 10px;
+    box-shadow: none;
     background-color: #0a4308;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   .topic-title {
-    font-size: 16px;
-    padding: 12px 14px;
-    border-radius: 10px;
+    width: 95%;
+    margin: 10px auto;
+    font-size: 17px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .topic-title:hover {
+    background-color: #f0fff1;
+  }
+
+  .topic-title.active {
+    background-color: #dbfee3;
+  }
+
+  .subtopics-list {
+    padding-left: 12px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    width: 96%;
+    margin: 0 auto 12px;
   }
 
   .subtopic-title {
-    font-size: 15px;
-    padding: 10px 14px;
-    margin-left: 15px;
+    width: 100%;
+    max-width: 95%;
+    margin-left: 20px;
+    font-size: 16px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  }
+
+  .subtopic-title:hover {
+    background-color: #ccffd7;
   }
 
   .progress-bar-wrapper {
-    width: 100%;
-    margin: 8px 0;
+    width: 93%;
+    margin: 10px auto;
+  }
+
+  .progress-bar-bg {
+    height: 6px;
+    border-radius: 10px;
+    background-color: #e1dfdf;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    background-color: #4caf50;
   }
 
   .explanation-container {
-    width: 100%;
-    padding: 20px;
+    width: 93%;
+    margin: 25px auto 0;
+    padding: 24px;
     background-color: #ffffff;
     border-radius: 12px;
-    margin-top: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 
   .back-subjects-btn {
     width: 100%;
-    margin-top: 20px;
-    font-size: 16px;
-    padding: 12px;
+    max-width: 88%;
+    margin: 15px auto 10px;
+    display: block;
     background-color: #0ee83d;
-  }
-
-  /* Optional spacing and stacking improvements */
-  .topics-list ul,
-  .subtopics-list {
-    margin: 0 auto;
-    width: 100%;
-    padding-left: 0;
-  }
-
-  .subtopic-child,
-  .subtopic-grandchild,
-  .subtopic-greatgrandchild {
-    margin-left: 30px;
   }
 }

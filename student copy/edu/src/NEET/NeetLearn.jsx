@@ -17,9 +17,14 @@ const SubtopicTree = ({
   const [expandedSub, setExpandedSub] = useState(null);
 
   const handleSubClick = (sub, idx) => {
-    if (sub.units && sub.units.length > 0) {
-      setExpandedSub(expandedSub === idx ? null : idx);
+    // Expand if children/tests exist
+    if (
+      (sub.units && sub.units.length > 0) ||
+      (sub.test && sub.test.length > 0)
+    ) {
+      setExpandedSub((prev) => (prev === idx ? null : idx));
     }
+    // Always open explanation as well
     onClick(sub, parentIndex);
   };
 
@@ -43,23 +48,25 @@ const SubtopicTree = ({
             style={{ marginLeft: `${level * 20}px` }}
             onClick={() => handleSubClick(sub, idx)}
           >
-            {sub.unitName}
+            📄 {sub.unitName}
           </div>
 
-          {/* Show subtopic tests */}
-          {sub.test &&
+          {/* Show tests when expanded */}
+          {expandedSub === idx &&
+            sub.test &&
             sub.test.length > 0 &&
             sub.test.map((test, tIdx) => (
               <div
                 key={tIdx}
                 className="subtopic-title test-title"
+                style={{ marginLeft: `${(level + 1) * 20}px` }}
                 onClick={() => handleTestClick(test, tIdx, sub)}
               >
-                {test.testName}
+                📝 {test.testName} - Assessment
               </div>
             ))}
 
-          {/* Recurse into children */}
+          {/* Recursive children */}
           {expandedSub === idx && sub.units && (
             <SubtopicTree
               subtopics={sub.units}
@@ -129,19 +136,36 @@ const NeetLearn = () => {
     };
 
     getAllSubjectDetails();
+
+    // Load saved progress
+    const savedProgress = JSON.parse(
+      localStorage.getItem(`completedSubtopics_${userId}_neet`) || "{}"
+    );
+    setCompletedSubtopics(savedProgress);
   }, []);
 
+  // Recursively flatten all subtopics
   const collectAllSubtopics = (subs = []) =>
     subs.flatMap((s) => [s, ...(s.units ? collectAllSubtopics(s.units) : [])]);
 
-  const isTopicCompleted = (topic) => {
-    const completed = completedSubtopics[topic.unitName] || {};
+  const calculateProgress = (topic) => {
+    if (!topic || !topic.units) return 0;
     const allSubs = collectAllSubtopics(topic.units);
-    return allSubs.every((sub) => completed[sub.unitName]);
+    const completedCount = allSubs.filter(
+      (sub) => completedSubtopics[topic.unitName]?.[sub.unitName]
+    ).length;
+    const totalCount = allSubs.length;
+    return totalCount === 0
+      ? 0
+      : Math.round((completedCount / totalCount) * 100);
   };
 
-  const isTopicUnlocked = (index) =>
-    index === 0 || isTopicCompleted(fetchedUnits[index - 1]);
+  const isTopicCompleted = (topic) => calculateProgress(topic) === 100;
+
+  const isTopicUnlocked = (index) => {
+    if (index === 0) return true;
+    return isTopicCompleted(fetchedUnits[index - 1]);
+  };
 
   const toggleTopic = (index) => {
     if (!isTopicUnlocked(index)) return;
@@ -161,15 +185,6 @@ const NeetLearn = () => {
   };
 
   const handleBackToSubjects = () => navigate("/Neet");
-
-  const calculateProgress = (topic) => {
-    const allSubs = collectAllSubtopics(topic.units);
-    const completedCount = allSubs.filter(
-      (sub) => completedSubtopics[topic.unitName]?.[sub.unitName]
-    ).length;
-    const totalCount = allSubs.length;
-    return totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
-  };
 
   const markSubtopicComplete = () => {
     if (!selectedSubtopic || expandedTopic === null) return;
@@ -218,7 +233,10 @@ const NeetLearn = () => {
   return (
     <div className="Neet-container">
       {isMobile && (
-        <button className="toggle-btn" onClick={() => setShowTopics(!showTopics)}>
+        <button
+          className="toggle-btn"
+          onClick={() => setShowTopics(!showTopics)}
+        >
           <FaBars />
           <h2>{subject} Topics</h2>
         </button>
@@ -275,10 +293,11 @@ const NeetLearn = () => {
                         <li
                           key={tIdx}
                           className="subtopic-title test-title"
-                          
-                          onClick={() => handleSubtopicClick(testSubtopic, index)}
+                          onClick={() =>
+                            handleSubtopicClick(testSubtopic, index)
+                          }
                         >
-                          {test.testName}
+                          📝 {test.testName} - Assessment
                         </li>
                       );
                     })}
@@ -320,7 +339,9 @@ const NeetLearn = () => {
           )
         ) : (
           <div className="no-explanation">
-            <h2>Welcome to {subject} - Std {selectedStandard}</h2>
+            <h2>
+              Welcome to {subject} - Std {selectedStandard}
+            </h2>
             <p>Select a topic and subtopic to begin your learning journey.</p>
           </div>
         )}
