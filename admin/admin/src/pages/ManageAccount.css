@@ -11,6 +11,9 @@
   color: #333;
   margin-bottom: 30px;
 }
+html {
+  scroll-behavior: smooth;
+}
 
 .manage-container h2 {
   font-size: 28px;

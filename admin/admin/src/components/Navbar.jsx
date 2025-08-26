@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import logo from '../assets/logo.png';
+import { FaUser, FaEnvelope, FaPhone, FaSignOutAlt } from 'react-icons/fa';
 
 const Navbar = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -9,14 +10,43 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef();
 
-  // Function to update user from localStorage
-  const updateUser = () => {
+    const updateUser = () => {
     const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+   // console.log("UpdateUser triggered, storedUser = ", storedUser);
     setCurrentUser(storedUser);
   };
+useEffect(() => {
+    // Always check server-side session to prevent showing old user
+    //fetch(`http://localhost:80/checkSession`, {
+      fetch('https://trilokinnovations-api-prod.trilokinnovations.com/test/checkSession',{
+      method: "GET",
+      credentials: 'include'
+    })
+      .then(resp => resp.json())
+      .then(data => {
+        if (data.status === 'pass') {
+          const userData = {
+            username: data.userName,
+            phone: data.phoneNumber,
+            role: data.role,
+            courseType: data.coursetype,
+            courseName: data.courseName,
+            email: data.userGmail,
+          };
+          localStorage.setItem('currentUser', JSON.stringify(userData));
+          setCurrentUser(userData);
+        } else {
+          localStorage.removeItem('currentUser');
+          setCurrentUser(null);
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('currentUser');
+        setCurrentUser(null);
+      });
+  }, []);
 
-  // Load current user and listen for login/logout events
-  useEffect(() => {
+useEffect(() => {
     updateUser();
 
     // Listen for custom login/logout events
@@ -33,21 +63,49 @@ const Navbar = () => {
     };
   }, []);
 
-  // Toggle dropdown menu
-  const toggleDropdown = () => {
+  const toggleDropdown = () => 
     setDropdownOpen((prev) => !prev);
-  };
+  ;
 
-  // Logout handler
   const handleLogout = () => {
+     const start = performance.now();
+   // fetch(`http://localhost:80/logout`,{
+     // fetch(`https://api-test.trilokinnovations.com/logout`,{
+       fetch('https://trilokinnovations-api-prod.trilokinnovations.com/test/logout',{
+      method:"GET",
+      credentials:'include'
+    }).then(resp=> resp.text())
+    .then(text=>{
+      const end = performance.now(); // End time
+      console.log(`Fetch for navbar took ${end - start} ms`);
+      //console.log("inside logout",text)
+      if(text==='pass'){
+        localStorage.removeItem('currentUser');
+    setCurrentUser(null);
+     window.dispatchEvent(new Event('userLogout')); 
+
+    setDropdownOpen(false);
+    navigate('/signin')
+      }
+      if(text==="failed"){
+        localStorage.removeItem('currentUser');
+         window.dispatchEvent(new Event('userLogout')); 
+
+    setCurrentUser(null);
+    setDropdownOpen(false);
+    navigate('/signin')
+      }
+    }).catch(()=>{
+      // /console.log(err)
+    })
     localStorage.removeItem('currentUser');
     setCurrentUser(null);
     setDropdownOpen(false);
-    window.dispatchEvent(new Event('userLogout')); // Notify others
+    window.dispatchEvent(new Event('userLogout'));
     navigate('/signin');
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -66,7 +124,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <ul className="navbar-links">{/* Add links if needed */}</ul>
+      <ul className="navbar-links">{/* Add more nav links if needed */}</ul>
 
       <div className="navbar-signin">
         {!currentUser ? (
@@ -78,11 +136,17 @@ const Navbar = () => {
             </button>
             {dropdownOpen && (
               <div className="dropdown-menu">
-                <p><strong>Name:</strong> {currentUser.username}</p>
-                {currentUser.email && <p><strong>Email:</strong> {currentUser.email}</p>}
-                {currentUser.phone && <p><strong>Phone:</strong> {currentUser.phone}</p>}
-                <button onClick={handleLogout} className="logout-button">Logout</button>
-              </div>
+  <p><FaUser size={15} style={{ marginRight: '10px' }} /><strong>Name:</strong> {currentUser.username}</p>
+  {currentUser.email && (
+    <p><FaEnvelope size={15} style={{ marginRight: '10px' }} /><strong>Email:</strong> {currentUser.email}</p>
+  )}
+  {currentUser.phone && (
+    <p><FaPhone size={15} style={{ marginRight: '10px' }} /><strong>Phone:</strong> {currentUser.phone}</p>
+  )}
+  <button onClick={handleLogout} className="logout-button">
+    <FaSignOutAlt size={15} style={{ marginRight: '10px' }} /> Logout
+  </button>
+</div>
             )}
           </div>
         )}

@@ -14,63 +14,126 @@ const professionalCards = [
   { id: 'neet', subtitle: 'NEET Exam', title: 'NEET Prep Material' },
 ];
 
+
 const AdminHome = () => {
-  const navigate = useNavigate();
-
-  const [user, setUser] = useState({
-    email: 'admin@example.com',
-    role: 'admin',
-    access: {
-      mode: 'professional',
-      cardId: 'jee',
-      subject: 'Physics',
-      standard: '11'
-    }
-  });
-
+const navigate = useNavigate();
+  //  const [user, setUser] = useState({
+  //   email: 'admin@example.com',
+  //   role: 'admin',
+  //   access: {
+  //     mode: 'professional',
+  //     cardId: 'jee',
+  //     subject: 'Physics',
+  //     standard: '11'
+  //   }
+  // });
+  
+  const [currentUser, setCurrentUser] = useState(null);
   const [subjectsByCard, setSubjectsByCard] = useState({});
   const [current, setCurrent] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [menuOpen, setMenuOpen] = useState(true);
   const [mode, setMode] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [selectedStandard, setSelectedStandard] = useState(user?.role === 'admin' ? '' : user?.access.standard);
-
-  useEffect(() => {
-    if (user.role !== 'admin' && user.access.cardId) {
-      handleCardClick({
-        id: user.access.cardId,
-        title: user.access.cardId === 'jee' ? 'JEE Prep Material' : 'NEET Prep Material',
-        subtitle: user.access.cardId === 'jee' ? 'JEE Exam' : 'NEET Exam'
-      });
+const [selectedStandard, setSelectedStandard] = useState(currentUser?.role === 'admin' ? '' : currentUser?.standards);
+const[userRole,setUserRole]=useState(null);
+const[courseType,setCourseType]=useState(null);
+const[courseName,setCourseName]=useState(null);
+const[currSubjects,setCurrSubjects]=useState();
+const[currStandards,setCurrStandards]=useState();
+  useEffect(()=>{
+    if(localStorage.getItem('currentUser')!==null){
+       const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    //console.log("UpdateUser triggered, storedUser = ", storedUser);
+    setCurrentUser(storedUser);
+    setUserRole(storedUser.role)
+    setCourseType(storedUser.courseType)
+    setCourseName(storedUser.courseName)
+      //return;
     }
-  }, []);
+     const start = performance.now(); 
+    //fetch(`http://localhost:80/checkSession`,{
+         fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/checkSession`,{
+        //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/checkSession`,{
+      method:"GET",
+      credentials:'include'
+    }).then(resp=>resp.json())
+    .then(data=>{
+      const end = performance.now(); // End time
+      console.log(`Fetch admin home check session took ${end - start} ms`);
+      //console.log("check session inside admin home ",data)
+     if (data.status === 'failed') {
+    navigate('/signin')
+   return;
+  }
+  if(data.status==='pass'){
+    const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    //console.log("UpdateUser triggered, storedUser = ", storedUser);
+    setCurrentUser(storedUser);
+    setUserRole(storedUser.role)
+    setCourseType(storedUser.courseType)
+    setCourseName(storedUser.courseName)
+  }
+   const start1 = performance.now(); 
+  //fetch('http://localhost:80/UserSubjectStd',{
+     fetch(`https://trilokinnovations-api-prod.trilokinnovations.com/test/UserSubjectStd`,{
+    //  fetch(`https://test-padmasiniAdmin-api.trilokinnovations.com/UserSubjectStd`,{
+     method:"GET",
+      credentials:'include'
+  }).then(resp=>resp.json())
+  .then(data=>{
+    const end1 = performance.now(); // End time
+      console.log(`Fetch for admin home get sub and std took ${end1 - start1} ms`);
+    // console.log(data);
+    setCurrSubjects(data.subject)
+    setCurrStandards(data.standards)
+  }).catch(() => {}
+    // console.log("Session check for sub and std failed:", err)
+  );
+  //  console.log("inside admin home for course type:",courseType)
+  //   console.log("course name: ",courseName)
+  //   console.log(userRole)
+    }).catch(err => console.log("Session check failed:", err));
+     //console.log(userRole)
+  },[])
+// useEffect(() => {
+//     // Preload default subjects if card matches
+//     if (currentUser.role !== 'admin' && currentUser.access.cardId) {
+//       handleCardClick({
+//         id: user.access.cardId,
+//         title: user.access.cardId === 'jee' ? 'JEE Prep Material' : 'NEET Prep Material',
+//         subtitle: user.access.cardId === 'jee' ? 'JEE Exam' : 'NEET Exam'
+//       });
+//     }
+   
+//   }, []);
 
   const currentCardId = selectedCard?.id || null;
   const currentSubjects = currentCardId ? subjectsByCard[currentCardId] || [] : [];
 
   const handleAdd = () => {
-    const trimmed = current.trim();
-    if (!trimmed || currentCardId === null) return;
-    if (currentSubjects.includes(trimmed)) {
-      alert('Subject already exists.');
-      return;
-    }
-    setSubjectsByCard((prev) => ({
-      ...prev,
-      [currentCardId]: [...(prev[currentCardId] || []), trimmed],
-    }));
+    if (!current.trim() || currentCardId === null) return;
+    setSubjectsByCard((prev) => {
+      const copy = { ...prev };
+      const arr = Array.isArray(copy[currentCardId]) ? [...copy[currentCardId]] : [];
+      arr.push(current.trim());
+      copy[currentCardId] = arr;
+      return copy;
+    });
     setCurrent('');
     setSelectedIndex(null);
   };
 
   const handleUpdate = () => {
-    const trimmed = current.trim();
-    if (currentCardId === null || selectedIndex === null || !trimmed) return;
+    if (currentCardId === null || selectedIndex === null || !current.trim()) return;
     setSubjectsByCard((prev) => {
-      const updated = [...(prev[currentCardId] || [])];
-      updated[selectedIndex] = trimmed;
-      return { ...prev, [currentCardId]: updated };
+      const copy = { ...prev };
+      const arr = [...(copy[currentCardId] || [])];
+      arr[selectedIndex] = current.trim();
+      copy[currentCardId] = arr;
+      return copy;
     });
     setCurrent('');
     setSelectedIndex(null);
@@ -79,16 +142,20 @@ const AdminHome = () => {
   const handleDelete = () => {
     if (currentCardId === null || selectedIndex === null) return;
     setSubjectsByCard((prev) => {
-      const updated = [...(prev[currentCardId] || [])];
-      updated.splice(selectedIndex, 1);
-      return { ...prev, [currentCardId]: updated };
+      const copy = { ...prev };
+      const arr = [...(copy[currentCardId] || [])];
+      arr.splice(selectedIndex, 1);
+      copy[currentCardId] = arr;
+      return copy;
     });
     setCurrent('');
     setSelectedIndex(null);
   };
 
   const handleSelectSubject = (idx, navigateToPage = false) => {
-    const isRestricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
+const isRestricted = (
+  ['jee', 'neet', 'class1-5', 'class6-12'].includes(selectedCard?.id)
+) && !selectedStandard;
     if (isRestricted) {
       alert('Please select a standard before proceeding.');
       return;
@@ -96,19 +163,18 @@ const AdminHome = () => {
     setSelectedIndex(idx);
     setCurrent(currentSubjects[idx] || '');
     if (navigateToPage) {
+     // console.log("mide",mode)
       navigate('/adminright', {
-        state: {
-          cardId: currentCardId,
-          subject: currentSubjects[idx],
-          ...(selectedCard?.id === 'jee' || selectedCard?.id === 'neet'
-            ? {
-                standard: selectedStandard,
-                examTitle: selectedCard.title,
-                examSubtitle: selectedCard.subtitle,
-              }
-            : {}),
-        },
-      });
+  state: {
+    cardId: currentCardId,
+    subjectName:userRole==='admin'? currentSubjects[idx]:currSubjects[idx],
+    standard: selectedStandard,  // Always pass standard
+    examTitle: selectedCard.title,
+    examSubtitle: selectedCard.subtitle,
+    courseName: mode,
+  },
+});
+
     }
   };
 
@@ -146,41 +212,55 @@ const AdminHome = () => {
 
   return (
     <div className="container">
-      {mode && selectedCard && (
-        <>
-          <button className="dis" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
-          <aside className={`sidebar ${menuOpen ? '' : 'hidden'}`}>
-            <h2 className="sub">Subjects {selectedStandard && `(Std ${selectedStandard})`}</h2>
-            <ul>
-              {currentSubjects.length === 0 ? (
-                <li className="empty">No subjects in this category</li>
-              ) : (
-                currentSubjects.map((subj, idx) => {
-                  const restricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
-                  return (
-                    <li
-                      key={idx}
-                      className={`${selectedIndex === idx ? 'active' : ''} ${restricted ? 'disabled' : ''}`}
-                      onClick={() => handleSelectSubject(idx, true)}
-                    >
-                      <FiBook className="icon" />
-                      <span>{subj}</span>
-                    </li>
-                  );
-                })
-              )}
-            </ul>
-          </aside>
-        </>
-      )}
+      {mode !== null && selectedCard !== null && (
+  <>
+    <button className="dis" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
+
+    <aside className={`sidebar ${menuOpen ? '' : 'hidden'}`}>
+      <h2 className="sub">Subjects</h2>
+      <ul>
+        {currentSubjects.length === 0 ? (
+          <li className="empty">No subjects in this category</li>
+        ) : userRole==='admin'?(
+          currentSubjects.map((subj, idx) => {
+            const restricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
+            return (
+              <li
+                key={idx}
+                className={`${selectedIndex === idx ? 'active' : ''} ${restricted ? 'disabled' : ''}`}
+                onClick={() => handleSelectSubject(idx, true)}
+              >
+                <FiBook className="icon" />
+                <span>{subj}</span>
+              </li>
+            );
+          })
+        ):(currSubjects.map((subj, idx) => {
+            const restricted = (selectedCard?.id === 'jee' || selectedCard?.id === 'neet') && !selectedStandard;
+            return (
+              <li
+                key={idx}
+                className={`${selectedIndex === idx ? 'active' : ''} ${restricted ? 'disabled' : ''}`}
+                onClick={() => handleSelectSubject(idx, true)}
+              >
+                <FiBook className="icon" />
+                <span>{subj}</span>
+              </li>
+            );
+          }))}
+      </ul>
+    </aside>
+  </>
+)}
 
       <section className="main">
         <div className="header">
           {mode === null ? (
             <div className="mode-switch-container">
-              <button className="mode-button uniform" onClick={() => setMode('academics')}>Academics</button>
-              <button className="mode-button uniform" onClick={() => setMode('professional')}>Professional Training</button>
-              <button className="mode-button uniform" onClick={() => navigate('/manage-account')}>Manage Account</button>
+              {(userRole==='admin'||courseType==='academics')&&<button className="mode-button uniform" onClick={() => setMode('academics')}>Academics</button>}
+              {(userRole==='admin'||courseType==='professional')&&<button className="mode-button uniform" onClick={() => setMode('professional')}>Professional Training</button>}
+              {userRole==='admin'&&(<button className="mode-button uniform" onClick={() => navigate('/manage-account')}>Manage Account</button>)}
+
             </div>
           ) : (
             <>
@@ -192,6 +272,7 @@ const AdminHome = () => {
                       {selectedCard.title} ({selectedCard.subtitle})
                     </span>
                   </div>
+
                   <div className="standard-select">
                     <label>Select Standard:</label>
                     <select
@@ -199,10 +280,17 @@ const AdminHome = () => {
                       onChange={(e) => setSelectedStandard(e.target.value)}
                     >
                       <option value="">-- Select --</option>
-                      <option value="11">Standard 11</option>
-                      <option value="12">Standard 12</option>
+                      {userRole!=='admin'?(currStandards.map((cardObj,idx)=>(
+                        <option key={idx}>{cardObj}</option>
+                      ))):(<>
+                         <option>11</option>
+                        <option>12</option>
+                      </>
+                       
+                      )}
                     </select>
                   </div>
+
                   <div className="card-cancel-wrapper">
                     <button className="card-cancel-button" onClick={() => setSelectedCard(null)}>Back</button>
                     <button className="card-cancel-button" onClick={handleCancelAll}>Cancel</button>
@@ -211,6 +299,7 @@ const AdminHome = () => {
               ) : (
                 <>
                   <h3 className="subs">Subjects</h3>
+
                   <div className="summary-box">
                     {selectedCard === null ? (
                       <span>Select a card above to manage its subjects</span>
@@ -235,11 +324,17 @@ const AdminHome = () => {
                     <div className="cards-wrapper">
                       <div className="cards-container">
                         {(mode === 'academics' ? academicCards : professionalCards).map((cardObj) => (
-                          <div key={cardObj.id} className="card" onClick={() => handleCardClick(cardObj)}>
+                          userRole==='admin'?(
+                            <div key={cardObj.id} className="card" onClick={() => handleCardClick(cardObj)}>
                             <div className="card-subtitle">{cardObj.subtitle}</div>
                             <div className="card-title">{cardObj.title}</div>
                             <button className="card-button">Select</button>
                           </div>
+                          ):(cardObj.id===courseName&&(<div key={cardObj.id} className="card" onClick={() => handleCardClick(cardObj)}>
+                            <div className="card-subtitle">{cardObj.subtitle}</div>
+                            <div className="card-title">{cardObj.title}</div>
+                            <button className="card-button">Select</button>
+                          </div>))
                         ))}
                       </div>
                       <div className="card-cancel-wrapper">
@@ -254,17 +349,43 @@ const AdminHome = () => {
                           {selectedCard.title} ({selectedCard.subtitle})
                         </span>
                       </div>
-
+                       {/* 👇 Show Standard Select if applicable */}
+{['class1-5', 'class6-12'].includes(selectedCard?.id) && currentSubjects.length > 0 && (
+    <div className="standard-select">
+      <label>Select Standard:</label>
+      <select
+        value={selectedStandard}
+        onChange={(e) => setSelectedStandard(e.target.value)}
+      >
+        <option value="">-- Select --</option>
+        {selectedCard?.id === 'class1-5' && (
+          <>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </>
+        )}
+        {selectedCard?.id === 'class6-12' && (
+          <>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+          </>
+        )}
+      </select>
+    </div>
+  )}
                       <input
                         type="text"
                         placeholder="Subject Name"
                         value={current}
                         onChange={(e) => setCurrent(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            selectedIndex === null ? handleAdd() : handleUpdate();
-                          }
-                        }}
                       />
 
                       <div className="buttons">

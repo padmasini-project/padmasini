@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './NeetExplanation.css';
 import { FaPlay, FaPause, FaCheckCircle } from 'react-icons/fa';
+//import parseTextWithFormulas from "../backendSwami/utils/parseTextWithFormulas";
 
 const NeetExplanation = ({
   explanation = '',
@@ -62,7 +63,31 @@ const NeetExplanation = ({
     setHighlightedRange({ start: 0, end: 0 });
     utteranceRef.current = null;
   }, [subtopicTitle]);
+const parseTextWithFormulas = (texts) => {
+  if(!texts)return;
+  const text=texts.replace(/\\\\/g, "\\")
+  const TEMP_DOLLAR = '__DOLLAR__';
+  const safeText = text.replace(/\\\$/g, TEMP_DOLLAR);
 
+  const parts = safeText.split(/(\$[^$]+\$)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('$') && part.endsWith('$')) {
+      const latex = part.slice(1, -1);
+      try {
+        const html = katex.renderToString(latex, {
+          throwOnError: false,
+          output: 'html',
+        });
+        return <span key={index}>{parse(html)}</span>;
+      } catch (err) {
+        return <span key={index} style={{ color: 'red' }}>{latex}</span>;
+      }
+    } else {
+      return <span key={index}>{part.replaceAll(TEMP_DOLLAR, '$')}</span>;
+    }
+  });
+};
   const handleTogglePlayPause = () => {
     const text = explanation || subtopicTitle;
     if (isSpeaking) {
@@ -157,9 +182,12 @@ const NeetExplanation = ({
             </div>
           ) : (
             <p>
-              {before}
-              <mark className="highlight">{highlight}</mark>
-              {after}
+              <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+  {parseTextWithFormulas(before)}
+  <mark className="highlight">{parseTextWithFormulas(highlight)}</mark>
+  {parseTextWithFormulas(after)}
+</pre>
+
             </p>
           )}
         </div>
