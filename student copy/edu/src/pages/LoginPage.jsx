@@ -25,9 +25,9 @@ const LoginPage = () => {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // fetch("http://localhost:3000/login", {
+    fetch("http://localhost:3000/login", {
       // fetch("https://studentpadmasini.onrender.com/login", {
-      fetch("https://padmasini-prod-api.padmasini.com/login", {
+      // fetch("https://padmasini-prod-api.padmasini.com/login", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -40,6 +40,10 @@ const LoginPage = () => {
     })
     .then(async resp => {
       const data = await resp.json();
+      if(data.message==='Invalid credentials'){
+        alert("no user or password matched")
+        throw new Error(data.message || "Login failed");
+      }
       if (data.message === 'Login successful') {
         localStorage.setItem('currentUser', JSON.stringify(data.user));
         login(data.user);

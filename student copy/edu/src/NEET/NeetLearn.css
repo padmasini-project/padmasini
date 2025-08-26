@@ -340,7 +340,7 @@
   .Neet-container {
     flex-direction: column;
     padding: 15px;
-    margin-top: 80px;
+    margin-top: 90px;
     width: 100%;
   }
 
@@ -431,6 +431,3 @@
     background-color: #0ee83d;
   }
 }
-
-
-

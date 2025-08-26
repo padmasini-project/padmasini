@@ -39,7 +39,8 @@ const [photoPreview, setPhotoPreview] = useState(null);
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
-
+const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -125,11 +126,11 @@ const sendUserDetails=async () => {
     console.log("photo is there")
     formData.append('photo', photo);
   }
-
+console.log(selectedCourse,"  ",selectedStandard)
   try {
-    // const response = await fetch('http://localhost:3000/register/newUser', {
+    const response = await fetch('http://localhost:3000/register/newUser', {
       // const response = await fetch('https://studentpadmasini.onrender.com/register/newUser', {
-      const response = await fetch('https://padmasini-prod-api.padmasini.com/register/newUser', {
+      // const response = await fetch('https://padmasini-prod-api.padmasini.com/register/newUser', {
       method: 'POST',
       body: formData, // Do not set Content-Type; browser sets it with boundary
     });
@@ -151,9 +152,30 @@ const sendUserDetails=async () => {
 };
   const handleFinalSubmit = (e) => {
     e.preventDefault();
-    if ( !dob || !gender || !selectedCourse) return alert("Please fill in all required fields.");//removed !photo||
-    if ((selectedCourse === "JEE" || selectedCourse === "NEET") && !selectedStandard) return alert("Please select your standard (11th or 12th).");
-    const updatedUser = JSON.parse(localStorage.getItem("registeredUser") || "{}");
+     if (!isUpgrade) {
+    if ( !dob || !gender || !selectedCourse) {
+      return alert("Please fill in all required fields.");
+    }
+  } else {
+    if (!selectedCourse) {
+      return alert("Please select your course.");
+    }
+  }
+   // if ( !dob || !gender || !selectedCourse) return alert("Please fill in all required fields.");//removed !photo||
+   if (
+  (selectedCourse === "JEE" ||
+    selectedCourse === "NEET" ||
+    selectedCourse === "Both") &&
+  !selectedStandard
+) {
+  return alert("Please select your standard (11th, 12th or Both).");
+}
+   // if ((selectedCourse === "JEE" || selectedCourse === "NEET") && !selectedStandard) return alert("Please select your standard (11th or 12th).");
+ let normalizedStandard = selectedStandard;
+if (selectedStandard === "Both (11th + 12th)") {
+  normalizedStandard = "both";
+}
+   const updatedUser = JSON.parse(localStorage.getItem("registeredUser") || "{}");
     updatedUser.dob = dob;
     updatedUser.gender = gender;
     updatedUser.course = selectedCourse;
@@ -173,6 +195,14 @@ const sendUserDetails=async () => {
 
  const completePayment = (method) => {
     setPaymentMethod(method);
+      if (["Google Pay", "PhonePe", "Paytm"].includes(method)) {
+    setIsPaying(true);
+    setTimeout(() => {
+      setIsPaying(false);
+      setPaymentSuccess(true);
+      alert(`${method} Payment Successful!`);
+    }, 2000);
+  }
   };
 
   const handlePayNowClick = () => {
@@ -188,6 +218,7 @@ const sendUserDetails=async () => {
     setIsPaying(true);
     setTimeout(() => {
       setIsPaying(false);
+      setPaymenySuccess(true)
       alert(`Payment successful using ${paymentMethod}`);
       const user = JSON.parse(localStorage.getItem("registeredUser") || "{}");
       const startDate = new Date();
@@ -205,7 +236,7 @@ const sendUserDetails=async () => {
       user.startDate = startDate.toISOString().split("T")[0];
       user.endDate = endDate.toISOString().split("T")[0];
       localStorage.setItem("registeredUser", JSON.stringify(user));
-      sendUserDetails()
+      // sendUserDetails()
       console.log(JSON.stringify(user))
       alert(`Login successful! Welcome ${user.firstname}`);
       
@@ -302,19 +333,20 @@ const sendUserDetails=async () => {
                   <option value="six">Class 6-12</option> */}
                   <option value="JEE">JEE</option>
                   <option value="NEET">NEET</option>
+                  <option value="Both">Both (JEE + NEET)</option>
                   <option value="Other">Other</option>
                 </select>
 
-                {(selectedCourse === "first" || selectedCourse === "six" || selectedCourse === "JEE" || selectedCourse === "NEET") && (
+                {(selectedCourse === "first" || selectedCourse === "six" || selectedCourse === "JEE" || selectedCourse === "NEET"||selectedCourse === "Both") && (
                   <select value={selectedStandard} onChange={(e) => setSelectedStandard(e.target.value)} required>
                     <option value="">Select Standard</option>
                     {/* {selectedCourse === "first" && [1,2,3,4,5].map(n => <option key={n}>{n}</option>)}
                     {selectedCourse === "six" && [6,7,8,9,10,11,12].map(n => <option key={n}>{n}</option>)} */}
-                    {(selectedCourse === "JEE" || selectedCourse === "NEET") && ["11th", "12th"].map(std => <option key={std}>{std}</option>)}
+                    {["11th", "12th", "Both (11th + 12th)"].map(std => <option key={std} value={std}>{std}</option>)}
                   </select>
                 )}
                 <div className="student-navigation-buttons">
-                 <button onClick={() => (isUpgrade ? navigate("/home") : setStep(1))}>Previous</button>
+                 <button type="button" onClick={() => (isUpgrade ? navigate("/home") : setStep(1))}>Previous</button>
 <button type="submit">Next</button>
                 </div>
 
@@ -326,15 +358,39 @@ const sendUserDetails=async () => {
 
         {step === 3 && (
           <div className="payment-section">
-          <h2>Select Your Plan</h2>
+           <h2>{isUpgrade ? "Upgrade Your Plan" : "Select Your Plan"}</h2>
           <div className="payment-selection">
             
 
             <div className="plans">
                  {!isUpgrade && (
               <label><input type="radio" name="plan" value="trial" checked={selectedPlan === "trial"} onChange={() => setSelectedPlan("trial")} /> 15-day Free Trial</label>)}
-              <label><input type="radio" name="plan" value="monthly" checked={selectedPlan === "monthly"} onChange={() => setSelectedPlan("monthly")} /> 1 Month – ₹1000</label>
-              <label><input type="radio" name="plan" value="yearly" checked={selectedPlan === "yearly"} onChange={() => setSelectedPlan("yearly")} /> 1 Year – ₹12000</label>
+              {/* <label><input type="radio" name="plan" value="monthly" checked={selectedPlan === "monthly"} onChange={() => setSelectedPlan("monthly")} /> 1 Month – ₹1000</label>
+              <label><input type="radio" name="plan" value="yearly" checked={selectedPlan === "yearly"} onChange={() => setSelectedPlan("yearly")} /> 1 Year – ₹12000</label> */}
+             {isUpgrade && (
+          <>
+            <label>
+              <input
+                type="radio"
+                name="plan"
+                value="monthly"
+                checked={selectedPlan === "monthly"}
+                onChange={() => setSelectedPlan("monthly")}
+              />
+              1 Month – ₹1000
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="plan"
+                value="yearly"
+                checked={selectedPlan === "yearly"}
+                onChange={() => setSelectedPlan("yearly")}
+              />
+              1 Year – ₹12000
+            </label>
+          </>
+        )}
             </div>
 
             <div className="promo-section">
@@ -378,21 +434,40 @@ const sendUserDetails=async () => {
             </div>
           )}
 
-          {paymentMethod && (
+          {paymentMethod && !paymentSuccess &&(
             <button onClick={handleFinalPayment} disabled={isPaying}>
               {isPaying ? "Processing..." : "Pay Now"}
             </button>
           )}
+           {paymentSuccess && (
+  <button
+    onClick={async () => {
+      setIsSubmitting(true);
+      await sendUserDetails();
+      setIsSubmitting(false);
+
+      const user = JSON.parse(sessionStorage.getItem("registeredUser") || "{}");
+      alert(`Registration Completed Successfully! Welcome ${user.firstname || ""} ${user.lastname || ""}`);
+
+      navigate("/login");
+    }}
+    disabled={isSubmitting}
+  >
+    {isSubmitting ? "Submitting..." : "Submit"}
+  </button>
+)}
         </div>
             )}
             <div className="plans-navigation-buttons">
               <button onClick={() => setStep(2)}>Previous</button>
+              {!paymentSuccess && (
               <button onClick={() => {
                 if (!selectedPlan) return alert("Please select a plan.");
                 setShowPaymentOptions(true);
               }}>
                 Pay Now
               </button>
+               )}
             </div>
 
             

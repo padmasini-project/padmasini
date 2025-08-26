@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema({
   mobile: String,
   dob: String,
   gender: String,
-  selectedCourse: String,
-  selectedStandard: String,
+  selectedCourse: {type: [String], default: []},
+  selectedStandard: {type: [String], default: []},
   photo: String, // store filename or S3 link
 }, { timestamps: true });
 

@@ -15,15 +15,36 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage: storage });
+
 //adding new user
 router.post('/newUser', upload.single('photo'), async (req, res) => {
   console.log("inside register user")
   //console.log("req.file:", req.file);
   try {
-    const {
+    let {
       firstname, lastname, email, password,
       mobile, dob, gender, selectedCourse, selectedStandard
     } = req.body;
+    console.log("selectedCourse from req.body:", selectedCourse);
+console.log("selectedStandard from req.body:", selectedStandard);
+
+    // Handle "both" case first
+if (selectedCourse === 'Both') {
+  selectedCourse = ['NEET', 'JEE'];
+} else {
+  selectedCourse = Array.isArray(selectedCourse)
+    ? selectedCourse
+    : selectedCourse ? [selectedCourse] : [];
+}
+
+if (selectedStandard === 'Both (11th + 12th)') {
+  selectedStandard = ['11', '12'];
+} else {
+  selectedStandard = Array.isArray(selectedStandard)
+    ? selectedStandard
+    : selectedStandard ? [selectedStandard] : [];
+}
+
  const dbName = "studentUsers" // 👈 e.g., jee, neet, etc.
     const connection = await getConnection(dbName);
     const User = connection.model('studentUserDetail', userSchema,'studentUserDetail'); 
@@ -32,13 +53,13 @@ router.post('/newUser', upload.single('photo'), async (req, res) => {
   const baseUrl = req.protocol + '://' + req.get('host');
   photoUrl = `${baseUrl}/uploads/${req.file.filename}`;
 }
-
+  
     const newUser = new User({
       firstname,
       lastname,
       email,
       password,
-      mobile,
+      mobile, 
       dob,
       gender,
       selectedCourse,

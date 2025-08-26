@@ -22,9 +22,9 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // fetch(`http://localhost:3000/logout`, {
+    fetch(`http://localhost:3000/logout`, {
       // fetch(`https://studentpadmasini.onrender.com/logout`, {
-      fetch(`https://padmasini-prod-api.padmasini.com/logout`, {
+      // fetch(`https://padmasini-prod-api.padmasini.com/logout`, {
       method: "POST",
       credentials: "include",
     })
@@ -44,9 +44,9 @@ const Navbar = () => {
       .catch((err) => console.log(err));
   };
  useEffect(()=>{
-  // fetch('http://localhost:3000/checkSession',{
+  fetch('http://localhost:3000/checkSession',{
     // fetch(`https://studentpadmasini.onrender.com/checkSession`, {
-     fetch(`https://padmasini-prod-api.padmasini.com/checkSession`, {
+    //  fetch(`https://padmasini-prod-api.padmasini.com/checkSession`, {
     method:"GET",
     credentials:'include'
   }).then(resp=> resp.json())
@@ -101,9 +101,20 @@ const existingUser=localStorage.getItem('currentUser')
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const selectedCourse = currentUser?.selectedCourse;
-
+    let selectedCourse=[]
+if(Array.isArray(currentUser?.selectedCourse)){
+  selectedCourse=currentUser?.selectedCourse
+}else {
+selectedCourse=[currentUser?.selectedCourse]
+}
+let selectedStandard=[]
+if(Array.isArray(currentUser?.selectedStandard)){
+selectedStandard=currentUser?.selectedStandard
+}else {
+selectedStandard=[currentUser?.selectedStandard]
+}
+   
+//console.log(selectedCourse)
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="logo">
@@ -126,24 +137,19 @@ const existingUser=localStorage.getItem('currentUser')
                 setUserDropdownOpen(false);
               }}
             >
-              Courses {coursesOpen ? <FaChevronUp /> : <FaChevronDown />}
-            </div>
+             <span>Courses</span>
+  <span className="dropdown-icon">
+    {coursesOpen ? <FaChevronUp /> : <FaChevronDown />}
+  </span></div>
             {coursesOpen && (
               <ul className="dropdown-menu">
-                {selectedCourse === "NEET" && (
-                  <li>
-                    <Link to="/NEET" onClick={() => setMenuOpen(false)}>
-                      NEET
+                {Array.isArray(selectedCourse)&&selectedCourse?.map((course) => (
+                  <li key={course}>
+                    <Link to={`/${course}`} onClick={() => setMenuOpen(false)}>
+                      {course}
                     </Link>
                   </li>
-                )}
-                {selectedCourse === "JEE" && (
-                  <li>
-                    <Link to="/JEE" onClick={() => setMenuOpen(false)}>
-                      JEE
-                    </Link>
-                  </li>
-                )}
+                ))}
               </ul>
             )}
           </li>
@@ -159,8 +165,10 @@ const existingUser=localStorage.getItem('currentUser')
                   setCoursesOpen(false);
                 }}
               >
-                Hi, {currentUser.firstname}{" "}
-                {userDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                <span>Hi, {currentUser.firstname}</span>
+               <span className="dropdown-icon">
+          {userDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+        </span>
               </div>
 
               {userDropdownOpen && (
@@ -184,11 +192,11 @@ const existingUser=localStorage.getItem('currentUser')
                       <strong>Mobile:</strong> {currentUser.mobile}
                     </li>
                     <li>
-                      <strong>Role:</strong>{" "}
-                      {currentUser.selectedCourse?.toUpperCase()}
+                      <strong>Courses:</strong>{" "}
+                      {selectedCourse?.join(",")}
                     </li>
                     <li>
-                      <strong>Standard:</strong> {currentUser.selectedStandard}
+                      <strong>Standards:</strong> {selectedStandard?.join(",")}
                     </li>
                     <li>
                       <button
@@ -223,3 +231,4 @@ const existingUser=localStorage.getItem('currentUser')
 };
 
 export default Navbar;
+

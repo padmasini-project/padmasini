@@ -27,7 +27,7 @@ const Subjects = () => {
     console.log(JSON.parse(localStorage.getItem("currentUser")))
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
     if (storedUser) {
-      setStandard(storedUser.standard || "");
+      setStandard(storedUser.selectedStandard || "");
 
       if (storedUser.standard === "both") {
         const savedClass = localStorage.getItem("currentClass") || "";
@@ -46,7 +46,7 @@ const Subjects = () => {
       if (storedUser.startDate) setStartDate(formatDate(storedUser.startDate));
       if (storedUser.endDate) setEndDate(formatDate(storedUser.endDate));
     }
-
+    
     const savedCompletion = JSON.parse(localStorage.getItem("subjectCompletion"));
     if (savedCompletion) {
       setSubjectCompletion(savedCompletion);

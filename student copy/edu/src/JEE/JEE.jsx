@@ -22,14 +22,20 @@ const Jee = () => {
   const learningPathRef = useRef(null);
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("registeredUser"));
+    const storedUser = JSON.parse(localStorage.getItem("currentUser"));
     if (storedUser) {
-      setStandard(storedUser.standard || "");
-
-      if (storedUser.standard === "both") {
-        const savedClass = localStorage.getItem("currentClassJee") || "";
-        setSelectedClass(savedClass);
-      }
+      setStandard(storedUser.selectedStandard || "");
+if (storedUser.selectedStandard.length === 1) {
+  const std = storedUser.selectedStandard[0];
+  localStorage.setItem("currentClassJee", std);
+}if (typeof storedUser.selectedStandard === "string") {
+const  std = storedUser.selectedStandard;
+localStorage.setItem("currentClassJee", std)
+}
+      // if (storedUser.standard === "both") {
+      //   const savedClass = localStorage.getItem("currentClassJee") || "";
+      //   setSelectedClass(savedClass);
+      // }
 
       const formatDate = (dateStr) => {
         const date = new Date(dateStr);
@@ -43,7 +49,7 @@ const Jee = () => {
       if (storedUser.startDate) setStartDate(formatDate(storedUser.startDate));
       if (storedUser.endDate) setEndDate(formatDate(storedUser.endDate));
     }
-
+    console.log(storedUser.selectedStandard)
     const savedCompletion = JSON.parse(localStorage.getItem("jeeSubjectCompletion"));
     if (savedCompletion) {
       setSubjectCompletion(savedCompletion);
@@ -53,6 +59,7 @@ const Jee = () => {
   const handleClassChange = (e) => {
     const selected = e.target.value;
     setSelectedClass(selected);
+    console.log(standard)
     localStorage.setItem("currentClassJee", selected);
   };
 
@@ -92,22 +99,23 @@ const Jee = () => {
       <aside className="sidebar">
         <h2>JEE</h2>
 
-        {standard && (
-          <p>
-            <strong>Standard:</strong>{" "}
-            {standard === "11th" ? (
-              "Class 11"
-            ) : standard === "12th" ? (
-              "Class 12"
-            ) : (
-              <select value={selectedClass} onChange={handleClassChange} required>
-                <option value="">Select Class</option>
-                <option value="11th">Class 11</option>
-                <option value="12th">Class 12</option>
-              </select>
-            )}
-          </p>
-        )}
+        {standard && standard.length > 0 && (
+  <p>
+    <strong>Standard:</strong>{" "}
+    {Array.isArray(standard)&&standard.map((std, index) => (
+      <span key={index}>
+        {std === "11th" ? "Class 11" : std === "12th" ? "Class 12" : std}
+        {index < standard.length - 1 && ", "}
+      </span>
+    ))}
+    {typeof standard==='string'&&(
+      <span>
+        {standard}
+      </span>
+    )}
+  </p>
+)}
+
 
         <span className="badge certified">Certified</span>
         <span className="badge limited">Limited Access Only</span>

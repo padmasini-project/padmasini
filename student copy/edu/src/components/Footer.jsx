@@ -6,7 +6,7 @@ import "./Footer.css";
 const Footer = () => {
   return (
     <footer className="footer">
-      <p className="foot">@2025 EduApp. All rights reserved</p>
+      <p className="foot">@2025 Padmasini. All rights reserved</p>
       <p className="foot">
         For any enquiry:&nbsp;
         <Link to="/contact-us" className="footer-link">

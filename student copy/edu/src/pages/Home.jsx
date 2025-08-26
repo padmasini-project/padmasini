@@ -37,6 +37,7 @@ const Home = () => {
     const parsedUser = JSON.parse(storedUser);
     setCurrentUser(parsedUser);
     setCourseType(parsedUser.selectedCourse);
+    console.log(parsedUser.selectedCourse)
   }
   window.scrollTo(0, 0);
       console.log(localStorage.getItem("currentUser"))
@@ -44,22 +45,21 @@ const Home = () => {
 }, []);
 
 
-  const handleLearnMore = () => {
-     if(currentUser&&localStorage.getItem('currentUser')){
-      console.log(courseType)
-      
-      if (courseType === 'JEE') {
-      navigate('/JEE');
-      return;
-    }
-    else if (courseType === 'NEET') {
-      navigate('/NEET');
+  const handleLearnMore = (selectedCourseType) => {
+  if (currentUser && localStorage.getItem("currentUser")) {
+    console.log("Selected:", selectedCourseType);
+
+    if (selectedCourseType === "JEE") {
+      navigate("/JEE");
+    } else if (selectedCourseType === "NEET") {
+      navigate("/NEET");
     } else {
-      navigate("/register");
+      navigate("/register"); // fallback
     }
-    }
-   else { navigate("/register");}
-  };
+  } else {
+    navigate("/register");
+  }
+};
 
   // Chatbot state
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -126,50 +126,51 @@ const Home = () => {
           </button>
 
           <div className="tabs-container" id="tabScroll">
-            {[/*{
-              title: "Bright Beginnings",
-              range: "Kindergarten",
-              tags: ["Reading", "Writing", "Basics"],
-              img: ncertImg
-            }, {
-              title: "Practice Zone",
-              range: "Class 1 - 5",
-              tags: ["Learning", "Practice", "Basic Tests"],
-              img: previousImg
-            }, {
-              title: "Board Exam Kit",
-              range: "Class 6 - 12",
-              tags: ["CBSE", "ICSE", "Boards"],
-              img: sampleImg
-            },*/ {
-              courseType:"JEE",
-              title: "JEE Prep Material",
-              range: "JEE Exam",
-              tags: ["Reference", "Advanced", "Textbooks"],
-              img: booksImg
-            }, {
-              courseType:"NEET",
-              title: "NEET Ready Papers",
-              range: "NEET Exam",
-              tags: ["Mock Tests", "Practice", "Important"],
-              img: importantImg
-            }].map((card, index) => 
-              courseType === card.courseType||!currentUser?(<div key={index} className="tab-card updated-card">
-                <div className="card-header">
-                  <span className="class-range">{card.range}</span>
-                  <h3>{card.title}</h3>
-                </div>
-                <div className="tags">
-                  {card.tags.map((tag, i) => (
-                    <span key={i} className="tag">{tag}</span>
-                  ))}
-                </div>
-                <img className="card-image" src={card.img} alt={card.title} />
-                <button className="explore-btn" onClick={handleLearnMore}>
-                  Learn More
-                </button>
-              </div>):null
-            )}
+            {[
+  {
+    courseType: "JEE",
+    title: "JEE Prep Material",
+    range: "JEE Exam",
+    tags: ["Reference", "Advanced", "Textbooks"],
+    img: booksImg
+  },
+  {
+    courseType: "NEET",
+    title: "NEET Ready Papers",
+    range: "NEET Exam",
+    tags: ["Mock Tests", "Practice", "Important"],
+    img: importantImg
+  }
+].map((card, index) => {
+  const canShow = 
+    !currentUser || // show all if no user
+    (Array.isArray(courseType) && courseType.some(c => c === card.courseType)); 
+
+  if (!canShow) return null;
+
+  return (
+    <div key={index} className="tab-card updated-card">
+      <div className="card-header">
+        <span className="class-range">{card.range}</span>
+        <h3>{card.title}</h3>
+      </div>
+      <div className="tags">
+        {card.tags.map((tag, i) => (
+          <span key={i} className="tag">{tag}</span>
+        ))}
+      </div>
+      <img className="card-image" src={card.img} alt={card.title} />
+      <button 
+        className="explore-btn" 
+        onClick={() => handleLearnMore(card.courseType)}
+      >
+        Learn More
+      </button>
+    </div>
+  );
+})}
+
+            
           </div>
 
           <button
