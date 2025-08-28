@@ -24,14 +24,19 @@ const Jee = () => {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
     if (storedUser) {
-      setStandard(storedUser.selectedStandard || "");
-if (storedUser.selectedStandard.length === 1) {
-  const std = storedUser.selectedStandard[0];
-  localStorage.setItem("currentClassJee", std);
-}if (typeof storedUser.selectedStandard === "string") {
-const  std = storedUser.selectedStandard;
-localStorage.setItem("currentClassJee", std)
-}
+       const stdData = storedUser.selectedStandard;
+
+      if (typeof stdData === "string") {
+        setStandard(stdData);
+        localStorage.setItem("currentClassJee", stdData);
+      } else if (Array.isArray(stdData)) {
+        if (stdData.length === 1) {
+          setStandard(stdData[0]); // Single element
+          localStorage.setItem("currentClassJee", stdData[0]);
+        } else {
+          setStandard(stdData); // Multiple options → dropdown
+        }
+      }
       // if (storedUser.standard === "both") {
       //   const savedClass = localStorage.getItem("currentClassJee") || "";
       //   setSelectedClass(savedClass);
@@ -99,22 +104,29 @@ localStorage.setItem("currentClassJee", std)
       <aside className="sidebar">
         <h2>JEE</h2>
 
-        {standard && standard.length > 0 && (
+        {standard && (
   <p>
     <strong>Standard:</strong>{" "}
-    {Array.isArray(standard)&&standard.map((std, index) => (
-      <span key={index}>
-        {std === "11th" ? "Class 11" : std === "12th" ? "Class 12" : std}
-        {index < standard.length - 1 && ", "}
-      </span>
-    ))}
-    {typeof standard==='string'&&(
-      <span>
-        {standard}
-      </span>
-    )}
-  </p>
-)}
+     {Array.isArray(standard) ? (
+              <select value={selectedClass} onChange={handleClassChange}>
+                <option value="">Select Class</option>
+                {standard.map((std, index) => (
+                  <option key={index} value={std}>
+                    {std === "11th" ? "Class 11" : std === "12th" ? "Class 12" : std}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span>
+                {standard === "11th"
+                  ? "Class 11"
+                  : standard === "12th"
+                  ? "Class 12"
+                  : standard}
+              </span>
+            )}
+          </p>
+        )}
 
 
         <span className="badge certified">Certified</span>
@@ -190,13 +202,25 @@ localStorage.setItem("currentClassJee", std)
                     </div>
                     <button
                       className="continue-btn"
-                      onClick={() =>
+                      onClick={() =>{
+                         if(!standard){
+                          console.log("jiii")
+                          alert("please select a standard")
+                          return
+                        }
+                        if (Array.isArray(standard) && !selectedClass) {
+    alert("Please select a class before proceeding");
+    return;
+  }
                         navigate("/JeeLearn", {
                           state: {
                             subject: subject.name,
                             selectedClass: standard === "both" ? selectedClass : standard,
                           },
                         })
+                      }
+                        
+                        
                       }
                       disabled={standard === "both" && !selectedClass}
                     >

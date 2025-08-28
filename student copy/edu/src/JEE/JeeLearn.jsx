@@ -194,11 +194,9 @@ const collectAllSubtopics = (subs = []) =>
   };
 
   const handleSubtopicClick = (sub, index) => {
-    if (!sub.units || sub.units.length === 0) {
-      setSelectedSubtopic(sub);
-      if (isMobile) setShowTopics(false);
-      setExpandedTopic(index);
-    }
+    setSelectedSubtopic(sub);
+    if (isMobile) setShowTopics(false);
+    setExpandedTopic(index);
   };
 
   const handleBackToTopics = () => {

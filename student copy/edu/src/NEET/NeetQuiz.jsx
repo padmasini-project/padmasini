@@ -34,7 +34,31 @@ const NeetQuiz = ({ topicTitle, subtopicTitle, test, onBack, onMarkComplete }) =
       handleAutoSubmit();
     }
   }, [timeRemaining, submitted, hasStarted]);
+const parseTextWithFormulas = (texts) => {
+  if(!texts)return;
+  const text=texts.replace(/\\\\/g, "\\")
+  const TEMP_DOLLAR = '__DOLLAR__';
+  const safeText = text.replace(/\\\$/g, TEMP_DOLLAR);
 
+  const parts = safeText.split(/(\$[^$]+\$)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('$') && part.endsWith('$')) {
+      const latex = part.slice(1, -1);
+      try {
+        const html = katex.renderToString(latex, {
+          throwOnError: false,
+          output: 'html',
+        });
+        return <span key={index}>{parse(html)}</span>;
+      } catch (err) {
+        return <span key={index} style={{ color: 'red' }}>{latex}</span>;
+      }
+    } else {
+      return <span key={index}>{part.replaceAll(TEMP_DOLLAR, '$')}</span>;
+    }
+  });
+};
   useEffect(() => {
     const isDone = sessionStorage.getItem(`neet-completed-${subtopicTitle}`) === "true";
     if (isDone) setIsComplete(true);
@@ -138,9 +162,9 @@ const NeetQuiz = ({ topicTitle, subtopicTitle, test, onBack, onMarkComplete }) =
             </div>
 
             <div className="quiz-question">
-              <p className="question-text">
-                {currentQIndex + 1}. {currentQuestion.question}
-              </p>
+              <pre className="question-text" style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+  {parseTextWithFormulas(`${currentQIndex + 1}. ${currentQuestion.question}`)}
+</pre>
               <div className="options-group">
                 {[currentQuestion.option1, currentQuestion.option2, currentQuestion.option3, currentQuestion.option4].map((opt, j) => {
                   const isSelected = userAnswers[currentQIndex] === opt;
@@ -160,7 +184,7 @@ const NeetQuiz = ({ topicTitle, subtopicTitle, test, onBack, onMarkComplete }) =
                         onChange={() => handleOptionChange(opt)}
                         disabled={submitted}
                       />
-                      {opt}
+                      {parseTextWithFormulas(opt)}
                     </label>
                   );
                 })}

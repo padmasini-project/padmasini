@@ -65,7 +65,31 @@ const JeeExplanation = ({
     setHighlightedRange({ start: 0, end: 0 });
     utteranceRef.current = null;
   }, [subtopicTitle]);
+const parseTextWithFormulas = (texts) => {
+  if(!texts)return;
+  const text=texts.replace(/\\\\/g, "\\")
+  const TEMP_DOLLAR = '__DOLLAR__';
+  const safeText = text.replace(/\\\$/g, TEMP_DOLLAR);
 
+  const parts = safeText.split(/(\$[^$]+\$)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('$') && part.endsWith('$')) {
+      const latex = part.slice(1, -1);
+      try {
+        const html = katex.renderToString(latex, {
+          throwOnError: false,
+          output: 'html',
+        });
+        return <span key={index}>{parse(html)}</span>;
+      } catch (err) {
+        return <span key={index} style={{ color: 'red' }}>{latex}</span>;
+      }
+    } else {
+      return <span key={index}>{part.replaceAll(TEMP_DOLLAR, '$')}</span>;
+    }
+  });
+};
   const handleTogglePlayPause = () => {
     const text = explanation || subtopicTitle;
     if (isSpeaking) {
@@ -117,34 +141,10 @@ const JeeExplanation = ({
     sessionStorage.setItem(`jee-completed-${subtopicTitle}`, "true");
     if (onMarkComplete) onMarkComplete("explanation");
   };
- const parseTextWithFormulas = (texts) => {
-  if(!texts)return;
-  const text=texts.replace(/\\\\/g, "\\")
-  const TEMP_DOLLAR = '__DOLLAR__';
-  const safeText = text.replace(/\\\$/g, TEMP_DOLLAR);
-
-  const parts = safeText.split(/(\$[^$]+\$)/g);
-
-  return parts.map((part, index) => {
-    if (part.startsWith('$') && part.endsWith('$')) {
-      const latex = part.slice(1, -1);
-      try {
-        const html = katex.renderToString(latex, {
-          throwOnError: false,
-          output: 'html',
-        });
-        return <span key={index}>{parse(html)}</span>;
-      } catch (err) {
-        return <span key={index} style={{ color: 'red' }}>{latex}</span>;
-      }
-    } else {
-      return <span key={index}>{part.replaceAll(TEMP_DOLLAR, '$')}</span>;
-    }
-  });
-};
+ 
   //const textToDisplay = explanation || subtopicTitle;
-  const textToDisplayWithout = explanation || subtopicTitle;
-  const textToDisplay=parseTextWithFormulas(textToDisplayWithout)
+  const textToDisplay = explanation || subtopicTitle;
+  //const textToDisplay=parseTextWithFormulas(textToDisplayWithout)
   const { start, end } = highlightedRange;
   const before = textToDisplay.slice(0, start);
   const highlight = textToDisplay.slice(start, end);
@@ -185,11 +185,13 @@ const JeeExplanation = ({
               ></iframe>
             </div>
           ) : (
-            <p>
-              {before}
-              <mark className="highlight">{highlight}</mark>
-              {after}
-            </p>
+            
+              <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+  {parseTextWithFormulas(before)}
+  <mark className="highlight">{parseTextWithFormulas(highlight)}</mark>
+  {parseTextWithFormulas(after)}
+</pre>
+            
           )}
         </div>
 <div className="subject-info">

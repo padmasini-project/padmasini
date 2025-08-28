@@ -142,8 +142,8 @@ const NeetExplanation = ({
     }
   });
 };
-  const textToDisplayWithout = explanation || subtopicTitle;
-  const textToDisplay=parseTextWithFormulas(textToDisplayWithout)
+  const textToDisplay = explanation || subtopicTitle;
+//  const textToDisplay=parseTextWithFormulas(textToDisplayWithout)
   const { start, end } = highlightedRange;
   const before = textToDisplay.slice(0, start);
   const highlight = textToDisplay.slice(start, end);
@@ -184,34 +184,37 @@ const NeetExplanation = ({
               ></iframe>
             </div>
           ) : (
-            <p>
-              {before}
-              <mark className="highlight">{highlight}</mark>
-              {after}
-            </p>
+            
+              <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+  {parseTextWithFormulas(before)}
+  <mark className="highlight">{parseTextWithFormulas(highlight)}</mark>
+  {parseTextWithFormulas(after)}
+</pre>
+            
           )}
         </div>
 
-        {!isIntroIframe && (
-          <div className="voice-controls-wrapper">
-            <button className="voice-play-button" onClick={handleTogglePlayPause}>
-              {isSpeaking ? <FaPause /> : <FaPlay />}
-            </button>
-
-            <div className="rate-control">
-              <label htmlFor="rate">Speech Speed: {rate.toFixed(2)}x</label>
-              <input
-                type="range"
-                id="rate"
-                min="0.25"
-                max="2"
-                step="0.05"
-                value={rate}
-                onChange={(e) => setRate(parseFloat(e.target.value))}
-              />
-            </div>
-          </div>
-        )}
+        <div className="subject-info">
+                {!isIntroIframe && (
+                  <div className="voice-controls-wrapper">
+                    <button className="voice-play-button" onClick={handleTogglePlayPause}>
+                      {isSpeaking ? <FaPause /> : <FaPlay />}
+                    </button>
+        
+                    <div className="rate-control">
+                      <label htmlFor="rate">Speech Speed: {rate.toFixed(2)}x</label>
+                      <input
+                        type="range"
+                        id="rate"
+                        min="0.25"
+                        max="2"
+                        step="0.05"
+                        value={rate}
+                        onChange={(e) => setRate(parseFloat(e.target.value))}
+                      />
+                    </div>
+                  </div>
+                )}
 
         {/* Audio File Playback */}
         {audioFileId && audioFileId.length > 0 && (
@@ -223,6 +226,7 @@ const NeetExplanation = ({
             ))}
           </div>
         )}
+        </div>
         <button onClick={handleBack} className="back-btn">
           Back to Topics
         </button>

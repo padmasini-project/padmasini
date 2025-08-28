@@ -27,13 +27,22 @@ const Subjects = () => {
     console.log(JSON.parse(localStorage.getItem("currentUser")))
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
     if (storedUser) {
-      setStandard(storedUser.selectedStandard || "");
+      const stdData = storedUser.selectedStandard;
 
-      if (storedUser.standard === "both") {
-        const savedClass = localStorage.getItem("currentClass") || "";
-        setSelectedClass(savedClass);
+      // Handle string
+      if (typeof stdData === "string") {
+        setStandard(stdData);
+        localStorage.setItem("currentClass", stdData);
       }
-
+      // Handle array
+      else if (Array.isArray(stdData)) {
+        if (stdData.length === 1) {
+          setStandard(stdData[0]);
+          localStorage.setItem("currentClass", stdData[0]);
+        } else {
+          setStandard(stdData);
+        }
+      }
       const formatDate = (dateStr) => {
         const date = new Date(dateStr);
         return date.toLocaleDateString("en-GB", {
@@ -98,16 +107,23 @@ const Subjects = () => {
         {standard && (
           <p>
             <strong>Standard:</strong>{" "}
-            {standard === "11th" ? (
-              "Class 11"
-            ) : standard === "12th" ? (
-              "Class 12"
-            ) : (
-              <select value={selectedClass} onChange={handleClassChange} required>
+            {Array.isArray(standard) ? (
+              <select value={selectedClass} onChange={handleClassChange}>
                 <option value="">Select Class</option>
-                <option value="11th">Class 11</option>
-                <option value="12th">Class 12</option>
+                {standard.map((std, idx) => (
+                  <option key={idx} value={std}>
+                    {std === "11th" ? "Class 11" : std === "12th" ? "Class 12" : std}
+                  </option>
+                ))}
               </select>
+            ) : (
+              <span>
+                {standard === "11th"
+                  ? "Class 11"
+                  : standard === "12th"
+                  ? "Class 12"
+                  : standard}
+              </span>
             )}
           </p>
         )}
@@ -188,7 +204,15 @@ const Subjects = () => {
 
                       onClick={() =>{
                         console.log(localStorage.getItem("currentUser"))
-
+                        if(!standard){
+                          console.log("jiii")
+                          alert("please select a standard")
+                          return
+                        }
+                        if (Array.isArray(standard) && !selectedClass) {
+    alert("Please select a class before proceeding");
+    return;
+  }
                         navigate("/NeetLearn", {
                           state: {
                             subject: subject.name,

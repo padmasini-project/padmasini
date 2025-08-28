@@ -182,11 +182,8 @@ if (selectedStandard === "Both (11th + 12th)") {
     updatedUser.standard = selectedStandard;
     updatedUser.role = selectedCourse.toLowerCase();
     if (!isUpgrade) {
-      if (!dob || !gender) return alert("Please fill in all required fields.");//removed !photo||
-      updatedUser.photo = photo;
-      updatedUser.dob = dob;
-      updatedUser.gender = gender;
-    }
+  updatedUser.photo = photo;
+}
 
     localStorage.setItem("registeredUser", JSON.stringify(updatedUser));
     
@@ -209,6 +206,25 @@ if (selectedStandard === "Both (11th + 12th)") {
     if (!selectedPlan) return alert("Please select a plan.");
     setShowPaymentOptions(true);
   };
+
+const currentUserCourses=()=>{
+  const currentUser=JSON.parse(localStorage.getItem("currentUser"))
+  if(currentUser){
+    let userCourse=currentUser.selectedCourse
+    if(typeof userCourse==='string'){
+      userCourse=[userCourse]
+    }
+    
+      return (
+        
+        <div>
+          Your current course: {userCourse?.join(",")}
+          </div>
+        
+      )
+    
+  }
+}
 
   const handleFinalPayment = () => {
     if (paymentMethod === "UPI" && !upiId) return alert("Enter UPI ID");
@@ -236,7 +252,7 @@ if (selectedStandard === "Both (11th + 12th)") {
       user.startDate = startDate.toISOString().split("T")[0];
       user.endDate = endDate.toISOString().split("T")[0];
       localStorage.setItem("registeredUser", JSON.stringify(user));
-      // sendUserDetails()
+      // sendUserDetails() //change for backend connection
       console.log(JSON.stringify(user))
       alert(`Login successful! Welcome ${user.firstname}`);
       
@@ -301,6 +317,8 @@ if (selectedStandard === "Both (11th + 12th)") {
         {step === 2 && (
           <div className="student-details">
              <h2>{isUpgrade ? "Update Plan" : "Student Details"}</h2>
+{           isUpgrade&&currentUserCourses()
+             }
           <div className="student-details-wrapper">
             {!isUpgrade && (
             <div className="left-section">
