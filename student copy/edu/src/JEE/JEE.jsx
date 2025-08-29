@@ -20,7 +20,42 @@ const Jee = () => {
   const [endDate, setEndDate] = useState("");
   const [subjectCompletion, setSubjectCompletion] = useState(subjectList);
   const learningPathRef = useRef(null);
-
+ useEffect(()=>{
+  // fetch('http://localhost:3000/checkSession',{
+    fetch(`https://studentpadmasini.onrender.com/checkSession`, {
+    //  fetch(`https://padmasini-prod-api.padmasini.com/checkSession`, {
+    method:"GET",
+    credentials:'include'
+  }).then(resp=> resp.json())
+  .then(data=>{
+    console.log(data)
+    if(data.loggedIn===true){
+      login(data.user)
+      //localStorage.clear();
+       //console.log(localStorage.getItem('currentUser'))
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+      //  logout(localStorage.getItem('currentUser'))
+       console.log(localStorage.getItem('currentUser'))
+       //onsole.log(currentUser)
+    }
+    if(data.loggedIn===false){
+      console.log('it came here before seeing user')
+const existingUser=localStorage.getItem('currentUser')
+  if(existingUser){
+    console.log('it came here and deleted the user')
+   // localStorage.removeItem("currentUser");
+          //localStorage.removeItem("jeeSubjectCompletion");
+          //localStorage.removeItem("currentClassJee");
+          localStorage.clear(); // Clear all local storage
+          logout();
+          setCoursesOpen(false);
+          setUserDropdownOpen(false);
+          navigate("/login");
+  }
+    }
+  }).catch(console.error)
+  
+ },[])
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
     if (storedUser) {

@@ -26,15 +26,15 @@ app.options('/', cors({
   credentials: true
 }));
 
-//const redisClient = new Redis(process.env.REDIS_URL); 
+const redisClient = new Redis(process.env.REDIS_URL); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
-const redisClient = new Redis({
-  host: 'localhost', // or your Redis host
-  port: 6379,
-  // password: 'your_password', // if password is set
-});
+// const redisClient = new Redis({
+//   host: 'localhost', // or your Redis host
+//   port: 6379,
+//   // password: 'your_password', // if password is set
+// });
 //console.log('MongoDB URI:', process.env.MONGODB_URI); // ✅ Debug log
 app.use(session({
   store: new RedisSessionStore({ client: redisClient }),
@@ -42,20 +42,22 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {//change this according to localhosting and deploying 
-    secure: false, // Set to true if using HTTPS 
+    secure: true, // Set to true if using HTTPS 
     // for local hosting secure false and samesite:"lax" no doamin is needed
     //for production secure true and same site none 
     httpOnly: true,
-    sameSite:'lax',//Set none if use true in secure lax if same like s3 and ec2
+    sameSite:'none',//Set none if use true in secure lax if same like s3 and ec2
     
     //domain:'.padmasini.com',
     maxAge: 1000 *60 *60 *24// 1 day
   }
 }));
+module.exports = {  redisClient };
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection failed:', err));
-
+const forgetPassword=require("./routes/forgetPassword")
+app.use("/",forgetPassword)
 const userRoutes = require('./routes/userRoutes');
 app.use('/', userRoutes);
 const registerRoutes = require('./routes/register');
@@ -64,6 +66,8 @@ app.use('/register', registerRoutes);
 //    //req.session.counter = (req.session.counter || 0) + 1;
 //   res.send('Welcome to the Node + MongoDB CRUD API');
 // });
+const authRoutes = require('./routes/auth');
+app.use('/auth', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

@@ -3,23 +3,46 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./ResetPassword.css";
 import whatsappIcon from "../assets/WhatsApp_icon.png"; // Adjust path if needed
-
+import { useParams } from "react-router-dom";
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+const { token } = useParams(); 
+  const handleReset = async (e) => {
+  e.preventDefault();
 
-  const handleReset = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  try {
+    // const res = await fetch(`http://localhost:3000/reset-password/${token}`, {
+    const res = await fetch(`https://studentpadmasini.onrender.com/reset-password/${token}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ newPassword: password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Password reset successful!");
+      navigate("/login");
+    } else {
+      alert(data.message || "Something went wrong");
     }
-    alert("Password reset successful!");
-    navigate("/login");
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Server error, please try again later");
+  }
+};
+
 
   return (
     <div className="reset-container">

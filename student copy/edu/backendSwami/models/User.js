@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   selectedCourse: {type: [String], default: []},
   selectedStandard: {type: [String], default: []},
   photo: String, // store filename or S3 link
+  isVerified: { type: Boolean, default: false }
 }, { timestamps: true });
 
 module.exports =  userSchema;

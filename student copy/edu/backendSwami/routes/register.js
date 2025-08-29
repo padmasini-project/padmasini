@@ -3,6 +3,8 @@ const multer = require('multer');
 const userSchema = require('../models/User');
 const router = express.Router();
 const path = require('path');
+const { redisClient } = require('../apps.js');
+
 const getConnection = require('../utils/dbConnection');
 // multer setup for file uploads
 const storage = multer.diskStorage({
@@ -27,6 +29,10 @@ router.post('/newUser', upload.single('photo'), async (req, res) => {
     } = req.body;
     console.log("selectedCourse from req.body:", selectedCourse);
 console.log("selectedStandard from req.body:", selectedStandard);
+const verified = await redisClient.get(`otp:verified:${email}`);
+    if (!verified) {
+      return res.status(400).json({ error: "Please verify your email with OTP before registering." });
+    }
 
     // Handle "both" case first
 if (selectedCourse === 'Both') {
@@ -64,10 +70,12 @@ if (selectedStandard === 'Both (11th + 12th)') {
       gender,
       selectedCourse,
       selectedStandard,
-      photo:photoUrl
+      photo:photoUrl,
+      isVerified:true
     });
 
     await newUser.save();
+     await redisClient.del(`otp:verified:${email}`);
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     console.error(err);

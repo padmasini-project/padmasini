@@ -19,6 +19,11 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-top: 80px;
 }
+.verifyOtp.verified {
+  background-color: #4CAF50; /* Green */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
 
 /* Illustration Section */
 .registration-illustration {
@@ -226,7 +231,19 @@ form button[type="submit"] {
   transition: background 0.3s ease;
   margin-top: -5px;
 }
-
+.verifyOtp{
+  width: 100%;
+  padding: 10px;
+  margin: 5px;
+  background-color: #28a745;
+  color: white;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: -5px;
+}
 form button[type="submit"]:hover {
   background-color: #1c7e32;
 }

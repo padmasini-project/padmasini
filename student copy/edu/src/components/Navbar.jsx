@@ -22,8 +22,8 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    fetch(`http://localhost:3000/logout`, {
-      // fetch(`https://studentpadmasini.onrender.com/logout`, {
+    // fetch(`http://localhost:3000/logout`, {
+      fetch(`https://studentpadmasini.onrender.com/logout`, {
       // fetch(`https://padmasini-prod-api.padmasini.com/logout`, {
       method: "POST",
       credentials: "include",
@@ -44,8 +44,8 @@ const Navbar = () => {
       .catch((err) => console.log(err));
   };
  useEffect(()=>{
-  fetch('http://localhost:3000/checkSession',{
-    // fetch(`https://studentpadmasini.onrender.com/checkSession`, {
+  // fetch('http://localhost:3000/checkSession',{
+    fetch(`https://studentpadmasini.onrender.com/checkSession`, {
     //  fetch(`https://padmasini-prod-api.padmasini.com/checkSession`, {
     method:"GET",
     credentials:'include'
@@ -54,21 +54,21 @@ const Navbar = () => {
     console.log(data)
     if(data.loggedIn===true){
       login(data.user)
-      localStorage.clear();
-       console.log(localStorage.getItem('currentUser'))
+      //localStorage.clear();
+       //console.log(localStorage.getItem('currentUser'))
         localStorage.setItem('currentUser', JSON.stringify(data.user));
       //  logout(localStorage.getItem('currentUser'))
        console.log(localStorage.getItem('currentUser'))
-       console.log(currentUser)
+       //onsole.log(currentUser)
     }
     if(data.loggedIn===false){
       console.log('it came here before seeing user')
 const existingUser=localStorage.getItem('currentUser')
   if(existingUser){
     console.log('it came here and deleted the user')
-    localStorage.removeItem("currentUser");
-          localStorage.removeItem("jeeSubjectCompletion");
-          localStorage.removeItem("currentClassJee");
+   // localStorage.removeItem("currentUser");
+          //localStorage.removeItem("jeeSubjectCompletion");
+          //localStorage.removeItem("currentClassJee");
           localStorage.clear(); // Clear all local storage
           logout();
           setCoursesOpen(false);
@@ -76,9 +76,12 @@ const existingUser=localStorage.getItem('currentUser')
           navigate("/login");
   }
     }
-  })
+  }).catch(console.error)
   
  },[])
+ useEffect(() => {
+  console.log("Current user is now:", currentUser);
+}, [currentUser]);
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdowns = document.querySelectorAll(".dropdown-toggle, .dropdown-menu");

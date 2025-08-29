@@ -18,7 +18,9 @@ const RegistrationFlow = () => {
   const [mobile, setMobile] = useState("");
   const [emailError, setEmailError] = useState("");
   const [mobileError, setMobileError] = useState("");
-  
+  const [otp, setOtp]=useState("")
+  const [otpError, setOtpError]=useState("")
+  const [otpSent, setOtpSent] = useState(false);
 
   // Step 2 states
   const [photo, setPhoto] = useState(null);
@@ -46,12 +48,14 @@ const [paymentSuccess, setPaymentSuccess] = useState(false);
   const queryParams = new URLSearchParams(location.search);
   const stepFromURL = parseInt(queryParams.get("step"));
   const isUpgrade = queryParams.get("upgrade") === "true";
+  const [isVerified, setIsVerified] = useState(false);
 useEffect(()=>{
 // const existingUser=localStorage.getItem('currentUser')
 // if(existingUser){
 //   console.log("user already logged in")
 //   navigate('/home')
 // }
+
 
 
    const useMe1=localStorage.getItem("registeredUser")
@@ -128,8 +132,8 @@ const sendUserDetails=async () => {
   }
 console.log(selectedCourse,"  ",selectedStandard)
   try {
-    const response = await fetch('http://localhost:3000/register/newUser', {
-      // const response = await fetch('https://studentpadmasini.onrender.com/register/newUser', {
+    // const response = await fetch('http://localhost:3000/register/newUser', {
+      const response = await fetch('https://studentpadmasini.onrender.com/register/newUser', {
       // const response = await fetch('https://padmasini-prod-api.padmasini.com/register/newUser', {
       method: 'POST',
       body: formData, // Do not set Content-Type; browser sets it with boundary
@@ -201,7 +205,73 @@ if (selectedStandard === "Both (11th + 12th)") {
     }, 2000);
   }
   };
+   const sendOtp=async(e)=>{
+    e.preventDefault();
+    if (!email) {
+    setEmailError("Please enter an email first");
+    return;
+    }
+    if (!validateEmail(email)) return setEmailError("Please enter a valid email address.");
+    else setEmailError("");
+    setEmailError(""); 
+    try {
+    // const res = await fetch("http://localhost:3000/auth/send-otp", {
+      const res = await fetch("https://studentpadmasini.onrender.com/auth/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    console.log("status:", res.status);
+    const data = await res.json();
+    if (res.ok) {
+      setOtpSent(true);
+      console.log("otp send successfully")
+      alert(data.message);
+    } else {
+      alert(data.message || "Failed to send OTP");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error sending OTP");
+  }
+    
+    
+   }
+   const verifyOtp=async(e)=>{
+ e.preventDefault();
+  if (!otp) return setOtpError("Please enter OTP");
+   try {
+    // const res = await fetch("http://localhost:3000/auth/verify-otp", {
+      const res = await fetch("https://studentpadmasini.onrender.com/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
 
+    const data = await res.json();
+    if (res.ok) {
+      setIsVerified(true);
+
+      localStorage.setItem("emailVerification", "success");
+      alert("Email verified successfully ✅");
+    } else {
+      setOtpError(data.message || "Invalid OTP");
+    }
+  } catch (err) {
+    console.error(err);
+    setOtpError("Error verifying OTP");
+  }
+   }
+
+   const isEmailVerified=()=>{
+    const emailVerification=localStorage.getItem("emailVerification")
+    console.log(emailVerification)
+    if(emailVerification!=='success'){
+      alert("Please verify your email to proceed to Next Step")
+      return true
+    }
+    return false
+   }
   const handlePayNowClick = () => {
     if (!selectedPlan) return alert("Please select a plan.");
     setShowPaymentOptions(true);
@@ -253,6 +323,7 @@ const currentUserCourses=()=>{
       user.endDate = endDate.toISOString().split("T")[0];
       localStorage.setItem("registeredUser", JSON.stringify(user));
       // sendUserDetails() //change for backend connection
+      localStorage.removeItem("emailVerification")
       console.log(JSON.stringify(user))
       alert(`Login successful! Welcome ${user.firstname}`);
       
@@ -281,6 +352,22 @@ const currentUserCourses=()=>{
 
                 <input type="email" placeholder="Email Id" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 {emailError && <span className="error-message">{emailError}</span>}
+                
+                {!otpSent && (<button type="none" className="verifyOtp" onClick={sendOtp}>Send Otp</button>)}
+                
+                {otpSent && (
+  <>
+    <input 
+      type="text" 
+      placeholder="Enter OTP" 
+      value={otp} 
+      onChange={(e) => setOtp(e.target.value)} 
+      disabled={isVerified}
+    />
+    {otpError && <span className="error-message">{otpError}</span>}
+    <button type="button" className={`verifyOtp ${isVerified ? "verified" : ""}`}  onClick={verifyOtp} disabled={isVerified}> {isVerified ? "Verified ✅" : "Verify OTP"}</button>
+  </>
+)}
 
                 <input type="tel" placeholder="Mobile No." value={mobile} onChange={(e) => setMobile(e.target.value)} required />
                 {mobileError && <span className="error-message">{mobileError}</span>}
@@ -303,7 +390,7 @@ const currentUserCourses=()=>{
                     </label>
                   </div>
 
-                  <button type="submit">Next</button>
+                  <button onClick={isEmailVerified} type="submit">Next</button>
 
                   <p className="login-text">
                     Already have an account? <a href="#" onClick={(e) => { e.preventDefault(); navigate("/login"); }}>Login</a>
@@ -461,13 +548,13 @@ const currentUserCourses=()=>{
   <button
     onClick={async () => {
       setIsSubmitting(true);
-      await sendUserDetails();
+       sendUserDetails();
       setIsSubmitting(false);
 
       const user = JSON.parse(sessionStorage.getItem("registeredUser") || "{}");
       alert(`Registration Completed Successfully! Welcome ${user.firstname || ""} ${user.lastname || ""}`);
 
-      navigate("/login");
+      //navigate("/login");
     }}
     disabled={isSubmitting}
   >
