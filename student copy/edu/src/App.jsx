@@ -19,7 +19,7 @@ import JeeQuiz from './JEE/JeeQuiz';
 import PadmasiniChat from "./components/PadmasiniChat"; // Importing the chat
 import ProtectedRoute from "./components/ProtectedRoute"; // Import here
 import "./App.css";
-
+// try catch error 
 function App() {
   return (
     <div className="app-container">
