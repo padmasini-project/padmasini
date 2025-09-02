@@ -2,8 +2,8 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
-const userSchema = require("../models/User"); // your mongoose model
- const getConnection = require('../utils/dbConnection');
+const userSchema = require("../models/User.js"); // your mongoose model
+ const getConnection = require('../utils/dbConnection.js');
 const Redis = require('ioredis');
  const router = express.Router();
 const { redisClient } = require('../apps.js');
@@ -24,8 +24,8 @@ const db = await getConnection("studentUsers");
     });
     await redisClient.set(`reset:${findUser._id}`, token, "EX", 900); // 900s = 15min
 
-    // const resetLink = `http://localhost:5173/reset-password/${token}`; 
-    const resetLink = `https://celebrated-eclair-e6ee30.netlify.app/reset-password/${token}`; 
+    const resetLink = `http://localhost:5173/reset-password/${token}`; 
+    // const resetLink = `https://celebrated-eclair-e6ee30.netlify.app/reset-password/${token}`; 
     // https://celebrated-eclair-e6ee30.netlify.app/
     // use frontend URL (adjust if deployed)
 

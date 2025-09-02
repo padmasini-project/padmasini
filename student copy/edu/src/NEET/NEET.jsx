@@ -6,7 +6,7 @@ import physicsImg from "../assets/physics.jpg";
 import chemistryImg from "../assets/chemistry.jpg";
 import zoologyImg from "../assets/zoology.jpg";
 import botanyImg from "../assets/botany.jpg";
-
+import { useUser } from "../components/UserContext"; 
 const subjectList = [
   { name: "Physics", image: physicsImg, certified: false },
   { name: "Chemistry", image: chemistryImg, certified: false },
@@ -22,7 +22,7 @@ const Subjects = () => {
   const [endDate, setEndDate] = useState("");
   const [subjectCompletion, setSubjectCompletion] = useState(subjectList);
   const learningPathRef = useRef(null);
-
+const {login}=useUser()
   useEffect(() => {
     console.log(JSON.parse(localStorage.getItem("currentUser")))
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -68,8 +68,8 @@ const Subjects = () => {
     }
   };
  useEffect(()=>{
-  // fetch('http://localhost:3000/checkSession',{
-    fetch(`https://studentpadmasini.onrender.com/checkSession`, {
+  fetch('http://localhost:3000/checkSession',{
+    // fetch(`https://studentpadmasini.onrender.com/checkSession`, {
     //  fetch(`https://padmasini-prod-api.padmasini.com/checkSession`, {
     method:"GET",
     credentials:'include'

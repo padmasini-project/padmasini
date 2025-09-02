@@ -26,8 +26,9 @@ const RegistrationFlow = () => {
   const [photo, setPhoto] = useState(null);
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [selectedStandard, setSelectedStandard] = useState("");
+const [selectedCourses, setSelectedCourses] = useState([]); // ["JEE","NEET"]
+const [selectedStandards, setSelectedStandards] = useState([]); // ["11th","12th"]
+
 const [photoPreview, setPhotoPreview] = useState(null);
 
   // Step 3 states
@@ -95,6 +96,10 @@ const storeLocal=()=>{
  const handleStepOneSubmit = (e) => {
   console.log(localStorage.getItem("registeredUser"))
     e.preventDefault();
+  //   if (!isEmailVerified()) {
+  //     console.log(localStorage.getItem('emailVerification'))
+  //   return; // stop here if email is not verified
+  // }
     if (!validateEmail(email)) return setEmailError("Please enter a valid email address.");
     else setEmailError("");
     if (!validateMobile(mobile)) return setMobileError("Please enter a valid 10-digit mobile number.");
@@ -112,6 +117,18 @@ const storeLocal=()=>{
     setPhotoPreview(localUrl); // preview photo on UI
   }
   };
+  const toggleCourse = (course) => {
+  setSelectedCourses((prev) =>
+    prev.includes(course) ? prev.filter((c) => c !== course) : [...prev, course]
+  );
+};
+
+const toggleStandard = (std) => {
+  setSelectedStandards((prev) =>
+    prev.includes(std) ? prev.filter((s) => s !== std) : [...prev, std]
+  );
+};
+
 const sendUserDetails=async () => {
   const formData = new FormData();
 
@@ -122,18 +139,19 @@ const sendUserDetails=async () => {
   formData.append('mobile', mobile);
   formData.append('dob', dob);
   formData.append('gender', gender);
-  formData.append('selectedCourse', selectedCourse);
-  formData.append('selectedStandard', selectedStandard);
+  formData.append('selectedCourses', JSON.stringify(selectedCourses));
+formData.append('selectedStandards', JSON.stringify(selectedStandards));
 
   // append photo only if selected
   if (photo) {
     console.log("photo is there")
     formData.append('photo', photo);
   }
-console.log(selectedCourse,"  ",selectedStandard)
-  try {
-    // const response = await fetch('http://localhost:3000/register/newUser', {
-      const response = await fetch('https://studentpadmasini.onrender.com/register/newUser', {
+console.log(selectedCourses,"  ",selectedStandards)
+  if(!isUpgrade){
+    try {
+    const response = await fetch('http://localhost:3000/register/newUser', {
+      // const response = await fetch('https://studentpadmasini.onrender.com/register/newUser', {
       // const response = await fetch('https://padmasini-prod-api.padmasini.com/register/newUser', {
       method: 'POST',
       body: formData, // Do not set Content-Type; browser sets it with boundary
@@ -153,38 +171,47 @@ console.log(selectedCourse,"  ",selectedStandard)
     console.error("Error during registration:", error);
     alert("Something went wrong");
   }
+  }
+  else {
+    alert("updated successfully.... note: backend is not set")
+    navigate('/home')
+  }
 };
   const handleFinalSubmit = (e) => {
     e.preventDefault();
      if (!isUpgrade) {
-    if ( !dob || !gender || !selectedCourse) {
+    if ( !dob || !gender || selectedCourses.length===0||selectedStandards.length===0) {
       return alert("Please fill in all required fields.");
     }
   } else {
-    if (!selectedCourse) {
-      return alert("Please select your course.");
+    if (selectedCourse.length === 0 || selectedStandards.length === 0) {
+      return alert("Please select your course and standard.");
     }
   }
+  const updatedUser = JSON.parse(localStorage.getItem("registeredUser") || "{}");
+
+  let courseObject = updatedUser.selectedCourse || {};
+  selectedCourses.forEach((course) => {
+    courseObject[course] = [...new Set([...(courseObject[course] || []), ...selectedStandards])];
+  });
    // if ( !dob || !gender || !selectedCourse) return alert("Please fill in all required fields.");//removed !photo||
-   if (
-  (selectedCourse === "JEE" ||
-    selectedCourse === "NEET" ||
-    selectedCourse === "Both") &&
-  !selectedStandard
-) {
-  return alert("Please select your standard (11th, 12th or Both).");
-}
-   // if ((selectedCourse === "JEE" || selectedCourse === "NEET") && !selectedStandard) return alert("Please select your standard (11th or 12th).");
- let normalizedStandard = selectedStandard;
-if (selectedStandard === "Both (11th + 12th)") {
-  normalizedStandard = "both";
-}
-   const updatedUser = JSON.parse(localStorage.getItem("registeredUser") || "{}");
+//    if (
+//   (selectedCourse === "JEE" ||
+//     selectedCourse === "NEET" ||
+//     selectedCourse === "Both") &&
+//   !selectedStandard
+// ) {
+//   return alert("Please select your standard (11th, 12th or Both).");
+// }
+//    // if ((selectedCourse === "JEE" || selectedCourse === "NEET") && !selectedStandard) return alert("Please select your standard (11th or 12th).");
+//  let normalizedStandard = selectedStandard;
+// if (selectedStandard === "Both (11th + 12th)") {
+//   normalizedStandard = "both";
+// }
+   //const updatedUser = JSON.parse(localStorage.getItem("registeredUser") || "{}");
     updatedUser.dob = dob;
     updatedUser.gender = gender;
-    updatedUser.course = selectedCourse;
-    updatedUser.standard = selectedStandard;
-    updatedUser.role = selectedCourse.toLowerCase();
+    updatedUser.selectedCourse = courseObject;
     if (!isUpgrade) {
   updatedUser.photo = photo;
 }
@@ -205,73 +232,74 @@ if (selectedStandard === "Both (11th + 12th)") {
     }, 2000);
   }
   };
-   const sendOtp=async(e)=>{
-    e.preventDefault();
-    if (!email) {
-    setEmailError("Please enter an email first");
-    return;
-    }
-    if (!validateEmail(email)) return setEmailError("Please enter a valid email address.");
-    else setEmailError("");
-    setEmailError(""); 
-    try {
-    // const res = await fetch("http://localhost:3000/auth/send-otp", {
-      const res = await fetch("https://studentpadmasini.onrender.com/auth/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    console.log("status:", res.status);
-    const data = await res.json();
-    if (res.ok) {
-      setOtpSent(true);
-      console.log("otp send successfully")
-      alert(data.message);
-    } else {
-      alert(data.message || "Failed to send OTP");
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Error sending OTP");
-  }
+  //  const sendOtp=async(e)=>{
+  //   e.preventDefault();
+  //   if (!email) {
+  //   setEmailError("Please enter an email first");
+  //   return;
+  //   }
+  //   if (!validateEmail(email)) return setEmailError("Please enter a valid email address.");
+  //   else setEmailError("");
+  //   setEmailError(""); 
+  //   try {
+  //   const res = await fetch("http://localhost:3000/auth/send-otp", {
+  //     // const res = await fetch("https://studentpadmasini.onrender.com/auth/send-otp", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ email }),
+  //   });
+  //   console.log("status:", res.status);
+  //   const data = await res.json();
+  //   if (res.ok) {
+  //     setOtpSent(true);
+  //     console.log("otp send successfully")
+  //     alert(data.message);
+  //   } else {
+  //     alert(data.message || "Failed to send OTP");
+  //   }
+  // } catch (err) {
+  //   console.error(err);
+  //   alert("Error sending OTP");
+  // }
     
     
-   }
-   const verifyOtp=async(e)=>{
- e.preventDefault();
-  if (!otp) return setOtpError("Please enter OTP");
-   try {
-    // const res = await fetch("http://localhost:3000/auth/verify-otp", {
-      const res = await fetch("https://studentpadmasini.onrender.com/auth/verify-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp }),
-    });
+  //  }
+//    const verifyOtp=async(e)=>{
+//  e.preventDefault();
+//   if (!otp) return setOtpError("Please enter OTP");
+//    try {
+//     const res = await fetch("http://localhost:3000/auth/verify-otp", {
+//       // const res = await fetch("https://studentpadmasini.onrender.com/auth/verify-otp", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ email, otp }),
+//     });
 
-    const data = await res.json();
-    if (res.ok) {
-      setIsVerified(true);
+//     const data = await res.json();
+//     if (res.ok) {
+//       setIsVerified(true);
+//       localStorage.setItem("verifiedEmail",email)
+//       localStorage.setItem("emailVerification", "success");
+//       alert("Email verified successfully ✅");
+//     } else {
+//       setOtpError(data.message || "Invalid OTP");
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     setOtpError("Error verifying OTP");
+//   }
+//    }
 
-      localStorage.setItem("emailVerification", "success");
-      alert("Email verified successfully ✅");
-    } else {
-      setOtpError(data.message || "Invalid OTP");
-    }
-  } catch (err) {
-    console.error(err);
-    setOtpError("Error verifying OTP");
-  }
-   }
-
-   const isEmailVerified=()=>{
-    const emailVerification=localStorage.getItem("emailVerification")
-    console.log(emailVerification)
-    if(emailVerification!=='success'){
-      alert("Please verify your email to proceed to Next Step")
-      return true
-    }
-    return false
-   }
+  //  const isEmailVerified=()=>{
+  //   const emailVerification=localStorage.getItem("emailVerification")
+  //   const verifiedEmail=localStorage.getItem("verifiedEmail")
+  //   console.log(emailVerification)
+  //   if (!verifiedEmail || verifiedEmail !== email || emailVerification !== "success") {
+  //   alert("Please verify your email to proceed to the next step.");
+  //   return false;
+  // }
+  //   return true
+  //  }
   const handlePayNowClick = () => {
     if (!selectedPlan) return alert("Please select a plan.");
     setShowPaymentOptions(true);
@@ -297,6 +325,7 @@ const currentUserCourses=()=>{
 }
 
   const handleFinalPayment = () => {
+    
     if (paymentMethod === "UPI" && !upiId) return alert("Enter UPI ID");
     if (paymentMethod === "Net Banking" && !bank) return alert("Select a bank");
     if (paymentMethod === "Credit/Debit Card" && (!cardNumber || !expiry || !cvv)) return alert("Fill all card details");
@@ -353,9 +382,9 @@ const currentUserCourses=()=>{
                 <input type="email" placeholder="Email Id" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 {emailError && <span className="error-message">{emailError}</span>}
                 
-                {!otpSent && (<button type="none" className="verifyOtp" onClick={sendOtp}>Send Otp</button>)}
+                {/* {!otpSent && (<button type="none" className="verifyOtp" onClick={sendOtp}>Send Otp</button>)} */}
                 
-                {otpSent && (
+                {/* {otpSent && (
   <>
     <input 
       type="text" 
@@ -367,7 +396,7 @@ const currentUserCourses=()=>{
     {otpError && <span className="error-message">{otpError}</span>}
     <button type="button" className={`verifyOtp ${isVerified ? "verified" : ""}`}  onClick={verifyOtp} disabled={isVerified}> {isVerified ? "Verified ✅" : "Verify OTP"}</button>
   </>
-)}
+)} */}
 
                 <input type="tel" placeholder="Mobile No." value={mobile} onChange={(e) => setMobile(e.target.value)} required />
                 {mobileError && <span className="error-message">{mobileError}</span>}
@@ -390,7 +419,7 @@ const currentUserCourses=()=>{
                     </label>
                   </div>
 
-                  <button onClick={isEmailVerified} type="submit">Next</button>
+                  <button  type="submit" >Next</button>
 
                   <p className="login-text">
                     Already have an account? <a href="#" onClick={(e) => { e.preventDefault(); navigate("/login"); }}>Login</a>
@@ -431,12 +460,12 @@ const currentUserCourses=()=>{
                 </select>
 </>
                   )}
-                <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)} required>
-                  <option value="">Course</option>
+                {/*<select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)} required>
+                  <option value="">Course</option>*/}
                   {/* <option value="kid">Kindergarten</option>
                   <option value="first">Class 1-5</option>
                   <option value="six">Class 6-12</option> */}
-                  <option value="JEE">JEE</option>
+                 {/* <option value="JEE">JEE</option>
                   <option value="NEET">NEET</option>
                   <option value="Both">Both (JEE + NEET)</option>
                   <option value="Other">Other</option>
@@ -444,12 +473,52 @@ const currentUserCourses=()=>{
 
                 {(selectedCourse === "first" || selectedCourse === "six" || selectedCourse === "JEE" || selectedCourse === "NEET"||selectedCourse === "Both") && (
                   <select value={selectedStandard} onChange={(e) => setSelectedStandard(e.target.value)} required>
-                    <option value="">Select Standard</option>
+                    <option value="">Select Standard</option>*/}
                     {/* {selectedCourse === "first" && [1,2,3,4,5].map(n => <option key={n}>{n}</option>)}
                     {selectedCourse === "six" && [6,7,8,9,10,11,12].map(n => <option key={n}>{n}</option>)} */}
-                    {["11th", "12th", "Both (11th + 12th)"].map(std => <option key={std} value={std}>{std}</option>)}
+                  {/*  {["11th", "12th", "Both (11th + 12th)"].map(std => <option key={std} value={std}>{std}</option>)}
                   </select>
-                )}
+                )}*/}
+                <div className="checkbox-section">
+  <p>Select Course:</p>
+  <label>
+    <input
+      type="checkbox"
+      checked={selectedCourses.includes("JEE")}
+      onChange={() => toggleCourse("JEE")}
+    />
+    JEE
+  </label>
+  <label>
+    <input
+      type="checkbox"
+      checked={selectedCourses.includes("NEET")}
+      onChange={() => toggleCourse("NEET")}
+    />
+    NEET
+  </label>
+</div>
+
+<div className="checkbox-section">
+  <p>Select Standard:</p>
+  <label>
+    <input
+      type="checkbox"
+      checked={selectedStandards.includes("11th")}
+      onChange={() => toggleStandard("11th")}
+    />
+    11th
+  </label>
+  <label>
+    <input
+      type="checkbox"
+      checked={selectedStandards.includes("12th")}
+      onChange={() => toggleStandard("12th")}
+    />
+    12th
+  </label>
+</div>
+
                 <div className="student-navigation-buttons">
                  <button type="button" onClick={() => (isUpgrade ? navigate("/home") : setStep(1))}>Previous</button>
 <button type="submit">Next</button>

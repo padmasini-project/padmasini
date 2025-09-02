@@ -5,7 +5,7 @@ import "./JEE.css";
 import physicsImg from "../assets/physics.jpg";
 import chemistryImg from "../assets/chemistry.jpg";
 import mathsImg from "../assets/maths.png";
-
+import { useUser } from "../components/UserContext"; 
 const subjectList = [
   { name: "Physics", image: physicsImg, certified: false },
   { name: "Chemistry", image: chemistryImg, certified: false },
@@ -20,9 +20,10 @@ const Jee = () => {
   const [endDate, setEndDate] = useState("");
   const [subjectCompletion, setSubjectCompletion] = useState(subjectList);
   const learningPathRef = useRef(null);
+  const {login}=useUser()
  useEffect(()=>{
-  // fetch('http://localhost:3000/checkSession',{
-    fetch(`https://studentpadmasini.onrender.com/checkSession`, {
+  fetch('http://localhost:3000/checkSession',{
+    // fetch(`https://studentpadmasini.onrender.com/checkSession`, {
     //  fetch(`https://padmasini-prod-api.padmasini.com/checkSession`, {
     method:"GET",
     credentials:'include'
