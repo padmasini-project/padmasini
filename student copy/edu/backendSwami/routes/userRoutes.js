@@ -29,7 +29,7 @@ router.post('/login', async (req, res) => {
     const findUser=await con.findOne({email:userName})
     console.log(findUser)
      if (!findUser || findUser.password !== password) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.json({ message: 'Invalid credentials' });
     }
     if(findUser){
       req.session.user={
@@ -68,7 +68,7 @@ router.get('/checkSession', (req, res) => {
   if (req.session.user) {
     return res.json({ loggedIn: true, user: req.session.user });
   } else {
-    return res.status(401).json({ loggedIn: false });
+    return res.json({ loggedIn: false });
   }
 });
 

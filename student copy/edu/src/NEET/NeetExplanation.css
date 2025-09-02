@@ -29,7 +29,9 @@
 }
 .subject-info {
   padding: 10px;
+  background-color: #f0f8ff;
   border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 /* Voice Controls */
 .voice-controls-wrapper {

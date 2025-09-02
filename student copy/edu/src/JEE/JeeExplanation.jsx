@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './JeeExplanation.css';
 import { FaPlay, FaPause, FaCheckCircle } from 'react-icons/fa';
+import katex from 'katex';
+import parse from 'html-react-parser';
+import 'katex/dist/katex.min.css';  // Required to style the output
 
 const JeeExplanation = ({
   explanation = '',
@@ -138,8 +141,10 @@ const parseTextWithFormulas = (texts) => {
     sessionStorage.setItem(`jee-completed-${subtopicTitle}`, "true");
     if (onMarkComplete) onMarkComplete("explanation");
   };
-
+ 
+  //const textToDisplay = explanation || subtopicTitle;
   const textToDisplay = explanation || subtopicTitle;
+  //const textToDisplay=parseTextWithFormulas(textToDisplayWithout)
   const { start, end } = highlightedRange;
   const before = textToDisplay.slice(0, start);
   const highlight = textToDisplay.slice(start, end);
@@ -180,14 +185,13 @@ const parseTextWithFormulas = (texts) => {
               ></iframe>
             </div>
           ) : (
-            <p>
-                <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+            
+              <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
   {parseTextWithFormulas(before)}
   <mark className="highlight">{parseTextWithFormulas(highlight)}</mark>
   {parseTextWithFormulas(after)}
 </pre>
-
-            </p>
+            
           )}
         </div>
 <div className="subject-info">

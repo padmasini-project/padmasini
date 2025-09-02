@@ -34,17 +34,6 @@ const NeetQuiz = ({ topicTitle, subtopicTitle, test, onBack, onMarkComplete }) =
       handleAutoSubmit();
     }
   }, [timeRemaining, submitted, hasStarted]);
-
-  useEffect(() => {
-    const isDone = sessionStorage.getItem(`neet-completed-${subtopicTitle}`) === "true";
-    if (isDone) setIsComplete(true);
-  }, [subtopicTitle]);
-
-  const handleOptionChange = (selected) => {
-    const updatedAnswers = [...userAnswers];
-    updatedAnswers[currentQIndex] = selected;
-    setUserAnswers(updatedAnswers);
-  };
 const parseTextWithFormulas = (texts) => {
   if(!texts)return;
   const text=texts.replace(/\\\\/g, "\\")
@@ -70,6 +59,17 @@ const parseTextWithFormulas = (texts) => {
     }
   });
 };
+  useEffect(() => {
+    const isDone = sessionStorage.getItem(`neet-completed-${subtopicTitle}`) === "true";
+    if (isDone) setIsComplete(true);
+  }, [subtopicTitle]);
+
+  const handleOptionChange = (selected) => {
+    const updatedAnswers = [...userAnswers];
+    updatedAnswers[currentQIndex] = selected;
+    setUserAnswers(updatedAnswers);
+  };
+
   const handleSubmit = () => {
     setSubmitted(true);
     setShowConfirmation(false);
@@ -165,7 +165,6 @@ const parseTextWithFormulas = (texts) => {
               <pre className="question-text" style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
   {parseTextWithFormulas(`${currentQIndex + 1}. ${currentQuestion.question}`)}
 </pre>
-
               <div className="options-group">
                 {[currentQuestion.option1, currentQuestion.option2, currentQuestion.option3, currentQuestion.option4].map((opt, j) => {
                   const isSelected = userAnswers[currentQIndex] === opt;
@@ -185,7 +184,7 @@ const parseTextWithFormulas = (texts) => {
                         onChange={() => handleOptionChange(opt)}
                         disabled={submitted}
                       />
-{parseTextWithFormulas(opt)}
+                      {parseTextWithFormulas(opt)}
                     </label>
                   );
                 })}

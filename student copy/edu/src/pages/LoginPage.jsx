@@ -26,6 +26,8 @@ const LoginPage = () => {
     e.preventDefault();
 
     fetch("http://localhost:3000/login", {
+      // fetch("https://studentpadmasini.onrender.com/login", {
+      // fetch("https://padmasini-prod-api.padmasini.com/login", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -38,6 +40,10 @@ const LoginPage = () => {
     })
     .then(async resp => {
       const data = await resp.json();
+      if(data.message==='Invalid credentials'){
+        alert("no user or password matched")
+        throw new Error(data.message || "Login failed");
+      }
       if (data.message === 'Login successful') {
         localStorage.setItem('currentUser', JSON.stringify(data.user));
         login(data.user);
@@ -52,14 +58,33 @@ const LoginPage = () => {
     });
   };
 
-  const handleForgotPassword = () => {
-    if (email) {
-      alert(`🔗 Password reset link sent to ${email}`);
-      navigate("/reset-password");
-    } else {
-      alert("Please enter your email first");
-    }
-  };
+  const handleForgotPassword = async () => {
+  if (!email) {
+    alert("Please enter your email first");
+    return;
+  }
+
+  try {
+    const resp = await fetch("http://localhost:3000/forgot-password", {
+    // const resp = await fetch("https://studentpadmasini.onrender.com/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) throw new Error(data.message || "Something went wrong");
+
+    alert(data.message); // backend will send success message
+    //navigate("/reset-password");
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
 
   return (
     <div className="login-container">

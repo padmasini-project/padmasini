@@ -1,0 +1,147 @@
+/* ===== Edit User Container ===== */
+.edit-user-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 20px 25px;
+  border-radius: 12px;
+  background: #f9f9f9;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.edit-user-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ===== Form Fields ===== */
+.edit-user-form .form-group {
+  margin-bottom: 15px;
+}
+
+.edit-user-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #34495e;
+}
+
+.edit-user-form input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border 0.2s ease;
+}
+
+.edit-user-form input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* ===== Form Actions ===== */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.save-btn {
+  background: #27ae60;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.save-btn:hover {
+  background: #1e874b;
+}
+
+.cancel-btn {
+  background: #e74c3c;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: #c0392b;
+}
+
+/* ===== Danger Zone ===== */
+.deactivate-section {
+  margin-top: 30px;
+  padding: 15px;
+  border: 1px solid #f5b7b1;
+  border-radius: 8px;
+  background: #fdf0f0;
+}
+
+.deactivate-section h3 {
+  color: #c0392b;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.deactivate-btn {
+  background: #e74c3c;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.1s;
+}
+
+.deactivate-btn:hover {
+  background: #c0392b;
+  transform: scale(1.05);
+}
+
+/* ===== OTP Verify Section ===== */
+.otp-verify {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.otp-verify label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.otp-verify input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.verify-btn {
+  background: #e74c3c;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.1s;
+}
+
+.verify-btn:hover {
+  background: #b03a2e;
+  transform: scale(1.05);
+}

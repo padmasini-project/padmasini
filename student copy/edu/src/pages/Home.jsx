@@ -5,7 +5,7 @@ import "./Home.css";
 // Header and branding
 import logo from '../assets/logo2.png';
 import headImage from '../assets/head.png';
-
+import { useUser } from "../components/UserContext"; 
 // Study Material Cards
 import ncertImg from '../assets/kid.jpg';
 import previousImg from '../assets/first.jpg';
@@ -27,7 +27,7 @@ const Home = () => {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
   const [courseType, setCourseType] = useState(null);
-
+  const {login}=useUser()
   // Scroll to top on component load
  useEffect(() => {
 //localStorage.clear();
@@ -36,15 +36,54 @@ const Home = () => {
   if (storedUser) {
     const parsedUser = JSON.parse(storedUser);
     setCurrentUser(parsedUser);
-    setCourseType(parsedUser.selectedCourse);
+    if (parsedUser.selectedCourse) {
+    const courseKeys = Object.keys(parsedUser.selectedCourse);
+    setCourseType(courseKeys);
+    console.log("User courses:", courseKeys);
+  }
   }
   window.scrollTo(0, 0);
       console.log(localStorage.getItem("currentUser"))
 
 }, []);
 
-
-const handleLearnMore = (selectedCourseType) => {
+ useEffect(()=>{
+  fetch('http://localhost:3000/checkSession',{
+    // fetch(`https://studentpadmasini.onrender.com/checkSession`, {
+    //  fetch(`https://padmasini-prod-api.padmasini.com/checkSession`, {
+    method:"GET",
+    credentials:'include'
+  }).then(resp=> resp.json())
+  .then(data=>{
+    console.log(data)
+    if(data.loggedIn===true){
+      login(data.user)
+      //localStorage.clear();
+       //console.log(localStorage.getItem('currentUser'))
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+      //  logout(localStorage.getItem('currentUser'))
+       console.log(localStorage.getItem('currentUser'))
+       //onsole.log(currentUser)
+    }
+    if(data.loggedIn===false){
+      console.log('it came here before seeing user')
+const existingUser=localStorage.getItem('currentUser')
+  if(existingUser){
+    console.log('it came here and deleted the user')
+   // localStorage.removeItem("currentUser");
+          //localStorage.removeItem("jeeSubjectCompletion");
+          //localStorage.removeItem("currentClassJee");
+          localStorage.clear(); // Clear all local storage
+          logout();
+          // setCoursesOpen(false);
+          // setUserDropdownOpen(false);
+          navigate("/login");
+  }
+    }
+  }).catch(console.error)
+  
+ },[])
+  const handleLearnMore = (selectedCourseType) => {
   if (currentUser && localStorage.getItem("currentUser")) {
     console.log("Selected:", selectedCourseType);
 
@@ -125,41 +164,29 @@ const handleLearnMore = (selectedCourseType) => {
           </button>
 
           <div className="tabs-container" id="tabScroll">
-            {[/*{
-              title: "Bright Beginnings",
-              range: "Kindergarten",
-              tags: ["Reading", "Writing", "Basics"],
-              img: ncertImg
-            }, {
-              title: "Practice Zone",
-              range: "Class 1 - 5",
-              tags: ["Learning", "Practice", "Basic Tests"],
-              img: previousImg
-            }, {
-              title: "Board Exam Kit",
-              range: "Class 6 - 12",
-              tags: ["CBSE", "ICSE", "Boards"],
-              img: sampleImg
-            },*/  {
+            {[
+  {
     courseType: "JEE",
     title: "JEE Prep Material",
     range: "JEE Exam",
     tags: ["Reference", "Advanced", "Textbooks"],
-    img: booksImg,
+    img: booksImg
   },
   {
     courseType: "NEET",
     title: "NEET Ready Papers",
     range: "NEET Exam",
     tags: ["Mock Tests", "Practice", "Important"],
-    img: importantImg,
-  },
-].map((card, index) =>
-  // Show card if: 
-  // 1. courseType matches user's selection 
-  // 2. OR user selected "Both"
-  // 3. OR no user logged in (show all)
-  courseType === card.courseType || courseType === "Both" || !currentUser ? (
+    img: importantImg
+  }
+].map((card, index) => {
+  const canShow = 
+    !currentUser || // show all if no user
+    (Array.isArray(courseType) && courseType.some(c => c === card.courseType)); 
+
+  if (!canShow) return null;
+
+  return (
     <div key={index} className="tab-card updated-card">
       <div className="card-header">
         <span className="class-range">{card.range}</span>
@@ -171,14 +198,17 @@ const handleLearnMore = (selectedCourseType) => {
         ))}
       </div>
       <img className="card-image" src={card.img} alt={card.title} />
-      {/* Pass the card.courseType */}
-      <button className="explore-btn" onClick={() => handleLearnMore(card.courseType)}>
+      <button 
+        className="explore-btn" 
+        onClick={() => handleLearnMore(card.courseType)}
+      >
         Learn More
       </button>
     </div>
-  ) : null
+  );
+})}
 
-            )}
+            
           </div>
 
           <button

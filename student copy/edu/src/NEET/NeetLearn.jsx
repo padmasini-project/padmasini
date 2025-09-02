@@ -82,6 +82,7 @@ const SubtopicTree = ({
   );
 };
 
+
 const NeetLearn = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -116,12 +117,15 @@ const NeetLearn = () => {
   useEffect(() => {
     const courseName = "professional";
     const subjectName = subject;
-    const stringStandard = currentUser.selectedStandard;
+    const stringStandard =localStorage.getItem("currentClass");
     const standard = stringStandard?.replace(/\D/g, "");
-
+console.log(localStorage.getItem("currentClass"))
+//localStorage.removeItem("currentClass")
     const getAllSubjectDetails = () => {
       fetch(
         `http://localhost:3000/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,
+        //  `https://studentpadmasini.onrender.com/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,
+        // `https://padmasini-prod-api.padmasini.com/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,
         {
           method: "GET",
           credentials: "include",
@@ -137,17 +141,18 @@ const NeetLearn = () => {
 
     getAllSubjectDetails();
 
-    // Load saved progress
+    // Load saved progress from localStorage
     const savedProgress = JSON.parse(
       localStorage.getItem(`completedSubtopics_${userId}_neet`) || "{}"
     );
     setCompletedSubtopics(savedProgress);
   }, []);
 
-  // Recursively flatten all subtopics
+  // Recursively flatten all subtopics in a topic
   const collectAllSubtopics = (subs = []) =>
     subs.flatMap((s) => [s, ...(s.units ? collectAllSubtopics(s.units) : [])]);
 
+  // Calculate % completion for a topic
   const calculateProgress = (topic) => {
     if (!topic || !topic.units) return 0;
     const allSubs = collectAllSubtopics(topic.units);
@@ -163,7 +168,7 @@ const NeetLearn = () => {
   const isTopicCompleted = (topic) => calculateProgress(topic) === 100;
 
   const isTopicUnlocked = (index) => {
-    if (index === 0) return true;
+    if (index === 0) return true; // Always unlock first topic
     return isTopicCompleted(fetchedUnits[index - 1]);
   };
 
@@ -173,7 +178,7 @@ const NeetLearn = () => {
     setSelectedSubtopic(null);
   };
 
-  const handleSubtopicClick = (sub, index) => {
+   const handleSubtopicClick = (sub, index) => {
     setSelectedSubtopic(sub);
     if (isMobile) setShowTopics(false);
     setExpandedTopic(index);

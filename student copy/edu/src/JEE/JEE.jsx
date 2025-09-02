@@ -5,7 +5,7 @@ import "./JEE.css";
 import physicsImg from "../assets/physics.jpg";
 import chemistryImg from "../assets/chemistry.jpg";
 import mathsImg from "../assets/maths.png";
-
+import { useUser } from "../components/UserContext"; 
 const subjectList = [
   { name: "Physics", image: physicsImg, certified: false },
   { name: "Chemistry", image: chemistryImg, certified: false },
@@ -20,16 +20,65 @@ const Jee = () => {
   const [endDate, setEndDate] = useState("");
   const [subjectCompletion, setSubjectCompletion] = useState(subjectList);
   const learningPathRef = useRef(null);
-
+  const {login}=useUser()
+ useEffect(()=>{
+  fetch('http://localhost:3000/checkSession',{
+    // fetch(`https://studentpadmasini.onrender.com/checkSession`, {
+    //  fetch(`https://padmasini-prod-api.padmasini.com/checkSession`, {
+    method:"GET",
+    credentials:'include'
+  }).then(resp=> resp.json())
+  .then(data=>{
+    console.log(data)
+    if(data.loggedIn===true){
+      login(data.user)
+      //localStorage.clear();
+       //console.log(localStorage.getItem('currentUser'))
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+      //  logout(localStorage.getItem('currentUser'))
+       console.log(localStorage.getItem('currentUser'))
+       //onsole.log(currentUser)
+    }
+    if(data.loggedIn===false){
+      console.log('it came here before seeing user')
+const existingUser=localStorage.getItem('currentUser')
+  if(existingUser){
+    console.log('it came here and deleted the user')
+   // localStorage.removeItem("currentUser");
+          //localStorage.removeItem("jeeSubjectCompletion");
+          //localStorage.removeItem("currentClassJee");
+          localStorage.clear(); // Clear all local storage
+          logout();
+          setCoursesOpen(false);
+          setUserDropdownOpen(false);
+          navigate("/login");
+  }
+    }
+  }).catch(console.error)
+  
+ },[])
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("registeredUser"));
+    const storedUser = JSON.parse(localStorage.getItem("currentUser"));
     if (storedUser) {
-      setStandard(storedUser.standard || "");
+       let stdData = storedUser.selectedCourse?.JEE;
 
-      if (storedUser.standard === "both") {
-        const savedClass = localStorage.getItem("currentClassJee") || "";
-        setSelectedClass(savedClass);
+      if (typeof stdData === "string") {
+        setStandard(stdData);
+        localStorage.setItem("currentClassJee", stdData);
+      } else if (Array.isArray(stdData)) {
+        if (stdData.length === 1) {
+          setStandard(stdData[0]); // Single element
+          localStorage.setItem("currentClassJee", stdData[0]);
+        } else {
+          setStandard(stdData); // Multiple options → dropdown
+          const savedClass = localStorage.getItem("currentClassJee");
+        if (savedClass) setSelectedClass(savedClass);
+        }
       }
+      // if (storedUser.standard === "both") {
+      //   const savedClass = localStorage.getItem("currentClassJee") || "";
+      //   setSelectedClass(savedClass);
+      // }
 
       const formatDate = (dateStr) => {
         const date = new Date(dateStr);
@@ -43,7 +92,7 @@ const Jee = () => {
       if (storedUser.startDate) setStartDate(formatDate(storedUser.startDate));
       if (storedUser.endDate) setEndDate(formatDate(storedUser.endDate));
     }
-
+    console.log(storedUser.selectedStandard)
     const savedCompletion = JSON.parse(localStorage.getItem("jeeSubjectCompletion"));
     if (savedCompletion) {
       setSubjectCompletion(savedCompletion);
@@ -53,6 +102,7 @@ const Jee = () => {
   const handleClassChange = (e) => {
     const selected = e.target.value;
     setSelectedClass(selected);
+    console.log(standard)
     localStorage.setItem("currentClassJee", selected);
   };
 
@@ -93,21 +143,29 @@ const Jee = () => {
         <h2>JEE</h2>
 
         {standard && (
-          <p>
-            <strong>Standard:</strong>{" "}
-            {standard === "11th" ? (
-              "Class 11"
-            ) : standard === "12th" ? (
-              "Class 12"
-            ) : (
-              <select value={selectedClass} onChange={handleClassChange} required>
+  <p>
+    <strong>Standard:</strong>{" "}
+     {Array.isArray(standard) ? (
+              <select value={selectedClass} onChange={handleClassChange}>
                 <option value="">Select Class</option>
-                <option value="11th">Class 11</option>
-                <option value="12th">Class 12</option>
+                {standard.map((std, index) => (
+                  <option key={index} value={std}>
+                    {std === "11th" ? "Class 11" : std === "12th" ? "Class 12" : std}
+                  </option>
+                ))}
               </select>
+            ) : (
+              <span>
+                {standard === "11th"
+                  ? "Class 11"
+                  : standard === "12th"
+                  ? "Class 12"
+                  : standard}
+              </span>
             )}
           </p>
         )}
+
 
         <span className="badge certified">Certified</span>
         <span className="badge limited">Limited Access Only</span>
@@ -182,13 +240,25 @@ const Jee = () => {
                     </div>
                     <button
                       className="continue-btn"
-                      onClick={() =>
+                      onClick={() =>{
+                         if(!standard){
+                          console.log("jiii")
+                          alert("please select a standard")
+                          return
+                        }
+                        if (Array.isArray(standard) && !selectedClass) {
+    alert("Please select a class before proceeding");
+    return;
+  }
                         navigate("/JeeLearn", {
                           state: {
                             subject: subject.name,
-                            selectedClass: standard === "both" ? selectedClass : standard,
+                            selectedClass: Array.isArray(standard) ? selectedClass : standard,
                           },
                         })
+                      }
+                        
+                        
                       }
                       disabled={standard === "both" && !selectedClass}
                     >

@@ -17,14 +17,14 @@ const SubtopicTree = ({
   const [expandedSub, setExpandedSub] = useState(null);
 
   const handleSubClick = (sub, idx) => {
-    // Expand if children/tests exist
-    if (
+   if (
       (sub.units && sub.units.length > 0) ||
       (sub.test && sub.test.length > 0)
     ) {
       setExpandedSub((prev) => (prev === idx ? null : idx));
     }
-    // Always open explanation as well
+
+    // Trigger parent click logic (for leaf subtopics)
     onClick(sub, parentIndex);
   };
 
@@ -51,22 +51,20 @@ const SubtopicTree = ({
             📄 {sub.unitName}
           </div>
 
-          {/* Show tests when expanded */}
           {expandedSub === idx &&
-            sub.test &&
+          sub.test &&
             sub.test.length > 0 &&
             sub.test.map((test, tIdx) => (
               <div
                 key={tIdx}
                 className="subtopic-title test-title"
-                style={{ marginLeft: `${(level + 1) * 20}px` }}
+                 style={{ marginLeft: `${(level + 1) * 20}px` }}
                 onClick={() => handleTestClick(test, tIdx, sub)}
               >
                 📝 {test.testName} - Assessment
               </div>
             ))}
 
-          {/* Recursive children */}
           {expandedSub === idx && sub.units && (
             <SubtopicTree
               subtopics={sub.units}
@@ -113,41 +111,63 @@ const JeeLearn = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    const courseName = "professional";
-    const subjectName = subject;
-    const stringStandard = currentUser.selectedStandard;
-    const standard = stringStandard?.replace(/\D/g, "");
+  
+   useEffect(() => {
+      const courseName = "professional";
+      const subjectName = subject;
+      const stringStandard = localStorage.getItem("currentClassJee");
+      console.log(stringStandard)
+      const standard = stringStandard?.replace(/\D/g, "");
+  console.log(standard)
+  console.log(localStorage.getItem("currentClassJee"))
+//localStorage.removeItem("currentClass")
+      const getAllSubjectDetails = () => {
+        fetch(
+          `http://localhost:3000/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,
+          // `https://studentpadmasini.onrender.com/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,
+      //  `https://padmasini-prod-api.padmasini.com/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,
+     
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        )
+          .then((resp) => resp.json())
+          .then((data) => {
+            console.log("details of units: ", data);
+            setFetchedUnits(data);
+          })
+          .catch((err) => console.log("getting units error: ", err));
+      };
+  
+      getAllSubjectDetails();
+  
+      // Load saved progress from localStorage
+      const savedProgress = JSON.parse(
+        localStorage.getItem(`completedSubtopics_${userId}_jee`) || "{}"
+      );
+      setCompletedSubtopics(savedProgress);
+    }, []);
+  // useEffect(() => {
+  //   const updated = {};
+  //   const traverse = (subs, topicName) => {
+  //     for (const sub of subs) {
+  //       if (sub.units) traverse(sub.units, topicName);
+  //       const key = `jee-completed-${sub.unitName}`;
+  //       if (localStorage.getItem(key) === "true") {
+  //         if (!updated[topicName]) updated[topicName] = {};
+  //         updated[topicName][sub.unitName] = true;
+  //       }
+  //     }
+  //   };
+  //   topics.forEach((topic) => traverse(topic.units, topic.unitName));
+  //   setCompletedSubtopics(updated);
+  // }, [topics]);
 
-    const getAllSubjectDetails = () => {
-      fetch(
-        `http://localhost:3000/getSubjectDetails?courseName=${courseName}&subjectName=${subjectName}&standard=${standard}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      )
-        .then((resp) => resp.json())
-        .then((data) => {
-          console.log("details of units: ", data);
-          setFetchedUnits(data);
-        })
-        .catch((err) => console.log("getting units error: ", err));
-    };
-
-    getAllSubjectDetails();
-
-    // Load saved progress
-    const savedProgress = JSON.parse(
-      localStorage.getItem(`completedSubtopics_${userId}_jee`) || "{}"
-    );
-    setCompletedSubtopics(savedProgress);
-  }, []);
-
-  // Recursively flatten all subtopics
-  const collectAllSubtopics = (subs = []) =>
+const collectAllSubtopics = (subs = []) =>
     subs.flatMap((s) => [s, ...(s.units ? collectAllSubtopics(s.units) : [])]);
 
+  // Calculate % completion for a topic
   const calculateProgress = (topic) => {
     if (!topic || !topic.units) return 0;
     const allSubs = collectAllSubtopics(topic.units);

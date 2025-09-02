@@ -7,6 +7,7 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaSignOutAlt,
+  FaPencilAlt,
 } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import "./Navbar.css";
@@ -17,12 +18,14 @@ const Navbar = () => {
   const [coursesOpen, setCoursesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-
+  const {login}=useUser()
   const { currentUser, logout } = useUser(); // ✅ Uses custom hook correctly
   const navigate = useNavigate();
 
   const handleLogout = () => {
     fetch(`http://localhost:3000/logout`, {
+      // fetch(`https://studentpadmasini.onrender.com/logout`, {
+      // fetch(`https://padmasini-prod-api.padmasini.com/logout`, {
       method: "POST",
       credentials: "include",
     })
@@ -41,7 +44,45 @@ const Navbar = () => {
       })
       .catch((err) => console.log(err));
   };
-
+ useEffect(()=>{
+  fetch('http://localhost:3000/checkSession',{
+    // fetch(`https://studentpadmasini.onrender.com/checkSession`, {
+    //  fetch(`https://padmasini-prod-api.padmasini.com/checkSession`, {
+    method:"GET",
+    credentials:'include'
+  }).then(resp=> resp.json())
+  .then(data=>{
+    console.log(data)
+    if(data.loggedIn===true){
+      login(data.user)
+      //localStorage.clear();
+       //console.log(localStorage.getItem('currentUser'))
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+      //  logout(localStorage.getItem('currentUser'))
+       console.log(localStorage.getItem('currentUser'))
+       //onsole.log(currentUser)
+    }
+    if(data.loggedIn===false){
+      console.log('it came here before seeing user')
+const existingUser=localStorage.getItem('currentUser')
+  if(existingUser){
+    console.log('it came here and deleted the user')
+   // localStorage.removeItem("currentUser");
+          //localStorage.removeItem("jeeSubjectCompletion");
+          //localStorage.removeItem("currentClassJee");
+          localStorage.clear(); // Clear all local storage
+          logout();
+          setCoursesOpen(false);
+          setUserDropdownOpen(false);
+          navigate("/login");
+  }
+    }
+  }).catch(console.error)
+  
+ },[])
+ useEffect(() => {
+  console.log("Current user is now:", currentUser);
+}, [currentUser]);
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdowns = document.querySelectorAll(".dropdown-toggle, .dropdown-menu");
@@ -64,9 +105,32 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+//     let selectedCourse=[]
+// if(Array.isArray(currentUser?.selectedCourse)){
+//   selectedCourse=currentUser?.selectedCourse
+// }else {
+// selectedCourse=[currentUser?.selectedCourse]
+// }
+// let selectedStandard=[]
+// if(Array.isArray(currentUser?.selectedStandard)){
+// selectedStandard=currentUser?.selectedStandard
+// }else {
+// selectedStandard=[currentUser?.selectedStandard]
+// }
+   // Extract courses (keys of the object)
+let selectedCourse = [];
+let selectedStandard = [];
 
-  const selectedCourse = currentUser?.selectedCourse;
+if (currentUser?.selectedCourse && typeof currentUser.selectedCourse === "object") {
+  selectedCourse = Object.keys(currentUser.selectedCourse);
 
+  // Flatten all standards into one array (avoid duplicates)
+  selectedStandard = [
+    ...new Set(Object.values(currentUser.selectedCourse).flat())
+  ];
+}
+
+//console.log(selectedCourse)
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="logo">
@@ -83,114 +147,112 @@ const Navbar = () => {
         {currentUser && (
           <li className="dropdown">
             <div
-  className="dropdown-toggle"
-  onClick={() => {
-    setCoursesOpen((prev) => !prev);
-    setUserDropdownOpen(false);
-  }}
->
-  <span>Courses</span>
+              className="dropdown-toggle"
+              onClick={() => {
+                setCoursesOpen((prev) => !prev);
+                setUserDropdownOpen(false);
+              }}
+            >
+             <span>Courses</span>
   <span className="dropdown-icon">
     {coursesOpen ? <FaChevronUp /> : <FaChevronDown />}
-  </span>
-</div>
-
-{coursesOpen && (
-  <ul className="dropdown-menu">
-    {(selectedCourse === "NEET" || selectedCourse === "Both") && (
-      <li>
-        <Link to="/NEET" onClick={() => setMenuOpen(false)}>
-          NEET
+  </span></div>
+            {coursesOpen && (
+              <ul className="dropdown-menu">
+                {selectedCourse.map((course) => (
+      <li key={course}>
+        <Link
+          to={`/${course}`}
+          onClick={() => setMenuOpen(false)}
+        >
+          {course}
         </Link>
       </li>
-    )}
-    {(selectedCourse === "JEE" || selectedCourse === "Both") && (
-      <li>
-        <Link to="/JEE" onClick={() => setMenuOpen(false)}>
-          JEE
-        </Link>
-      </li>
-    )}
-  </ul>
-)}
-
+    ))}
+              </ul>
+            )}
           </li>
         )}
 
         <li className="dropdown">
-  {currentUser ? (
-    <>
-      <div
-        className="dropdown-toggle"
-        onClick={() => {
-          setUserDropdownOpen((prev) => !prev);
-          setCoursesOpen(false);
-        }}
-      >
-        <span>Hi, {currentUser.firstname}</span>
-        <span className="dropdown-icon">
+          {currentUser ? (
+            <>
+              <div
+                className="dropdown-toggle"
+                onClick={() => {
+                  setUserDropdownOpen((prev) => !prev);
+                  setCoursesOpen(false);
+                }}
+              >
+                <span>Hi, {currentUser.firstname}</span>
+               <span className="dropdown-icon">
           {userDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
         </span>
-      </div>
+              </div>
+{userDropdownOpen && (
+  <ul className="dropdown-menu user-details-dropdown">
+    <div className="user-details-header">
+      <li>
+        <img
+          src={currentUser.photo}
+          alt="user"
+          className="user-photo"
+        />
+      </li>
+      <li className="user-name-row">
+        <strong>Name:</strong> {currentUser.firstname} {currentUser.lastname}
+        <FaPencilAlt
+          className="edit-icon"
+          onClick={() => {
+            setUserDropdownOpen(false);
+            navigate("/edit-user"); // redirect to edit user page
+          }}
+        />
+      </li>
+      <li>
+        <strong>Email:</strong> {currentUser.email}
+      </li>
+      <li>
+        <strong>Mobile:</strong> {currentUser.mobile}
+      </li>
+      <li>
+        <strong>Courses:</strong> {selectedCourse?.join(",")}
+      </li>
+      <li>
+        <strong>Standards:</strong> {selectedStandard?.join(",")}
+      </li>
 
-      {userDropdownOpen && (
-        <ul className="dropdown-menu user-details-dropdown">
-           <div className="user-details-header">
-                    <li>
-                      <img
-                        src={currentUser.photo}
-                        alt="user"
-                        className="user-photo"
-                      />
-                    </li>
-                    <li>
-                      <strong>Name:</strong> {currentUser.firstname}{" "}
-                      {currentUser.lastname}
-                    </li>
-                    <li>
-                      <strong>Email:</strong> {currentUser.email}
-                    </li>
-                    <li>
-                      <strong>Mobile:</strong> {currentUser.mobile}
-                    </li>
-                    <li>
-                      <strong>Role:</strong>{" "}
-                      {currentUser.selectedCourse?.toUpperCase()}
-                    </li>
-                    <li>
-                      <strong>Standard:</strong> {currentUser.selectedStandard}
-                    </li>
-                    <li>
-                      <button
-                        className="upgrade-btn"
-                        onClick={() => {
-                          setUserDropdownOpen(false);
-                          navigate("/register?step=2&upgrade=true");
-                        }}
-                      >
-                        🪙 Upgrade Plan
-                      </button>
-                    </li>
-                    <li>
-                      <button className="logout-btn" onClick={handleLogout}>
-                        <FaSignOutAlt style={{ marginRight: "8px" }} />
-                        Logout
-                      </button>
-                    </li>
-                  </div>
-        </ul>
-      )}
-    </>
-  ) : (
-    <Link to="/login" onClick={() => setMenuOpen(false)}>
-      Sign In
-    </Link>
-  )}
-</li>
-
+      <li>
+        <button
+          className="upgrade-btn"
+          onClick={() => {
+            setUserDropdownOpen(false);
+            navigate("/register?step=2&upgrade=true");
+          }}
+        >
+          🪙 Upgrade Plan
+        </button>
+      </li>
+      <li>
+        <button className="logout-btn" onClick={handleLogout}>
+          <FaSignOutAlt style={{ marginRight: "8px" }} />
+          Logout
+        </button>
+      </li>
+    </div>
+  </ul>
+)}
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setMenuOpen(false)}>
+              Sign In
+            </Link>
+          )}
+        </li>
       </ul>
     </nav>
   );
 };
 
 export default Navbar;
+

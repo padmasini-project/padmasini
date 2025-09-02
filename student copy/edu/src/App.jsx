@@ -8,6 +8,7 @@ import Registration from "./pages/Registration";
 import ContactUs from "./pages/ContactUs";
 import Terms from "./pages/terms";
 import ResetPassword from "./pages/ResetPassword";
+import EditUser from "./pages/EditUser";
 import NEET from "./NEET/NEET";
 import NeetLearn from './NEET/NeetLearn';
 import NeetExplanation from './NEET/NeetExplanation';
@@ -29,6 +30,7 @@ function App() {
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/home" element={<Home />} />
@@ -41,6 +43,7 @@ function App() {
         <Route path="/JeeExplanation" element={<ProtectedRoute allowedCourse="JEE" element={<JeeExplanation />} />} />
         <Route path="/JeeQuiz" element={<ProtectedRoute allowedCourse="JEE" element={<JeeQuiz />} />} />
         <Route path="/padmasini-chat" element={<PadmasiniChat />} />
+        <Route path="/edit-user" element={<EditUser />} />
       </Routes>
       <Footer />
     </div>

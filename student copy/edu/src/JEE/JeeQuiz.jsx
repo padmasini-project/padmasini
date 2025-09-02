@@ -34,11 +34,6 @@ const JeeQuiz = ({ topicTitle, subtopicTitle, test, onBack, onMarkComplete }) =>
       handleAutoSubmit();
     }
   }, [timeRemaining, submitted, hasStarted]);
-
-  useEffect(() => {
-    const isDone = sessionStorage.getItem(`jee-completed-${subtopicTitle}`) === "true";
-    if (isDone) setIsComplete(true);
-  }, [subtopicTitle]);
 const parseTextWithFormulas = (texts) => {
   if(!texts)return;
   const text=texts.replace(/\\\\/g, "\\")
@@ -64,6 +59,10 @@ const parseTextWithFormulas = (texts) => {
     }
   });
 };
+  useEffect(() => {
+    const isDone = sessionStorage.getItem(`jee-completed-${subtopicTitle}`) === "true";
+    if (isDone) setIsComplete(true);
+  }, [subtopicTitle]);
 
   const handleOptionChange = (selected) => {
     const updatedAnswers = [...userAnswers];
@@ -163,10 +162,9 @@ const parseTextWithFormulas = (texts) => {
             </div>
 
             <div className="quiz-question">
-              <pre className="question-text" style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+               <pre className="question-text" style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
   {parseTextWithFormulas(`${currentQIndex + 1}. ${currentQuestion.question}`)}
 </pre>
-
               <div className="options-group">
                 {[currentQuestion.option1, currentQuestion.option2, currentQuestion.option3, currentQuestion.option4].map((opt, j) => {
                   const isSelected = userAnswers[currentQIndex] === opt;
@@ -186,7 +184,7 @@ const parseTextWithFormulas = (texts) => {
                         onChange={() => handleOptionChange(opt)}
                         disabled={submitted}
                       />
-{parseTextWithFormulas(opt)}
+                     {parseTextWithFormulas(opt)}
                     </label>
                   );
                 })}
