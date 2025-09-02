@@ -18,8 +18,10 @@ const RegistrationFlow = () => {
   const [mobile, setMobile] = useState("");
   const [emailError, setEmailError] = useState("");
   const [mobileError, setMobileError] = useState("");
-  const [otp, setOtp]=useState("")
-  const [otpError, setOtpError]=useState("")
+  const [otp, setOtp]=useState("");
+  const [otpError, setOtpError]=useState("");
+  const [loading, setLoading] = useState(false); // new state
+
   const [otpSent, setOtpSent] = useState(false);
 
   // Step 2 states
@@ -83,9 +85,9 @@ useEffect(()=>{
     window.scrollTo(0, 0);
   }, [stepFromURL]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [step]);
+ useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
 
   const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email);
   const validateMobile = (mobile) => /^[0-9]{10}$/.test(mobile);
@@ -232,74 +234,82 @@ console.log(selectedCourses,"  ",selectedStandards)
     }, 2000);
   }
   };
-  //  const sendOtp=async(e)=>{
-  //   e.preventDefault();
-  //   if (!email) {
-  //   setEmailError("Please enter an email first");
-  //   return;
-  //   }
-  //   if (!validateEmail(email)) return setEmailError("Please enter a valid email address.");
-  //   else setEmailError("");
-  //   setEmailError(""); 
-  //   try {
-  //   const res = await fetch("http://localhost:3000/auth/send-otp", {
-  //     // const res = await fetch("https://studentpadmasini.onrender.com/auth/send-otp", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ email }),
-  //   });
-  //   console.log("status:", res.status);
-  //   const data = await res.json();
-  //   if (res.ok) {
-  //     setOtpSent(true);
-  //     console.log("otp send successfully")
-  //     alert(data.message);
-  //   } else {
-  //     alert(data.message || "Failed to send OTP");
-  //   }
-  // } catch (err) {
-  //   console.error(err);
-  //   alert("Error sending OTP");
-  // }
-    
-    
-  //  }
-//    const verifyOtp=async(e)=>{
-//  e.preventDefault();
-//   if (!otp) return setOtpError("Please enter OTP");
-//    try {
-//     const res = await fetch("http://localhost:3000/auth/verify-otp", {
-//       // const res = await fetch("https://studentpadmasini.onrender.com/auth/verify-otp", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ email, otp }),
-//     });
+   const sendOtp = async (e) => {
+  e.preventDefault();
 
-//     const data = await res.json();
-//     if (res.ok) {
-//       setIsVerified(true);
-//       localStorage.setItem("verifiedEmail",email)
-//       localStorage.setItem("emailVerification", "success");
-//       alert("Email verified successfully ✅");
-//     } else {
-//       setOtpError(data.message || "Invalid OTP");
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     setOtpError("Error verifying OTP");
-//   }
-//    }
+  if (!email) {
+    setEmailError("Please enter an email first");
+    return;
+  }
+  if (!validateEmail(email)) {
+    return setEmailError("Please enter a valid email address.");
+  } else {
+    setEmailError("");
+  }
 
-  //  const isEmailVerified=()=>{
-  //   const emailVerification=localStorage.getItem("emailVerification")
-  //   const verifiedEmail=localStorage.getItem("verifiedEmail")
-  //   console.log(emailVerification)
-  //   if (!verifiedEmail || verifiedEmail !== email || emailVerification !== "success") {
-  //   alert("Please verify your email to proceed to the next step.");
-  //   return false;
-  // }
-  //   return true
-  //  }
+  setLoading(true); // start loading
+
+  try {
+    const res = await fetch("http://localhost:3000/auth/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    console.log("status:", res.status);
+    const data = await res.json();
+
+    if (res.ok) {
+      setOtpSent(true);
+      console.log("otp sent successfully");
+      alert(data.message);
+    } else {
+      alert(data.message || "Failed to send OTP");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error sending OTP");
+  }
+
+  setLoading(false); // stop loading
+};
+
+   const verifyOtp=async(e)=>{
+ e.preventDefault();
+  if (!otp) return setOtpError("Please enter OTP");
+   try {
+    const res = await fetch("http://localhost:3000/auth/verify-otp", {
+      // const res = await fetch("https://studentpadmasini.onrender.com/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      setIsVerified(true);
+      localStorage.setItem("verifiedEmail",email)
+      localStorage.setItem("emailVerification", "success");
+      alert("Email verified successfully ✅");
+    } else {
+      setOtpError(data.message || "Invalid OTP");
+    }
+  } catch (err) {
+    console.error(err);
+    setOtpError("Error verifying OTP");
+  }
+   }
+
+   const isEmailVerified=()=>{
+    const emailVerification=localStorage.getItem("emailVerification")
+    const verifiedEmail=localStorage.getItem("verifiedEmail")
+    console.log(emailVerification)
+    if (!verifiedEmail || verifiedEmail !== email || emailVerification !== "success") {
+    alert("Please verify your email to proceed to the next step.");
+    return false;
+  }
+    return true
+   }
   const handlePayNowClick = () => {
     if (!selectedPlan) return alert("Please select a plan.");
     setShowPaymentOptions(true);
@@ -388,9 +398,18 @@ const currentUserCourses=()=>{
                 <input type="email" placeholder="Email Id" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 {emailError && <span className="error-message">{emailError}</span>}
                 
-                {/* {!otpSent && (<button type="none" className="verifyOtp" onClick={sendOtp}>Send Otp</button>)} */}
+                {!otpSent && (
+<button 
+  type="button" 
+  onClick={sendOtp} 
+  disabled={loading} 
+  className="sendOtp"
+>
+  {loading ? "Sending..." : "Send OTP"}
+</button>
+                  )}
                 
-                {/* {otpSent && (
+                {otpSent && (
   <>
     <input 
       type="text" 
@@ -402,7 +421,7 @@ const currentUserCourses=()=>{
     {otpError && <span className="error-message">{otpError}</span>}
     <button type="button" className={`verifyOtp ${isVerified ? "verified" : ""}`}  onClick={verifyOtp} disabled={isVerified}> {isVerified ? "Verified ✅" : "Verify OTP"}</button>
   </>
-)} */}
+)}
 
                 <input type="tel" placeholder="Mobile No." value={mobile} onChange={(e) => setMobile(e.target.value)} required />
                 {mobileError && <span className="error-message">{mobileError}</span>}
