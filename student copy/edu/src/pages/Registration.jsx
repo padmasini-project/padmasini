@@ -311,15 +311,21 @@ const currentUserCourses=()=>{
     let userCourse=currentUser.selectedCourse
     if(typeof userCourse==='string'){
       userCourse=[userCourse]
+      return <div>Your current course: {userCourse.join(", ")}</div>;
+    }
+     if (Array.isArray(userCourse)) {
+      return <div>Your current course: {userCourse.join(", ")}</div>;
+    }
+
+    // Case 3: object → flatten courses + standards
+    if (typeof userCourse === "object") {
+      const courseList = Object.entries(userCourse).map(
+        ([course, standards]) =>
+          `${course}: ${Array.isArray(standards) ? standards.join(", ") : standards}`
+      );
+      return <div>Your current course: {courseList.join(" | ")}</div>;
     }
     
-      return (
-        
-        <div>
-          Your current course: {userCourse?.join(",")}
-          </div>
-        
-      )
     
   }
 }
