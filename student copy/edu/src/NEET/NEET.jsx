@@ -27,7 +27,7 @@ const {login}=useUser()
     console.log(JSON.parse(localStorage.getItem("currentUser")))
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
     if (storedUser) {
-      const stdData = storedUser.selectedStandard;
+      let stdData = storedUser.selectedCourse?.NEET;
 
       // Handle string
       if (typeof stdData === "string") {
@@ -41,6 +41,8 @@ const {login}=useUser()
           localStorage.setItem("currentClass", stdData[0]);
         } else {
           setStandard(stdData);
+          const savedClass = localStorage.getItem("currentClassJee");
+        if (savedClass) setSelectedClass(savedClass);
         }
       }
       const formatDate = (dateStr) => {
@@ -251,7 +253,7 @@ const existingUser=localStorage.getItem('currentUser')
                         navigate("/NeetLearn", {
                           state: {
                             subject: subject.name,
-                            selectedClass: standard === "both" ? selectedClass : standard,
+                             selectedClass: Array.isArray(standard) ? selectedClass : standard,
                           },
                         })}
                       }

@@ -302,7 +302,7 @@ background-color: #03a020;
 .why-choose-us {
   font-size: 32px;
   font-weight: bold;
-  margin-bottom: 40px;
+  margin-bottom: 40px; 
   text-align: center;
   padding: 50px 20px;
 }
@@ -333,7 +333,6 @@ background-color: #03a020;
   border-radius: 50%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
-
 
 .center-logo img {
   width: 180px;
@@ -868,4 +867,63 @@ background-color: #03a020;
     padding: 10px 32px;
     gap: 10px;
   }
+}
+
+/* ===== Header Animations ===== */
+.header {
+  animation: fadeInHeader 1s ease-in-out;
+}
+
+@keyframes fadeInHeader {
+  from { opacity: 0; transform: translateY(-30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Image Animation */
+.head-image {
+  animation: zoomInImage 1.2s ease-in-out forwards;
+}
+
+@keyframes zoomInImage {
+  0%   { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Heading Text Animation */
+.head-text {
+  animation: slideInLeft 1s ease-in-out 0.3s forwards;
+  opacity: 0; /* Prevent flash before animation */
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Sub Text Animation */
+.sub-text {
+  animation: slideInRight 1s ease-in-out 0.6s forwards;
+  opacity: 0;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Bounce animation for button */
+@keyframes bounceBtn {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* Make button text bounce */
+.course-button {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+/* Apply bounce on hover */
+.course-button:hover {
+  animation: bounceBtn 0.6s ease-in-out infinite;
 }
